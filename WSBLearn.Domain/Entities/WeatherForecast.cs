@@ -1,4 +1,4 @@
-namespace WSBLearn.WebApi
+namespace WSBLearn.Domain.Entities
 {
     public class WeatherForecast
     {
