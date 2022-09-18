@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging.AzureAppServices;
+using System.Configuration;
 using WSBLearn.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,10 +13,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IWeatherForecastService, WeatherForecastService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 
-
 builder.Services.AddLogging();
+builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
+builder.Logging.AddAzureWebAppDiagnostics();
+
+//builder.Logging.Configure<AzureFileLoggerOptions>(Configuration.GetSection("AzureLogging"));
+
+builder.Logging.AddAzureWebAppDiagnostics();
+
 
 var app = builder.Build();
 
