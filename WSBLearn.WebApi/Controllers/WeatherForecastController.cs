@@ -19,6 +19,7 @@ namespace WSBLearn.WebApi.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IActionResult GetAll()
         {
+            _logger.LogWarning("This is a test of logger!");
             return Ok(_forecastService.Get());
         }
     }
