@@ -18,6 +18,19 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Logging.AddAzureWebAppDiagnostics();
+builder.Services.Configure<AzureFileLoggerOptions>(options =>
+{
+    options.FileName = "azure-diagnostics-";
+    options.FileSizeLimit = 50 * 1024;
+    options.RetainedFileCountLimit = 5;
+});
+builder.Services.Configure<AzureBlobLoggerOptions>(options =>
+{
+    options.BlobName = "log.txt";
+});
+
+var allowedOrigins = builder.Configuration["AllowedOrigins"];
+var originName = "sensorToolClient";
 
 //builder.Logging.Configure<AzureFileLoggerOptions>(Configuration.GetSection("AzureLogging"));
 
