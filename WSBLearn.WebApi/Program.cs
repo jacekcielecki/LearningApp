@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging.AzureAppServices;
 using System.Configuration;
 using WSBLearn.Application.Services;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,24 +19,11 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Logging.AddAzureWebAppDiagnostics();
-builder.Services.Configure<AzureFileLoggerOptions>(options =>
+builder.Services.AddAzureClients(clientBuilder =>
 {
-    options.FileName = "azure-diagnostics-";
-    options.FileSizeLimit = 50 * 1024;
-    options.RetainedFileCountLimit = 5;
+    clientBuilder.AddBlobServiceClient(builder.Configuration["AzureStorageConnectionString:blob"], preferMsi: true);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["AzureStorageConnectionString:queue"], preferMsi: true);
 });
-builder.Services.Configure<AzureBlobLoggerOptions>(options =>
-{
-    options.BlobName = "log.txt";
-});
-
-var allowedOrigins = builder.Configuration["AllowedOrigins"];
-var originName = "sensorToolClient";
-
-//builder.Logging.Configure<AzureFileLoggerOptions>(Configuration.GetSection("AzureLogging"));
-
-builder.Logging.AddAzureWebAppDiagnostics();
-
 
 var app = builder.Build();
 
