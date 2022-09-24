@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WSBLearn.Dal\WSBLearn.Dal.csproj" />
     <ProjectReference Include="..\WSBLearn.Domain\WSBLearn.Domain.csproj" />
   </ItemGroup>
 
