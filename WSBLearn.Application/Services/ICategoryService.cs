@@ -8,7 +8,7 @@ namespace WSBLearn.Application.Services
         int? Create(CategoryDto categoryDto);
         IEnumerable<CategoryDto>? GetAll();
         CategoryDto GetById(int id);
-        CategoryDto? Update(int id, CategoryDto categoryDto);
+        CategoryDto Update(int id, CategoryDto categoryDto);
         void Delete(int id);
     }
 }

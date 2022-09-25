@@ -25,12 +25,10 @@ namespace WSBLearn.Dal.Persistence
                 eb.Property(x => x.IconUrl)
                     .HasMaxLength(400);
 
-                eb.Property(x => x.QuestionsPerLevel)
-                    .HasMaxLength(400)
+                eb.Property(x => x.QuestionsPerLesson)
                     .IsRequired();
 
-                eb.Property(x => x.Levels)
-                    .HasMaxLength(400)
+                eb.Property(x => x.LessonsPerLevel)
                     .IsRequired();
             });
         }

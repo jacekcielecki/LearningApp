@@ -14,7 +14,6 @@ namespace WSBLearn.Application.Services
         private readonly ILogger<CategoryService> _logger;
         private readonly IMapper _mapper;
 
-
         public CategoryService(WsbLearnDbContext dbContext, ILogger<CategoryService> logger, IMapper mapper)
         {
             _dbContext = dbContext;
@@ -25,16 +24,8 @@ namespace WSBLearn.Application.Services
         public int? Create(CategoryDto categoryDto)
         {
             Category category = _mapper.Map<Category>(categoryDto);
-            try
-            {
-                _dbContext.Categories.Add(category);
-                _dbContext.SaveChanges();
-            }
-            catch (Exception)
-            {
-                _logger.LogError(Messages.DataAccessError);
-                return null;
-            }
+            _dbContext.Categories.Add(category);
+            _dbContext.SaveChanges();
 
             return category.Id;
         }
@@ -58,7 +49,7 @@ namespace WSBLearn.Application.Services
             return result;
         }
 
-        public CategoryDto? Update(int id, CategoryDto categoryDto)
+        public CategoryDto Update(int id, CategoryDto categoryDto)
         {
             Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
             if (category is null)
@@ -67,11 +58,10 @@ namespace WSBLearn.Application.Services
             category.Name = categoryDto.Name;
             category.Description = categoryDto.Description;
             category.IconUrl = categoryDto.IconUrl;
-            category.Levels = categoryDto.Levels;
-            category.QuestionsPerLevel = categoryDto.QuestionsPerLevel;
+            category.QuestionsPerLesson = categoryDto.QuestionsPerLesson;
+            category.LessonsPerLevel = categoryDto.LessonsPerLevel;
 
             var result = _mapper.Map<CategoryDto>(category);
-            //_dbContext.Categories.Update(category);
             _dbContext.SaveChanges();
 
             return result;

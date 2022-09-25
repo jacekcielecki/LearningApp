@@ -21,30 +21,22 @@ namespace WSBLearn.WebApi.Controllers
         public ActionResult Post([FromBody] CategoryDto categoryDto)
         {
             var result = _categoryService.Create(categoryDto);
-            if (result == null)
-            {
-                return StatusCode(500);
-            }
 
-            return Created(string.Format(CrudMessages.CreateEntitySuccess, "Category"), result);
+            return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Category", result));
         }
 
         // GET: api/<CategoryController>
         [HttpGet]
-        public ActionResult<IEnumerable<CategoryDto>?> Get()
+        public ActionResult<IEnumerable<CategoryDto>> Get()
         {
             IEnumerable<CategoryDto>? categories =  _categoryService.GetAll();
-            if (categories == null)
-            { 
-                return StatusCode(500);
-            }
 
             return Ok(categories);
         }
 
         // GET api/<CategoryController>/5
         [HttpGet("{id}")]
-        public ActionResult<CategoryDto> Get(int id)
+        public ActionResult<CategoryDto> GetById(int id)
         {
             CategoryDto category = _categoryService.GetById(id);
 
@@ -53,9 +45,9 @@ namespace WSBLearn.WebApi.Controllers
 
         // PUT api/<CategoryController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] CategoryDto categoryDto)
+        public ActionResult<CategoryDto> Put(int id, [FromBody] CategoryDto categoryDto)
         {
-            CategoryDto? category = _categoryService.Update(id, categoryDto);
+            CategoryDto category = _categoryService.Update(id, categoryDto);
 
             return Ok(category);
         }
@@ -66,7 +58,7 @@ namespace WSBLearn.WebApi.Controllers
         {
             _categoryService.Delete(id);
 
-            return Ok(string.Format(CrudMessages.DeleteEntityFailure, "Category"));
+            return Ok(string.Format(CrudMessages.DeleteEntitySuccess, "Category"));
         }
     }
 }
