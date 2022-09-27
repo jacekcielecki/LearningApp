@@ -1,7 +1,6 @@
 ﻿using WSBLearn.Application.Dtos;
-using WSBLearn.Domain.Entities;
 
-namespace WSBLearn.Application.Services
+namespace WSBLearn.Application.Interfaces
 {
     public interface ICategoryService
     {

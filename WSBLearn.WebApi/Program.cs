@@ -1,6 +1,8 @@
 using WSBLearn.Application.Extensions;
+using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Services;
 using WSBLearn.Dal.Extensions;
+using WSBLearn.Domain.Entities;
 using WSBLearn.WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +15,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices();
 builder.Services.AddDalServices(builder.Configuration);
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
-
-
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
 
 var allowedOrigins = builder.Configuration["AllowedOrigins"];
 var originName = "WsbLearnClient";

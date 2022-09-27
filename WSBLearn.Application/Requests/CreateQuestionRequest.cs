@@ -1,8 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using WSBLearn.Domain.Entities;
 
-namespace WSBLearn.Domain.Entities
+namespace WSBLearn.Application.Requests
 {
-    public class Question : BaseEntity
+    public class CreateQuestionRequest
     {
         public string QuestionContent { get; set; }
         public string? ImageUrl { get; set; }
@@ -13,6 +13,5 @@ namespace WSBLearn.Domain.Entities
         public char CorrectAnswer { get; set; }
         public int Level { get; set; }
         public int CategoryId { get; set; }
-        public virtual Category Category { get; set; }
     }
 }

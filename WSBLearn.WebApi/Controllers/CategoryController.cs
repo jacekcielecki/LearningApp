@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
-using WSBLearn.Application.Services;
+using WSBLearn.Application.Interfaces;
 
 namespace WSBLearn.WebApi.Controllers
 {

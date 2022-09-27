@@ -39,9 +39,6 @@ namespace WSBLearn.Dal.Persistence
                 eb.Property(x => x.Level)
                     .IsRequired();
 
-                eb.Property(x => x.Lesson)
-                    .IsRequired();
-
                 eb.Property(x => x.CategoryId)
                     .IsRequired();
 

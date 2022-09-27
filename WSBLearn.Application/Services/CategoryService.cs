@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
+using WSBLearn.Application.Interfaces;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 
