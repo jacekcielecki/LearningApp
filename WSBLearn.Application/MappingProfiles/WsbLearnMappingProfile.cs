@@ -9,7 +9,11 @@ namespace WSBLearn.Application.MappingProfiles
     {
         public WsbLearnMappingProfile()
         {
+            //Category
             CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<CreateCategoryRequest, Category>();
+
+            //Question
             CreateMap<Question, QuestionDto>().ReverseMap();
             CreateMap<CreateQuestionRequest, Question>();
         }

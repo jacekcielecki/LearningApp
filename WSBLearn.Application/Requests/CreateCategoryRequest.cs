@@ -1,13 +1,11 @@
-﻿namespace WSBLearn.Domain.Entities
+﻿namespace WSBLearn.Application.Requests
 {
-    public class Category : BaseEntity
+    public class CreateCategoryRequest
     {
         public string Name { get; set; }
         public string? Description { get; set; }
         public string? IconUrl { get; set; }
         public int QuestionsPerLesson { get; set; }
         public int LessonsPerLevel { get; set; }
-
-        public virtual ICollection<Question> Questions { get; set; }
     }
 }

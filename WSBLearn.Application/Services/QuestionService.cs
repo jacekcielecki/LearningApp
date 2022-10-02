@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
@@ -23,32 +24,47 @@ namespace WSBLearn.Application.Services
             _mapper = mapper;
         }
 
-        public int? Create(CreateQuestionRequest questionRequest)
+        public int? Create(CreateQuestionRequest questionRequest, int categoryId)
         {
+            var category = _dbContext.Categories.FirstOrDefault(c => c.Id == categoryId);
+            if (category == null)
+                throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+            if ((questionRequest.Level < 0) || (questionRequest.Level > 3))
+                throw new ArgumentException("Given level is invalid");
+
             Question question = _mapper.Map<Question>(questionRequest);
+            question.Category = category;
+
             _dbContext.Questions.Add(question);
             _dbContext.SaveChanges();
 
             return question.Id;
         }
 
-        public IEnumerable<QuestionDto>? GetAll()
+        public IEnumerable<QuestionDto> GetAllByCategory(int categoryId)
         {
-            IEnumerable<Question> questions = _dbContext.Questions.AsEnumerable();
+            var category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(r => r.Id == categoryId);
+            if (category is null)
+                throw new NotFoundException("Category not found!");
+
+            var questions = category.Questions.AsEnumerable();
             var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(questions);
 
-            return questionDtos;
+            return (questionDtos);
         }
 
-        public QuestionDto GetById(int id)
+        public IEnumerable<QuestionDto> GetLesson(int categoryId, int level)
         {
-            Question? question = _dbContext.Questions.FirstOrDefault(q => q.Id == id);
-            if (question is null)
-                throw new NotFoundException(string.Format(Messages.InvalidId, "Question"));
+            var category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(r => r.Id == categoryId);
+            if (category is null)
+                throw new NotFoundException("Category not found!");
+            if ((level < 0) || (level > 3))
+                throw new ArgumentException("Given level is invalid");
 
-            var questionDto = _mapper.Map<QuestionDto>(question);
+            var questions = category.Questions.Where(r => r.Level == level).AsEnumerable();
+            var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(questions);
 
-            return questionDto;
+            return (questionDtos);
         }
 
         public QuestionDto Update(int id, UpdateQuestionRequest updateQuestionRequest)
@@ -72,7 +88,7 @@ namespace WSBLearn.Application.Services
             question.D = updateQuestionRequest.D;
             question.CorrectAnswer = updateQuestionRequest.CorrectAnswer;
             question.Level = updateQuestionRequest.Level;
-            question.CategoryId = updateQuestionRequest.CategoryId;
+            question.Category = category;
 
             var questionDto = _mapper.Map<QuestionDto>(question);
             _dbContext.SaveChanges();

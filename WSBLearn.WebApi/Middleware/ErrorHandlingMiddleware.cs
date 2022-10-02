@@ -16,10 +16,15 @@ namespace WSBLearn.WebApi.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(notFoundException.Message);
             }
-            catch (Exception)
+            catch (EntityContainsSubentityException entityContainsSubentityException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(entityContainsSubentityException.Message);
+            }
+            catch (Exception exception)
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsync(Messages.DataAccessError);
+                await context.Response.WriteAsync(Messages.GenericErrorMessage);
             }
         }
     }

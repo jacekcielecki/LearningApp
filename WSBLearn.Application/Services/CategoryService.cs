@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
+using WSBLearn.Application.Requests;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 
@@ -22,9 +24,9 @@ namespace WSBLearn.Application.Services
             _mapper = mapper;
         }
 
-        public int? Create(CategoryDto categoryDto)
+        public int? Create(CreateCategoryRequest createCategoryRequest)
         {
-            Category category = _mapper.Map<Category>(categoryDto);
+            Category category = _mapper.Map<Category>(createCategoryRequest);
             _dbContext.Categories.Add(category);
             _dbContext.SaveChanges();
 
@@ -33,46 +35,48 @@ namespace WSBLearn.Application.Services
 
         public IEnumerable<CategoryDto>? GetAll()
         {
-            IEnumerable<Category> categories = _dbContext.Categories.AsEnumerable();
-            var result = _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            IEnumerable<Category> categories = _dbContext.Categories.Include(r => r.Questions).AsEnumerable();
+            var categoryDtos = _mapper.Map<IEnumerable<CategoryDto>>(categories);
 
-            return result;
+            return categoryDtos;
         }
 
         public CategoryDto GetById(int id)
         {
-            Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
+            Category? category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(c => c.Id == id);
             if (category is null)
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
 
-            var result = _mapper.Map<CategoryDto>(category);
+            var categoryDto = _mapper.Map<CategoryDto>(category);
 
-            return result;
+            return categoryDto;
         }
 
-        public CategoryDto Update(int id, CategoryDto categoryDto)
+        public CategoryDto Update(int id, UpdateCategoryRequest updateCategoryRequest)
         {
             Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
             if (category is null)
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
 
-            category.Name = categoryDto.Name;
-            category.Description = categoryDto.Description;
-            category.IconUrl = categoryDto.IconUrl;
-            category.QuestionsPerLesson = categoryDto.QuestionsPerLesson;
-            category.LessonsPerLevel = categoryDto.LessonsPerLevel;
+            category.Name = updateCategoryRequest.Name;
+            category.Description = updateCategoryRequest.Description;
+            category.IconUrl = updateCategoryRequest.IconUrl;
+            category.QuestionsPerLesson = updateCategoryRequest.QuestionsPerLesson;
+            category.LessonsPerLevel = updateCategoryRequest.LessonsPerLevel;
 
-            var result = _mapper.Map<CategoryDto>(category);
+            var categoryDto = _mapper.Map<CategoryDto>(category);
             _dbContext.SaveChanges();
 
-            return result;
+            return categoryDto;
         }
 
         public void Delete(int id)
         {
-            Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
+            Category? category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(c => c.Id == id);
             if (category is null)
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+            if (category.Questions.Any())
+                throw new NotFoundException(string.Format(Messages.ExistingSubentity, "Category", "Question"));
 
             _dbContext.Categories.Remove(category);
             _dbContext.SaveChanges();

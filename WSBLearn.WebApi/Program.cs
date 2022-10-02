@@ -2,7 +2,6 @@ using WSBLearn.Application.Extensions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Services;
 using WSBLearn.Dal.Extensions;
-using WSBLearn.Domain.Entities;
 using WSBLearn.WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);

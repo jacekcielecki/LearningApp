@@ -1,6 +1,4 @@
-﻿using WSBLearn.Domain.Entities;
-
-namespace WSBLearn.Application.Requests
+﻿namespace WSBLearn.Application.Requests
 {
     public class CreateQuestionRequest
     {
@@ -12,6 +10,5 @@ namespace WSBLearn.Application.Requests
         public string? D { get; set; }
         public char CorrectAnswer { get; set; }
         public int Level { get; set; }
-        public int CategoryId { get; set; }
     }
 }

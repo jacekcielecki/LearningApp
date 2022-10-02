@@ -3,6 +3,7 @@ using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests;
+using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.WebApi.Controllers
 {
@@ -18,30 +19,30 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         // POST api/<QuestionController>
-        [HttpPost]
-        public ActionResult Post([FromBody] CreateQuestionRequest questionRequest)
+        [HttpPost("{categoryId}")]
+        public ActionResult Post([FromBody] CreateQuestionRequest questionRequest, int categoryId)
         {
-            var result = _questionService.Create(questionRequest);
+            var questionId = _questionService.Create(questionRequest, categoryId);
 
-            return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Category", result));
+            return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Question", questionId));
         }
 
         // GET: api/<QuestionController>
-        [HttpGet]
-        public ActionResult<IEnumerable<QuestionDto>> Get()
+        [HttpGet("{categoryId}")]
+        public ActionResult<IEnumerable<QuestionDto>> GetAllByCategory(int categoryId)
         {
-            IEnumerable<QuestionDto>? questionDtos = _questionService.GetAll();
+            IEnumerable<QuestionDto> questionDtos = _questionService.GetAllByCategory(categoryId);
 
             return Ok(questionDtos);
         }
 
-        // GET api/<QuestionController>/5
-        [HttpGet("{id}")]
-        public ActionResult<QuestionDto> GetById(int id)
+        // GET: api/<QuestionController>
+        [HttpGet("{categoryId}/{level}")]
+        public ActionResult<IEnumerable<QuestionDto>> GetAllByCategory(int categoryId, [FromRoute] int level)
         {
-            QuestionDto questionDto = _questionService.GetById(id);
+            IEnumerable<QuestionDto> questionDtos = _questionService.GetLesson(categoryId, level);
 
-            return Ok(questionDto);
+            return Ok(questionDtos);
         }
 
         // PUT api/<QuestionController>/5

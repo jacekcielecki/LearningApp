@@ -1,4 +1,6 @@
-﻿namespace WSBLearn.Application.Requests
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WSBLearn.Application.Requests
 {
     public class UpdateQuestionRequest
     {
@@ -10,6 +12,8 @@
         public string? D { get; set; }
         public char CorrectAnswer { get; set; }
         public int Level { get; set; }
+
+       [Required]
         public int CategoryId { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
+using WSBLearn.Application.Requests;
 
 namespace WSBLearn.WebApi.Controllers
 {
@@ -18,9 +19,9 @@ namespace WSBLearn.WebApi.Controllers
 
         // POST api/<CategoryController>
         [HttpPost]
-        public ActionResult Post([FromBody] CategoryDto categoryDto)
+        public ActionResult Post([FromBody] CreateCategoryRequest createCategoryRequest)
         {
-            var result = _categoryService.Create(categoryDto);
+            var result = _categoryService.Create(createCategoryRequest);
 
             return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Category", result));
         }
@@ -45,9 +46,9 @@ namespace WSBLearn.WebApi.Controllers
 
         // PUT api/<CategoryController>/5
         [HttpPut("{id}")]
-        public ActionResult<CategoryDto> Put(int id, [FromBody] CategoryDto categoryDto)
+        public ActionResult<CategoryDto> Put(int id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
         {
-            CategoryDto category = _categoryService.Update(id, categoryDto);
+            CategoryDto category = _categoryService.Update(id, updateCategoryRequest);
 
             return Ok(category);
         }

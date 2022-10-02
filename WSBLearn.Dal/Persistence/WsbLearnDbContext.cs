@@ -34,12 +34,14 @@ namespace WSBLearn.Dal.Persistence
                     .IsRequired();
             });
 
+            modelBuilder.Entity<Category>()
+                .HasMany(c => c.Questions)
+                .WithOne(e => e.Category)
+                .IsRequired();
+
             modelBuilder.Entity<Question>(eb =>
             {
                 eb.Property(x => x.Level)
-                    .IsRequired();
-
-                eb.Property(x => x.CategoryId)
                     .IsRequired();
 
                 eb.Property(x => x.QuestionContent)
