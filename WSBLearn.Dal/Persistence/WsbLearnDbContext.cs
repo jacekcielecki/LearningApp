@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Drawing;
 using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.Dal.Persistence
@@ -7,6 +8,8 @@ namespace WSBLearn.Dal.Persistence
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Question> Questions { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
 
         public WsbLearnDbContext(DbContextOptions<WsbLearnDbContext> options) : base(options)
@@ -54,6 +57,28 @@ namespace WSBLearn.Dal.Persistence
 
                 eb.Property(x => x.CorrectAnswer)
                     .IsRequired();
+            });
+
+            modelBuilder.Entity<User>(eb =>
+            {
+                eb.Property(x => x.Username)
+                    .IsRequired();
+
+                eb.Property(x => x.Password)
+                    .IsRequired();
+
+                eb.Property(x => x.EmailAddress)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<Role>(eb =>
+            {
+                eb.Property(x => x.Name)
+                    .IsRequired();
+
+                eb.HasData(
+                    new Role { Id = 1, Name = "Admin" },
+                    new Role { Id = 2, Name = "User" });
             });
         }
     }
