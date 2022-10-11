@@ -1,4 +1,5 @@
-﻿using WSBLearn.Application.Constants;
+﻿using FluentValidation;
+using WSBLearn.Application.Constants;
 using WSBLearn.Application.Exceptions;
 
 namespace WSBLearn.WebApi.Middleware
@@ -21,7 +22,12 @@ namespace WSBLearn.WebApi.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(entityContainsSubentityException.Message);
             }
-            catch (Exception exception)
+            catch (ValidationException validationException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(validationException.Message);
+            }
+            catch (Exception)
             {
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsync(Messages.GenericErrorMessage);

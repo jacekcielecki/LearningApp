@@ -14,7 +14,6 @@ var appConfig = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddApplicationServices();
 builder.Services.AddDalServices(builder.Configuration);
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -45,6 +44,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddLogging();
 builder.Services.AddMvc();
+builder.Services.AddApplicationServices();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
