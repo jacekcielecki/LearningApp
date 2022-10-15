@@ -14,8 +14,7 @@ namespace WSBLearn.Application.Services
     {
         private readonly WsbLearnDbContext _dbContext;
         private readonly IPasswordHasher<User> _passwordHasher;
-        private IValidator<CreateUserRequest> _createUserRequestValidator;
-
+        private readonly IValidator<CreateUserRequest> _createUserRequestValidator;
 
         public UserService(WsbLearnDbContext dbContext, IPasswordHasher<User> passwordHasher, 
             IValidator<CreateUserRequest> createUserRequestValidator)
@@ -27,11 +26,11 @@ namespace WSBLearn.Application.Services
 
         public void Register(CreateUserRequest createUserRequest)
         {
-            ValidationResult result = _createUserRequestValidator.Validate(createUserRequest);
+            ValidationResult validationResult = _createUserRequestValidator.Validate(createUserRequest);
 
-            if (!result.IsValid)
+            if (!validationResult.IsValid)
             {
-                throw new ValidationException(result.Errors[0].ToString());
+                throw new ValidationException(validationResult.Errors[0].ToString());
             }
 
             var user = new User()

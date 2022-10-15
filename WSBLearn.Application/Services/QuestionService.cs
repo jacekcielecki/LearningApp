@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WSBLearn.Application.Constants;
@@ -6,6 +8,7 @@ using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests;
+using WSBLearn.Application.Validators;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 
@@ -16,23 +19,32 @@ namespace WSBLearn.Application.Services
         private readonly WsbLearnDbContext _dbContext;
         private readonly ILogger<QuestionService> _logger;
         private readonly IMapper _mapper;
+        private readonly IValidator<CreateQuestionRequest> _createQuestionRequestValidator;
+        private readonly IValidator<UpdateQuestionRequest> _updateQuestionRequestValidator;
 
-        public QuestionService(WsbLearnDbContext dbContext, ILogger<QuestionService> logger, IMapper mapper)
+        public QuestionService(WsbLearnDbContext dbContext, ILogger<QuestionService> logger, IMapper mapper, 
+            IValidator<CreateQuestionRequest> createQuestionRequestValidator, IValidator<UpdateQuestionRequest> updateQuestionRequestValidator)
         {
             _dbContext = dbContext;
             _logger = logger;
             _mapper = mapper;
+            _createQuestionRequestValidator = createQuestionRequestValidator;
+            _updateQuestionRequestValidator = updateQuestionRequestValidator;
         }
 
-        public int? Create(CreateQuestionRequest questionRequest, int categoryId)
+        public int? Create(CreateQuestionRequest createQuestionRequest, int categoryId)
         {
             var category = _dbContext.Categories.FirstOrDefault(c => c.Id == categoryId);
             if (category == null)
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
-            if ((questionRequest.Level < 0) || (questionRequest.Level > 3))
-                throw new ArgumentException("Given level is invalid");
 
-            Question question = _mapper.Map<Question>(questionRequest);
+            ValidationResult validationResult = _createQuestionRequestValidator.Validate(createQuestionRequest);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors[0].ToString());
+            }
+
+            Question question = _mapper.Map<Question>(createQuestionRequest);
             question.Category = category;
 
             _dbContext.Questions.Add(question);
@@ -78,6 +90,12 @@ namespace WSBLearn.Application.Services
             {
                 _logger.LogError(string.Format(Messages.InvalidId, "Category"));
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+            }
+
+            ValidationResult validationResult = _updateQuestionRequestValidator.Validate(updateQuestionRequest);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors[0].ToString());
             }
 
             question.QuestionContent = updateQuestionRequest.QuestionContent;

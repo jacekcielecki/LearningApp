@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WSBLearn.Application.Constants;
@@ -6,6 +8,7 @@ using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests;
+using WSBLearn.Application.Validators;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 
@@ -16,16 +19,27 @@ namespace WSBLearn.Application.Services
         private readonly WsbLearnDbContext _dbContext;
         private readonly ILogger<CategoryService> _logger;
         private readonly IMapper _mapper;
+        private readonly IValidator<CreateCategoryRequest> _createCategoryRequestValidator;
+        private readonly IValidator<UpdateCategoryRequest> _updateCategoryRequestValidator;
 
-        public CategoryService(WsbLearnDbContext dbContext, ILogger<CategoryService> logger, IMapper mapper)
+        public CategoryService(WsbLearnDbContext dbContext, ILogger<CategoryService> logger, IMapper mapper, 
+            IValidator<CreateCategoryRequest> createCategoryRequestValidator, IValidator<UpdateCategoryRequest> updateCategoryRequestValidator)
         {
             _dbContext = dbContext;
             _logger = logger;
             _mapper = mapper;
+            _createCategoryRequestValidator = createCategoryRequestValidator;
+            _updateCategoryRequestValidator = updateCategoryRequestValidator;
         }
 
         public int? Create(CreateCategoryRequest createCategoryRequest)
         {
+            ValidationResult validationResult = _createCategoryRequestValidator.Validate(createCategoryRequest);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors[0].ToString());
+            }
+
             Category category = _mapper.Map<Category>(createCategoryRequest);
             _dbContext.Categories.Add(category);
             _dbContext.SaveChanges();
@@ -57,6 +71,12 @@ namespace WSBLearn.Application.Services
             Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
             if (category is null)
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+
+            ValidationResult validationResult = _updateCategoryRequestValidator.Validate(updateCategoryRequest);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors[0].ToString());
+            }
 
             category.Name = updateCategoryRequest.Name;
             category.Description = updateCategoryRequest.Description;

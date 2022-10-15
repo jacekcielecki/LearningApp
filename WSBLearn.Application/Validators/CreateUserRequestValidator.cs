@@ -1,5 +1,4 @@
-﻿using System.Data;
-using FluentValidation;
+﻿using FluentValidation;
 using WSBLearn.Application.Requests;
 using WSBLearn.Dal.Persistence;
 
