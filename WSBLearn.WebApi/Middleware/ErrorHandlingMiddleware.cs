@@ -1,6 +1,6 @@
-﻿using FluentValidation;
-using WSBLearn.Application.Constants;
+﻿using WSBLearn.Application.Constants;
 using WSBLearn.Application.Exceptions;
+using ValidationException = FluentValidation.ValidationException;
 
 namespace WSBLearn.WebApi.Middleware
 {
@@ -17,15 +17,15 @@ namespace WSBLearn.WebApi.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(notFoundException.Message);
             }
-            catch (EntityContainsSubentityException entityContainsSubentityException)
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(entityContainsSubentityException.Message);
-            }
             catch (ValidationException validationException)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(validationException.Message);
+            }
+            catch (BadHttpRequestException badHttpRequestException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(badHttpRequestException.Message);
             }
             catch (Exception)
             {

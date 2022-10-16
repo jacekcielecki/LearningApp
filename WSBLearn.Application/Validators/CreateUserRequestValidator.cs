@@ -16,7 +16,15 @@ namespace WSBLearn.Application.Validators
                 .NotNull()
                 .NotEmpty()
                 .MinimumLength(6)
-                .MaximumLength(40);
+                .MaximumLength(40)
+                .Custom((value, context) =>
+                {
+                    var isUsernameNotUnique = _dbContext.Users.Any(u => u.Username == value);
+                    if (isUsernameNotUnique)
+                    {
+                        context.AddFailure("Username", $"User {value} already exists");
+                    }
+                });
 
             RuleFor(r => r.Password)
                 .NotNull()

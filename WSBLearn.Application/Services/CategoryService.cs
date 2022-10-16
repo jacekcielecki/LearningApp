@@ -95,8 +95,6 @@ namespace WSBLearn.Application.Services
             Category? category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(c => c.Id == id);
             if (category is null)
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
-            if (category.Questions.Any())
-                throw new NotFoundException(string.Format(Messages.ExistingSubentity, "Category", "Question"));
 
             _dbContext.Categories.Remove(category);
             _dbContext.SaveChanges();
