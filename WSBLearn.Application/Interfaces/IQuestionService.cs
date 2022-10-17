@@ -9,7 +9,7 @@ namespace WSBLearn.Application.Interfaces
     {
         int? Create(CreateQuestionRequest questionRequest, int categoryId);
         IEnumerable<QuestionDto> GetAllByCategory(int categoryId);
-        IEnumerable<QuestionDto> GetLesson(int categoryId, int level);
+        IEnumerable<QuestionDto> GetQuiz(int categoryId, int level);
         QuestionDto Update(int id, UpdateQuestionRequest updateQuestionRequest);
         void Delete(int id);
     }

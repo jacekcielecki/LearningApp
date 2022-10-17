@@ -8,7 +8,6 @@ using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests;
-using WSBLearn.Application.Validators;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 
@@ -65,7 +64,7 @@ namespace WSBLearn.Application.Services
             return (questionDtos);
         }
 
-        public IEnumerable<QuestionDto> GetLesson(int categoryId, int level)
+        public IEnumerable<QuestionDto> GetQuiz(int categoryId, int level)
         {
             var category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(r => r.Id == categoryId);
             if (category is null)

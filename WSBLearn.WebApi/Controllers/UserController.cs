@@ -8,6 +8,7 @@ namespace WSBLearn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -17,8 +18,8 @@ namespace WSBLearn.WebApi.Controllers
             _userService = userService;
         }
 
-        [AllowAnonymous]
         [HttpPost("login")]
+        [AllowAnonymous]
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
             string token = _userService.Login(loginDto);
@@ -26,6 +27,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public ActionResult RegisterUser([FromBody] CreateUserRequest createUserRequest)
         {
             _userService.Register(createUserRequest);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
@@ -8,6 +9,7 @@ namespace WSBLearn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -19,7 +21,8 @@ namespace WSBLearn.WebApi.Controllers
 
         // POST api/<CategoryController>
         [HttpPost]
-        public ActionResult Post([FromBody] CreateCategoryRequest createCategoryRequest)
+        [Authorize(Roles = "Admin")]
+        public ActionResult Create([FromBody] CreateCategoryRequest createCategoryRequest)
         {
             var result = _categoryService.Create(createCategoryRequest);
 
@@ -28,7 +31,8 @@ namespace WSBLearn.WebApi.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        public ActionResult<IEnumerable<CategoryDto>> Get()
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<CategoryDto>> GetAll()
         {
             IEnumerable<CategoryDto>? categories =  _categoryService.GetAll();
 
@@ -37,6 +41,7 @@ namespace WSBLearn.WebApi.Controllers
 
         // GET api/<CategoryController>/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public ActionResult<CategoryDto> GetById(int id)
         {
             CategoryDto category = _categoryService.GetById(id);
@@ -46,7 +51,8 @@ namespace WSBLearn.WebApi.Controllers
 
         // PUT api/<CategoryController>/5
         [HttpPut("{id}")]
-        public ActionResult<CategoryDto> Put(int id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
+        [Authorize(Roles = "Admin")]
+        public ActionResult<CategoryDto> Update(int id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
         {
             CategoryDto category = _categoryService.Update(id, updateCategoryRequest);
 
@@ -55,6 +61,7 @@ namespace WSBLearn.WebApi.Controllers
 
         // DELETE api/<CategoryController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             _categoryService.Delete(id);
