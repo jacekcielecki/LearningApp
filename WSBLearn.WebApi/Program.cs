@@ -11,21 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 var appConfig = builder.Configuration;
 
-//builder.Services.AddAuthentication(option =>
-//{
-//    option.DefaultAuthenticateScheme = "Bearer";
-//    option.DefaultScheme = "Bearer";
-//    option.DefaultChallengeScheme = "Bearer";
-//}).AddJwtBearer(configuration =>
-//{
-//    configuration.RequireHttpsMetadata = false;
-//    configuration.SaveToken = true;
-//    configuration.TokenValidationParameters = new TokenValidationParameters
-//    {
-
-//    }
-//});
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

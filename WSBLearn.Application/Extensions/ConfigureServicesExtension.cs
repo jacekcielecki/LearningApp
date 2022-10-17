@@ -16,7 +16,7 @@ namespace WSBLearn.Application.Extensions
             services.AddValidatorsFromAssemblyContaining<CreateUserRequestValidator>();
 
             var authenticationSettings = new JwtAuthenticationSettings();
-            configuration.GetSection("Authentiaction").Bind(authenticationSettings);
+            configuration.GetSection("Authentication").Bind(authenticationSettings);
             services.AddSingleton(authenticationSettings);
         }
     }
