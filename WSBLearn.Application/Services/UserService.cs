@@ -45,7 +45,7 @@ namespace WSBLearn.Application.Services
             {
                 Username = createUserRequest.Username,
                 EmailAddress = createUserRequest.EmailAddress,
-                RoleId = 2,
+                RoleId = createUserRequest.RoleId,
             };
             user.Password = _passwordHasher.HashPassword(user, createUserRequest.Password);
 
