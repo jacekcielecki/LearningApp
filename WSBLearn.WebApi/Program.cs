@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using WSBLearn.Application;
 using WSBLearn.Application.Extensions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Services;
@@ -11,20 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var appConfig = builder.Configuration;
 
-//builder.Services.AddAuthentication(option =>
-//{
-//    option.DefaultAuthenticateScheme = "Bearer";
-//    option.DefaultScheme = "Bearer";
-//    option.DefaultChallengeScheme = "Bearer";
-//}).AddJwtBearer(configuration =>
-//{
-//    configuration.RequireHttpsMetadata = false;
-//    configuration.SaveToken = true;
-//    configuration.TokenValidationParameters = new TokenValidationParameters
-//    {
-
-//    }
-//});
+var jwtSettings = new JwtAuthenticationSettings();
+appConfig.GetSection("Jwt").Bind(jwtSettings);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -34,20 +23,24 @@ builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+builder.Services.AddSingleton(jwtSettings);
+builder.Services.AddAuthentication(option =>
+{
+    option.DefaultAuthenticateScheme = "Bearer";
+    option.DefaultScheme = "Bearer";
+    option.DefaultChallengeScheme = "Bearer";
+}).AddJwtBearer(jwtBearerOptions =>
+{
+    jwtBearerOptions.RequireHttpsMetadata = false;
+    jwtBearerOptions.SaveToken = true;
+    jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = appConfig["Jwt:Issuer"],
-            ValidAudience = appConfig["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["Jwt:Key"]))
-        };
-    });
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Issuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+    };
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: appConfig["Cors:originName"], builder =>
@@ -59,8 +52,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddLogging();
 builder.Services.AddMvc();
-builder.Services.AddApplicationServices(appConfig);
-
+builder.Services.AddApplicationServices(jwtSettings);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
