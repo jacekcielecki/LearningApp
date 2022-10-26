@@ -16,6 +16,9 @@ namespace WSBLearn.Application.MappingProfiles
             //Question
             CreateMap<Question, QuestionDto>().ReverseMap();
             CreateMap<CreateQuestionRequest, Question>();
+
+            //User
+            CreateMap<User, UserDto>();
         }
     }
 }

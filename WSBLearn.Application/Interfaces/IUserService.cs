@@ -7,5 +7,9 @@ namespace WSBLearn.Application.Interfaces
     {
         string Login(LoginDto loginDto);
         void Register(CreateUserRequest createUserRequest);
+        IEnumerable<UserDto> GetAll();
+        void Delete(int id);
+        UserDto GetById(int id);
+        UserDto Update(int id, UpdateUserRequest updateUserRequest);
     }
 }
