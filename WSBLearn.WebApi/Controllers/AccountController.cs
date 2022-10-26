@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests;
@@ -18,7 +17,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto loginDto)
+        public ActionResult Login([FromBody] LoginDto loginDto)
         {
             string token = _userService.Login(loginDto);
             return Ok(token);
