@@ -6,6 +6,7 @@ using WSBLearn.Application.Extensions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Services;
 using WSBLearn.Dal.Extensions;
+using WSBLearn.WebApi.Extensions;
 using WSBLearn.WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,7 @@ appConfig.GetSection("Jwt").Bind(jwtSettings);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger();
 builder.Services.AddDalServices(builder.Configuration);
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
