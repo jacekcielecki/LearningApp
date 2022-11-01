@@ -4,7 +4,6 @@ using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests;
-using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.WebApi.Controllers
 {

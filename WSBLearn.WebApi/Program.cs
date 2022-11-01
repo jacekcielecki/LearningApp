@@ -8,6 +8,7 @@ using WSBLearn.Application.Services;
 using WSBLearn.Dal.Extensions;
 using WSBLearn.WebApi.Extensions;
 using WSBLearn.WebApi.Middleware;
+using WSBLearn.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +16,11 @@ var appConfig = builder.Configuration;
 
 var jwtSettings = new JwtAuthenticationSettings();
 appConfig.GetSection("Jwt").Bind(jwtSettings);
+var blobSettings = new AzureBlobStorageSettings();
+appConfig.GetSection("BlobStorage").Bind(blobSettings);
 
 builder.Services.AddControllers();
+builder.Services.AddTransient<IAzureStorage, AzureStorage>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureSwagger();
@@ -54,7 +58,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddLogging();
 builder.Services.AddMvc();
-builder.Services.AddApplicationServices(jwtSettings);
+builder.Services.AddApplicationServices(jwtSettings, blobSettings);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
