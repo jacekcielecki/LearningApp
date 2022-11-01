@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WSBLearn.WebApi.Models;
 using WSBLearn.WebApi.Services;
 
@@ -7,6 +8,7 @@ namespace WSBLearn.WebApi.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ImageController : ControllerBase
     {
         private readonly IAzureStorage _storage;
@@ -17,6 +19,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet(nameof(Get))]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Get()
         {
             // Get all files at the Azure Storage Location and return them
@@ -27,6 +30,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpPost(nameof(Upload))]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Upload(IFormFile file)
         {
             BlobResponseDto? response = await _storage.UploadAsync(file);
@@ -45,6 +49,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet("{filename}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Download(string filename)
         {
             BlobDto? file = await _storage.DownloadAsync(filename);
@@ -64,6 +69,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpDelete("filename")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string filename)
         {
             BlobResponseDto response = await _storage.DeleteAsync(filename);

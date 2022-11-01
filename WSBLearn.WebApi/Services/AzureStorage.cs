@@ -30,16 +30,32 @@ namespace WSBLearn.WebApi.Services
             // Get a reference to a container named in appsettings.json and then create it
             BlobContainerClient container = new BlobContainerClient(_storageConnectionString, _storageContainerName);
             //await container.CreateAsync();
+
             try
             {
+                string blobContentType = string.Empty;
                 // Get a reference to the blob just uploaded from the API in a container from configuration settings
                 BlobClient client = container.GetBlobClient(blob.FileName);
+
+                if (blob.FileName.EndsWith(".jpg"))
+                {
+                    blobContentType = "image/jpg";
+                }
+                else if (blob.FileName.EndsWith(".png"))
+                {
+                    blobContentType = "image/png";
+                }
+
+                var options = new BlobUploadOptions()
+                {
+                    HttpHeaders = new BlobHttpHeaders() {ContentType = blobContentType }
+                };
 
                 // Open a stream for the file we want to upload
                 await using (Stream? data = blob.OpenReadStream())
                 {
                     // Upload the file async
-                    await client.UploadAsync(data);
+                    await client.UploadAsync(data, options);
                 }
 
                 // Everything is OK and file got uploaded
