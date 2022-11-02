@@ -11,7 +11,6 @@ namespace WSBLearn.Dal.Persistence
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
 
-
         public WsbLearnDbContext(DbContextOptions<WsbLearnDbContext> options) : base(options)
         {
         }
@@ -23,18 +22,6 @@ namespace WSBLearn.Dal.Persistence
                 eb.Property(x => x.Name)
                     .HasMaxLength(20)
                     .IsRequired();
-
-                eb.Property(x => x.Description)
-                    .HasMaxLength(400);
-
-                eb.Property(x => x.IconUrl)
-                    .HasMaxLength(400);
-
-                eb.Property(x => x.QuestionsPerLesson)
-                    .IsRequired();
-
-                eb.Property(x => x.LessonsPerLevel)
-                    .IsRequired();
             });
 
             modelBuilder.Entity<Category>()
@@ -44,18 +31,8 @@ namespace WSBLearn.Dal.Persistence
 
             modelBuilder.Entity<Question>(eb =>
             {
-                eb.Property(x => x.Level)
-                    .IsRequired();
-
                 eb.Property(x => x.QuestionContent)
                     .HasMaxLength(400)
-                    .IsRequired();
-
-                eb.Property(x => x.ImageUrl)
-                    .HasMaxLength(400)
-                    .IsRequired();
-
-                eb.Property(x => x.CorrectAnswer)
                     .IsRequired();
             });
 

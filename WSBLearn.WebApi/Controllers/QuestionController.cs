@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests;
-using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class QuestionController : ControllerBase
     {
         private readonly IQuestionService _questionService;
@@ -20,7 +21,8 @@ namespace WSBLearn.WebApi.Controllers
 
         // POST api/<QuestionController>
         [HttpPost("{categoryId}")]
-        public ActionResult Post([FromBody] CreateQuestionRequest questionRequest, int categoryId)
+        [Authorize(Roles = "Admin")]
+        public ActionResult Create([FromBody] CreateQuestionRequest questionRequest, int categoryId)
         {
             var questionId = _questionService.Create(questionRequest, categoryId);
 
@@ -29,6 +31,7 @@ namespace WSBLearn.WebApi.Controllers
 
         // GET: api/<QuestionController>
         [HttpGet("{categoryId}")]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<QuestionDto>> GetAllByCategory(int categoryId)
         {
             IEnumerable<QuestionDto> questionDtos = _questionService.GetAllByCategory(categoryId);
@@ -38,16 +41,18 @@ namespace WSBLearn.WebApi.Controllers
 
         // GET: api/<QuestionController>
         [HttpGet("{categoryId}/{level}")]
-        public ActionResult<IEnumerable<QuestionDto>> GetAllByCategory(int categoryId, [FromRoute] int level)
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<QuestionDto>> GetQuiz(int categoryId, [FromRoute] int level)
         {
-            IEnumerable<QuestionDto> questionDtos = _questionService.GetLesson(categoryId, level);
+            IEnumerable<QuestionDto> questionDtos = _questionService.GetQuiz(categoryId, level);
 
             return Ok(questionDtos);
         }
 
         // PUT api/<QuestionController>/5
         [HttpPut("{id}")]
-        public ActionResult<QuestionDto> Put(int id, [FromBody] UpdateQuestionRequest updateQuestionRequest)
+        [Authorize(Roles = "Admin")]
+        public ActionResult<QuestionDto> Update(int id, [FromBody] UpdateQuestionRequest updateQuestionRequest)
         {
             QuestionDto questionDto = _questionService.Update(id, updateQuestionRequest);
 
@@ -56,6 +61,7 @@ namespace WSBLearn.WebApi.Controllers
 
         // DELETE api/<QuestionController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             _questionService.Delete(id);

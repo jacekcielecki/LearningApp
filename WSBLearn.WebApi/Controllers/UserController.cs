@@ -8,6 +8,7 @@ namespace WSBLearn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -17,19 +18,36 @@ namespace WSBLearn.WebApi.Controllers
             _userService = userService;
         }
 
+        [HttpGet]
         [AllowAnonymous]
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto loginDto)
+        public ActionResult<IEnumerable<UserDto>> GetAll()
         {
-            string token = _userService.Login(loginDto);
-            return Ok(token);
+            var users = _userService.GetAll();
+            return Ok(users);
         }
 
-        [HttpPost("register")]
-        public ActionResult RegisterUser([FromBody] CreateUserRequest createUserRequest)
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public ActionResult<UserDto> GetById(int id)
         {
-            _userService.Register(createUserRequest);
-            return Ok();
+            var user = _userService.GetById(id);
+            return Ok(user);
+        }
+
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public ActionResult DeleteUser(int id)
+        {
+            _userService.Delete(id);
+            return Ok("User successfully deleted");
+        }
+
+        [HttpPatch("{id}")]
+        [AllowAnonymous]
+        public ActionResult<UserDto> UpdateUser(int id, [FromBody] UpdateUserRequest updateUserRequest)
+        {
+            var updatedUserDto = _userService.Update(id, updateUserRequest);
+            return Ok(updatedUserDto);
         }
     }
 }

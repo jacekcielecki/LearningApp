@@ -1,5 +1,4 @@
-﻿
-namespace WSBLearn.Application.Dtos
+﻿namespace WSBLearn.Application.Dtos
 {
     public class LoginDto
     {

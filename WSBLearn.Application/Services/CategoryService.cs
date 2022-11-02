@@ -8,7 +8,6 @@ using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests;
-using WSBLearn.Application.Validators;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 
