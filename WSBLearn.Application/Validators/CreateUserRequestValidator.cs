@@ -48,15 +48,15 @@ namespace WSBLearn.Application.Validators
             RuleFor(r => r.ConfirmPassword)
                 .Equal(r => r.Password);
 
-            //RuleFor(r => r.RoleId)
-            //    .Custom((value, context) =>
-            //    {
-            //        var givenRoleExists = _dbContext.Roles.Any(r => r.Id == value);
-            //        if (!givenRoleExists)
-            //        {
-            //            context.AddFailure("Role Id", "Given role does not exist!");
-            //        }
-            //    });
+            RuleFor(r => r.RoleId)
+                .Custom((value, context) =>
+                {
+                    var givenRoleExists = _dbContext.Roles.Any(r => r.Id == value);
+                    if (!givenRoleExists)
+                    {
+                        context.AddFailure("Role Id", "Given role does not exist!");
+                    }
+                });
         }
     }
 }

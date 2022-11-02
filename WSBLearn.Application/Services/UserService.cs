@@ -83,13 +83,13 @@ namespace WSBLearn.Application.Services
                 new Claim(ClaimTypes.Role, user.Role.Name)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.Key));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(_authenticationSettings.ExpireDays);
+            var expires = DateTime.Now.AddDays(_authenticationSettings.JwtExpireDays);
 
             var token = new JwtSecurityToken(
-                issuer: _authenticationSettings.Issuer,
-                audience: _authenticationSettings.Issuer,
+                issuer: _authenticationSettings.JwtIssuer,
+                audience: _authenticationSettings.JwtIssuer,
                 claims,
                 expires: expires,
                 signingCredentials: credentials);

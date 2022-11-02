@@ -11,11 +11,11 @@ namespace WSBLearn.Application.Validators
                 .NotNull()
                 .NotEmpty()
                 .MinimumLength(6)
-                .MaximumLength(40);
+                .MaximumLength(40);            
             
             RuleFor(r => r.Description)
                 .NotEmpty()
-                .MaximumLength(140);
+                .MaximumLength(140);            
             
             RuleFor(r => r.IconUrl)
                 .NotEmpty()

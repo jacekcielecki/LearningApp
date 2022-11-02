@@ -1,7 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using WSBLearn.Application;
 using WSBLearn.Application.Extensions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Services;
@@ -12,8 +11,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 var appConfig = builder.Configuration;
 
-var jwtSettings = new JwtAuthenticationSettings();
-appConfig.GetSection("Jwt").Bind(jwtSettings);
+//builder.Services.AddAuthentication(option =>
+//{
+//    option.DefaultAuthenticateScheme = "Bearer";
+//    option.DefaultScheme = "Bearer";
+//    option.DefaultChallengeScheme = "Bearer";
+//}).AddJwtBearer(configuration =>
+//{
+//    configuration.RequireHttpsMetadata = false;
+//    configuration.SaveToken = true;
+//    configuration.TokenValidationParameters = new TokenValidationParameters
+//    {
+
+//    }
+//});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -23,24 +34,20 @@ builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
-builder.Services.AddSingleton(jwtSettings);
-builder.Services.AddAuthentication(option =>
-{
-    option.DefaultAuthenticateScheme = "Bearer";
-    option.DefaultScheme = "Bearer";
-    option.DefaultChallengeScheme = "Bearer";
-}).AddJwtBearer(jwtBearerOptions =>
-{
-    jwtBearerOptions.RequireHttpsMetadata = false;
-    jwtBearerOptions.SaveToken = true;
-    jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidIssuer = jwtSettings.Issuer,
-        ValidAudience = jwtSettings.Issuer,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
-    };
-});
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = appConfig["Jwt:Issuer"],
+            ValidAudience = appConfig["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["Jwt:Key"]))
+        };
+    });
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: appConfig["Cors:originName"], builder =>
@@ -52,7 +59,8 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddLogging();
 builder.Services.AddMvc();
-builder.Services.AddApplicationServices(jwtSettings);
+builder.Services.AddApplicationServices(appConfig);
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
