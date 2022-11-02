@@ -11,10 +11,9 @@ namespace WSBLearn.Application.Validators
                 .NotNull()
                 .NotEmpty()
                 .MaximumLength(200);
-                            
+
             RuleFor(r => r.ImageUrl)
-                .MaximumLength(400)
-                .NotEmpty();
+                .MaximumLength(400);
 
             RuleFor(r => r.A)
                 .NotNull()
