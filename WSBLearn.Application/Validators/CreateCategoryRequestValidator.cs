@@ -10,7 +10,7 @@ namespace WSBLearn.Application.Validators
             RuleFor(r => r.Name)
                 .NotNull()
                 .NotEmpty()
-                .MinimumLength(6)
+                .MinimumLength(1)
                 .MaximumLength(40);            
             
             RuleFor(r => r.Description)
