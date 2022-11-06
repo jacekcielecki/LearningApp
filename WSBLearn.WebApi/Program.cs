@@ -8,7 +8,6 @@ using WSBLearn.Application.Services;
 using WSBLearn.Dal.Extensions;
 using WSBLearn.WebApi.Extensions;
 using WSBLearn.WebApi.Middleware;
-using WSBLearn.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +19,7 @@ var blobSettings = new AzureBlobStorageSettings();
 appConfig.GetSection("BlobStorage").Bind(blobSettings);
 
 builder.Services.AddControllers();
-builder.Services.AddTransient<IAzureStorage, AzureStorage>();
+builder.Services.AddTransient<IImageService, ImageService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureSwagger();

@@ -1,7 +1,6 @@
 ﻿
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Requests;
-using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.Application.Interfaces
 {

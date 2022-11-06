@@ -1,4 +1,4 @@
-﻿namespace WSBLearn.WebApi.Models
+﻿namespace WSBLearn.Application.Dtos
 {
     public class BlobDto
     {
