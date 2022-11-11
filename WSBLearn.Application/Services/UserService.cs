@@ -51,6 +51,7 @@ namespace WSBLearn.Application.Services
                 Username = createUserRequest.Username,
                 EmailAddress = createUserRequest.EmailAddress,
                 RoleId = createUserRequest.RoleId,
+                ProfilePictureUrl = createUserRequest.ProfilePictureUrl
             };
             user.Password = _passwordHasher.HashPassword(user, createUserRequest.Password);
 
@@ -116,6 +117,7 @@ namespace WSBLearn.Application.Services
             user.EmailAddress = updateUserRequest.EmailAddress;
             user.Password = _passwordHasher.HashPassword(user, updateUserRequest.Password);
             user.RoleId = updateUserRequest.RoleId;
+            user.ProfilePictureUrl = updateUserRequest.ProfilePictureUrl;
             _dbContext.SaveChanges();
             var userDto = _mapper.Map<UserDto>(user);
 
