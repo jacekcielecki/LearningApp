@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WSBLearn.Dal.Persistence;
 
@@ -10,9 +11,10 @@ using WSBLearn.Dal.Persistence;
 namespace WSBLearn.Dal.Migrations
 {
     [DbContext(typeof(WsbLearnDbContext))]
-    partial class WsbLearnDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221112125432_addUserProgress")]
+    partial class addUserProgress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,6 +160,8 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasIndex("RoleId");
 
+                    b.HasIndex("UserProgressId");
+
                     b.ToTable("Users");
                 });
 
@@ -175,13 +179,7 @@ namespace WSBLearn.Dal.Migrations
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("UserProgresses");
                 });
@@ -205,29 +203,20 @@ namespace WSBLearn.Dal.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("WSBLearn.Domain.Entities.UserProgress", b =>
-                {
-                    b.HasOne("WSBLearn.Domain.Entities.User", "User")
-                        .WithOne("UserProgress")
-                        .HasForeignKey("WSBLearn.Domain.Entities.UserProgress", "UserId")
+                    b.HasOne("WSBLearn.Domain.Entities.UserProgress", "UserProgress")
+                        .WithMany()
+                        .HasForeignKey("UserProgressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Role");
+
+                    b.Navigation("UserProgress");
                 });
 
             modelBuilder.Entity("WSBLearn.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Questions");
-                });
-
-            modelBuilder.Entity("WSBLearn.Domain.Entities.User", b =>
-                {
-                    b.Navigation("UserProgress")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

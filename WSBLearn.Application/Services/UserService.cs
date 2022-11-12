@@ -1,5 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
 using FluentValidation;
@@ -14,7 +13,6 @@ using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 using AutoMapper;
 using WSBLearn.Application.Exceptions;
-using WSBLearn.Application.Validators;
 using WSBLearn.Application.Requests.User;
 
 namespace WSBLearn.Application.Services
@@ -47,23 +45,31 @@ namespace WSBLearn.Application.Services
 
         public void Register(CreateUserRequest createUserRequest)
         {
-            ValidationResult validationResult = _createUserRequestValidator.Validate(createUserRequest);
+            var validationResult = _createUserRequestValidator.Validate(createUserRequest);
 
             if (!validationResult.IsValid)
-            {
                 throw new ValidationException(validationResult.Errors[0].ToString());
-            }
-
             var user = new User()
             {
                 Username = createUserRequest.Username,
                 EmailAddress = createUserRequest.EmailAddress,
                 RoleId = createUserRequest.RoleId,
-                ProfilePictureUrl = createUserRequest.ProfilePictureUrl
+                ProfilePictureUrl = createUserRequest.ProfilePictureUrl,
             };
             user.Password = _passwordHasher.HashPassword(user, createUserRequest.Password);
-
             _dbContext.Users.Add(user);
+            _dbContext.SaveChanges();
+
+            var userProgress = new UserProgress
+            {
+                ExperiencePoints = 0,
+                Level = 1,
+                UserId = user.Id
+            };
+            _dbContext.UserProgresses.Add(userProgress);
+            _dbContext.SaveChanges();
+
+            user.UserProgressId = userProgress.Id;
             _dbContext.SaveChanges();
         }
 
@@ -84,7 +90,7 @@ namespace WSBLearn.Application.Services
 
         public IEnumerable<UserDto> GetAll()
         {
-            IEnumerable<User> users = _dbContext.Users.Include(u => u.Role).AsEnumerable();
+            IEnumerable<User> users = _dbContext.Users.Include(u => u.Role).Include(u => u.UserProgress).AsEnumerable();
             var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
 
             return userDtos;
@@ -92,11 +98,14 @@ namespace WSBLearn.Application.Services
 
         public UserDto GetById(int id)
         {
-            var user = _dbContext.Users.Include(u => u.Role).FirstOrDefault(u => u.Id == id);
+            var user = _dbContext.Users
+                .Include(u => u.Role)
+                .Include(u => u.UserProgress)
+                .FirstOrDefault(u => u.Id == id);
             if (user is null)
                 throw new NotFoundException("User with given id not found");
+           
             var userDto = _mapper.Map<UserDto>(user);
-
             return userDto;
         }
 

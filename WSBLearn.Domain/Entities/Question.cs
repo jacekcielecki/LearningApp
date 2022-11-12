@@ -4,8 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace WSBLearn.Domain.Entities
 {
-    public class Question : BaseEntity
+    public class Question
     {
+        public int Id { get; set; }
         public string QuestionContent { get; set; }
         public string? ImageUrl { get; set; }
         public string? A { get; set; }

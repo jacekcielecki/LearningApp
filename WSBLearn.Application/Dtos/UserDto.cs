@@ -9,5 +9,6 @@ namespace WSBLearn.Application.Dtos
         public string EmailAddress { get; set; }
         public string ProfilePictureUrl { get; set; }
         public virtual Role Role { get; set; }
+        public virtual UserProgress UserProgress { get; set; }
     }
 }

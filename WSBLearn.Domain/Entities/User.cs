@@ -10,5 +10,7 @@
 
         public int RoleId { get; set; }
         public virtual Role Role { get; set; }
+        public int UserProgressId { get; set; } 
+        public virtual UserProgress UserProgress { get; set; }
     }
 }

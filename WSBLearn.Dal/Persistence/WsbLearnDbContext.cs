@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Drawing;
 using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.Dal.Persistence
@@ -10,6 +9,7 @@ namespace WSBLearn.Dal.Persistence
         public DbSet<Question> Questions { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<UserProgress> UserProgresses { get; set; }
 
         public WsbLearnDbContext(DbContextOptions<WsbLearnDbContext> options) : base(options)
         {
@@ -28,6 +28,12 @@ namespace WSBLearn.Dal.Persistence
                 .HasMany(c => c.Questions)
                 .WithOne(e => e.Category)
                 .IsRequired();
+
+
+            modelBuilder.Entity<User>()
+                .HasOne(c => c.UserProgress)
+                .WithOne(e => e.User)
+                .HasForeignKey<UserProgress>(a => a.UserId);
 
             modelBuilder.Entity<Question>(eb =>
             {
@@ -56,6 +62,12 @@ namespace WSBLearn.Dal.Persistence
                 eb.HasData(
                     new Role { Id = 1, Name = "Admin" },
                     new Role { Id = 2, Name = "User" });
+            });
+
+            modelBuilder.Entity<UserProgress>(eb =>
+            {
+                eb.Property(x => x.Level)
+                    .IsRequired();
             });
         }
     }

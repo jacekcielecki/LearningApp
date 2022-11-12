@@ -35,9 +35,7 @@ namespace WSBLearn.Application.Services
         {
             ValidationResult validationResult = _createCategoryRequestValidator.Validate(createCategoryRequest);
             if (!validationResult.IsValid)
-            {
                 throw new ValidationException(validationResult.Errors[0].ToString());
-            }
 
             Category category = _mapper.Map<Category>(createCategoryRequest);
             _dbContext.Categories.Add(category);
