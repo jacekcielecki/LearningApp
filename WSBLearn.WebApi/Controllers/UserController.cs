@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.User;
 
 namespace WSBLearn.WebApi.Controllers
 {
@@ -35,7 +35,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public ActionResult DeleteUser(int id)
         {
             _userService.Delete(id);
@@ -43,11 +43,28 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpPatch("{id}")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public ActionResult<UserDto> UpdateUser(int id, [FromBody] UpdateUserRequest updateUserRequest)
         {
             var updatedUserDto = _userService.Update(id, updateUserRequest);
             return Ok(updatedUserDto);
+        }
+
+
+        [HttpPatch("updateRole/{id}/{roleId}")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<UserDto> UpdateUserRole(int id, int roleId)
+        {
+            var updatedUserDto = _userService.UpdateUserRole(id, roleId);
+            return Ok(updatedUserDto);
+        }
+
+        [HttpPatch("updatePassword/{id}")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<UserDto> UpdateUserPassword(int id, [FromBody] UpdateUserPasswordRequest updateUserPasswordRequest)
+        {
+            _userService.UpdateUserPassword(id, updateUserPasswordRequest);
+            return Ok();
         }
     }
 }

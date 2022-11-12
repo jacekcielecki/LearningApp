@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.User;
 using WSBLearn.Dal.Persistence;
 
 namespace WSBLearn.Application.Validators

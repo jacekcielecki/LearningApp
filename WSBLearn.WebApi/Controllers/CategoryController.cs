@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Category;
 
 namespace WSBLearn.WebApi.Controllers
 {

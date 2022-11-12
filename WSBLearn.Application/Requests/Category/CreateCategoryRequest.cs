@@ -1,4 +1,4 @@
-﻿namespace WSBLearn.Application.Requests
+﻿namespace WSBLearn.Application.Requests.Category
 {
     public class CreateCategoryRequest
     {

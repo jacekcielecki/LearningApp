@@ -7,7 +7,7 @@ using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Category;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 

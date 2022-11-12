@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Category;
 
 namespace WSBLearn.Application.Validators
 {

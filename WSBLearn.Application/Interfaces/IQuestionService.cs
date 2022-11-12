@@ -1,6 +1,6 @@
 ﻿
 using WSBLearn.Application.Dtos;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Question;
 
 namespace WSBLearn.Application.Interfaces
 {
