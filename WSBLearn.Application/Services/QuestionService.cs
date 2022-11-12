@@ -105,7 +105,7 @@ namespace WSBLearn.Application.Services
             question.D = updateQuestionRequest.D;
             question.CorrectAnswer = updateQuestionRequest.CorrectAnswer;
             question.Level = updateQuestionRequest.Level;
-            question.Category = category;
+            question.CategoryId = updateQuestionRequest.CategoryId;
 
             var questionDto = _mapper.Map<QuestionDto>(question);
             _dbContext.SaveChanges();
