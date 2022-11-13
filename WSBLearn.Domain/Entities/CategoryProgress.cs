@@ -7,6 +7,7 @@ namespace WSBLearn.Domain.Entities
     {
         public string Id { get; set; }
         public string CategoryName { get; set; }
+        public int CategoryId { get; set; }
 
         [Required]
         public int UserProgressId { get; set; }

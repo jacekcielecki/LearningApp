@@ -14,6 +14,7 @@ using WSBLearn.Domain.Entities;
 using AutoMapper;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Requests.User;
+using System.Net;
 
 namespace WSBLearn.Application.Services
 {
@@ -182,26 +183,25 @@ namespace WSBLearn.Application.Services
 
         private string GenerateToken(User user)
         {
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.EmailAddress),
-                new Claim(ClaimTypes.Role, user.Role.Name)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.Key));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(_authenticationSettings.ExpireDays);
-
-            var token = new JwtSecurityToken(
-                issuer: _authenticationSettings.Issuer,
-                audience: _authenticationSettings.Issuer,
-                claims,
-                expires: expires,
-                signingCredentials: credentials);
-
             var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.Key));
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity( new[]
+                {
+                    new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.GivenName, user.Username),
+                    new Claim(JwtRegisteredClaimNames.Email, user.EmailAddress),
+                    new Claim(ClaimTypes.Role, user.Role.Name)
+                }),
+                Audience = _authenticationSettings.Issuer,
+                Issuer = _authenticationSettings.Issuer,
+                Expires = DateTime.Now.AddDays(_authenticationSettings.ExpireDays),
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256),
+
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
             return tokenHandler.WriteToken(token);
         }
     }
