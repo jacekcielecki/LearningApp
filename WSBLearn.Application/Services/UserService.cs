@@ -64,6 +64,7 @@ namespace WSBLearn.Application.Services
             {
                 ExperiencePoints = 0,
                 Level = 1,
+                TotalCompletedQuiz = 0,
                 UserId = user.Id
             };
             _dbContext.UserProgresses.Add(userProgress);

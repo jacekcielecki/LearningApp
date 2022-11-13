@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests.Question;
+using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.WebApi.Controllers
 {
@@ -13,10 +15,14 @@ namespace WSBLearn.WebApi.Controllers
     public class QuestionController : ControllerBase
     {
         private readonly IQuestionService _questionService;
+        private readonly AuthorizationHandlerContext _context;
+        private readonly ILogger<QuestionController> _logger;
 
-        public QuestionController(IQuestionService questionService)
+        public QuestionController(IQuestionService questionService, AuthorizationHandlerContext context, ILogger<QuestionController> logger)
         {
             _questionService = questionService;
+            _context = context;
+            _logger = logger;
         }
 
         // POST api/<QuestionController>
@@ -40,13 +46,14 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         // GET: api/<QuestionController>
-        [HttpGet("{categoryId}/{level}")]
+        [HttpGet("{categoryId}/{level}")] 
         [AllowAnonymous]
-        public ActionResult<IEnumerable<QuestionDto>> GetQuiz(int categoryId, [FromRoute] int level)
+        public ActionResult<string?> GetQuiz(int categoryId, [FromRoute] int level)
         {
             IEnumerable<QuestionDto> questionDtos = _questionService.GetQuiz(categoryId, level);
+            var userId = _context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
-            return Ok(questionDtos);
+            return Ok(userId);
         }
 
         // PUT api/<QuestionController>/5
