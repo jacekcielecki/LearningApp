@@ -4,12 +4,12 @@ namespace WSBLearn.Application.Extensions
 {
     public static class GetUserIdExtension
     {
-        public static string GetUserId(this HttpContext httpContext)
+        public static int GetUserId(this HttpContext httpContext)
         {
-            if (httpContext.User is null)
-                return string.Empty;
+            //if (httpContext.User is null)
+            //    return string.Empty;
 
-            return httpContext.User.Claims.Single(c => c.Type == "jti").Value;
+            return Int32.Parse(httpContext.User.Claims.Single(c => c.Type == "jti").Value);
         }
     }
 }

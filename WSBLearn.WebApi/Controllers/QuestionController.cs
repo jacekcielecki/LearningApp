@@ -47,10 +47,10 @@ namespace WSBLearn.WebApi.Controllers
         [Authorize(Roles = "Admin, User")]
         public ActionResult<IEnumerable<QuestionDto>> GetQuiz(int categoryId, [FromRoute] int level)
         {
-            IEnumerable<QuestionDto> questionDtos = _questionService.GetQuiz(categoryId, level);
             var userId = HttpContext.GetUserId();
+            IEnumerable<QuestionDto> questionDtos = _questionService.GetQuiz(categoryId, level, userId);
 
-            return Ok(userId);
+            return Ok(questionDtos);
         }
 
         // PUT api/<QuestionController>/5

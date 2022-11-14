@@ -41,6 +41,10 @@ namespace WSBLearn.Application.Validators
                         context.AddFailure("Email Address", "Given Email Address is already in use");
                     }
                 });
+
+            RuleFor(r => r.ProfilePictureUrl)
+                .NotNull()
+                .MaximumLength(60);
         }
     }
 }

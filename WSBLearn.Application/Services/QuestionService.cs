@@ -64,13 +64,22 @@ namespace WSBLearn.Application.Services
             return (questionDtos);
         }
 
-        public IEnumerable<QuestionDto> GetQuiz(int categoryId, int level)
+        public IEnumerable<QuestionDto> GetQuiz(int categoryId, int level, int userId)
         {
             var category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(r => r.Id == categoryId);
             if (category is null)
                 throw new NotFoundException("Category not found!");
             if ((level < 0) || (level > 3))
                 throw new ArgumentException("Given level is invalid");
+
+            var user = _dbContext.Users.Include(u => u.UserProgress).FirstOrDefault(u => u.Id == userId);
+            if (user is null)
+                throw new NotFoundException("User not found!");
+            //var userCategoryProgress = user.UserProgress.CategoryProgress.FirstOrDefault(cp => cp.CategoryId == categoryId);
+            
+            //var userCategoryProgress = _dbContext.CategoryProgresses.FirstOrDefault(cp => cp.CategoryId == categoryId);
+            //if (userCategoryProgress is null)
+               // CreateUserCategoryProgress(user, category);
 
             var questions = category.Questions.Where(r => r.Level == level).AsEnumerable();
             var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(questions);
@@ -124,5 +133,21 @@ namespace WSBLearn.Application.Services
 
             return;
         }
+
+        //private void CreateUserCategoryProgress(User user, Category category)
+        //{
+        //    var categoryProgress = new CategoryProgress
+        //    {
+        //        CategoryName = category.Name,
+        //        CategoryId = category.Id,
+        //        //UserProgressId = user.UserProgressId
+        //    };
+
+        //    //_dbContext.CategoryProgresses.Add(categoryProgress);
+        //    _dbContext.SaveChanges();
+
+        //    //user.UserProgress.CategoryProgress.Add(categoryProgress);
+        //    _dbContext.SaveChanges();
+        //}
     }
 }
