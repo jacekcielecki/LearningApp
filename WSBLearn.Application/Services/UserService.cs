@@ -92,7 +92,12 @@ namespace WSBLearn.Application.Services
 
         public IEnumerable<UserDto> GetAll()
         {
-            IEnumerable<User> users = _dbContext.Users.Include(u => u.Role).Include(u => u.UserProgress).AsEnumerable();
+            IEnumerable<User> users = _dbContext.Users
+                .Include(u => u.Role)
+                .Include(u => u.UserProgress)
+                .ThenInclude(u => u.CategoryProgress)
+                .AsEnumerable();
+
             var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
 
             return userDtos;

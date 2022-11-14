@@ -75,11 +75,10 @@ namespace WSBLearn.Application.Services
             var user = _dbContext.Users.Include(u => u.UserProgress).FirstOrDefault(u => u.Id == userId);
             if (user is null)
                 throw new NotFoundException("User not found!");
-            //var userCategoryProgress = user.UserProgress.CategoryProgress.FirstOrDefault(cp => cp.CategoryId == categoryId);
             
-            //var userCategoryProgress = _dbContext.CategoryProgresses.FirstOrDefault(cp => cp.CategoryId == categoryId);
-            //if (userCategoryProgress is null)
-               // CreateUserCategoryProgress(user, category);
+            var userCategoryProgress = _dbContext.CategoryProgresses.FirstOrDefault(cp => cp.CategoryId == categoryId);
+            if (userCategoryProgress is null)
+                CreateUserCategoryProgress(user, category);
 
             var questions = category.Questions.Where(r => r.Level == level).AsEnumerable();
             var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(questions);
@@ -134,20 +133,20 @@ namespace WSBLearn.Application.Services
             return;
         }
 
-        //private void CreateUserCategoryProgress(User user, Category category)
-        //{
-        //    var categoryProgress = new CategoryProgress
-        //    {
-        //        CategoryName = category.Name,
-        //        CategoryId = category.Id,
-        //        //UserProgressId = user.UserProgressId
-        //    };
+        private void CreateUserCategoryProgress(User user, Category category)
+        {
+            var categoryProgress = new CategoryProgress
+            {
+                CategoryName = category.Name,
+                CategoryId = category.Id,
+                UserProgressId = user.UserProgressId
+            };
 
-        //    //_dbContext.CategoryProgresses.Add(categoryProgress);
-        //    _dbContext.SaveChanges();
+            _dbContext.CategoryProgresses.Add(categoryProgress);
+            _dbContext.SaveChanges();
 
-        //    //user.UserProgress.CategoryProgress.Add(categoryProgress);
-        //    _dbContext.SaveChanges();
-        //}
+            user.UserProgress.CategoryProgress.Add(categoryProgress);
+            _dbContext.SaveChanges();
+        }
     }
 }

@@ -15,6 +15,6 @@ namespace WSBLearn.Domain.Entities
         [JsonIgnore]
         public virtual User User { get; set; }
 
-        //public virtual ICollection<CategoryProgress> CategoryProgress { get; set; }
+        public virtual ICollection<CategoryProgress> CategoryProgress { get; set; }
     }
 }
