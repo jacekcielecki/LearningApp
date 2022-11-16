@@ -13,5 +13,8 @@ namespace WSBLearn.Domain.Entities
         public int UserProgressId { get; set; }
         [JsonIgnore]
         public UserProgress UserProgress { get; set; }
+
+        public virtual ICollection<LevelProgress> LevelProgresses { get; set; }
+
     }
 }

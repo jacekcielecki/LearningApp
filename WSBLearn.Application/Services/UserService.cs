@@ -14,7 +14,6 @@ using WSBLearn.Domain.Entities;
 using AutoMapper;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Requests.User;
-using System.Net;
 
 namespace WSBLearn.Application.Services
 {
@@ -96,6 +95,7 @@ namespace WSBLearn.Application.Services
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
+                .ThenInclude(u => u.LevelProgresses)
                 .AsEnumerable();
 
             var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
