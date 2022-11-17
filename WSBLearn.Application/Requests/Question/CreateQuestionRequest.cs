@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WSBLearn.Application.Requests
+﻿namespace WSBLearn.Application.Requests.Question
 {
-    public class UpdateQuestionRequest
+    public class CreateQuestionRequest
     {
         public string QuestionContent { get; set; }
         public string? ImageUrl { get; set; }
@@ -12,8 +10,5 @@ namespace WSBLearn.Application.Requests
         public string? D { get; set; }
         public char CorrectAnswer { get; set; }
         public int Level { get; set; }
-
-       [Required]
-        public int CategoryId { get; set; }
     }
 }

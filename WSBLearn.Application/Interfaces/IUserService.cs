@@ -1,5 +1,5 @@
 ﻿using WSBLearn.Application.Dtos;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.User;
 
 namespace WSBLearn.Application.Interfaces
 {
@@ -11,5 +11,7 @@ namespace WSBLearn.Application.Interfaces
         void Delete(int id);
         UserDto GetById(int id);
         UserDto Update(int id, UpdateUserRequest updateUserRequest);
+        UserDto UpdateUserRole(int id, int roleId);
+        void UpdateUserPassword(int id, UpdateUserPasswordRequest updateUserPasswordRequest);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using WSBLearn.Application.Validators;
+using WSBLearn.Application.Validators.User;
 using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.Application.Extensions

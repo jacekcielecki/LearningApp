@@ -1,15 +1,16 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Question;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
+using ValidationException = FluentValidation.ValidationException;
+using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace WSBLearn.Application.Services
 {
@@ -37,7 +38,7 @@ namespace WSBLearn.Application.Services
             if (category == null)
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
 
-            ValidationResult validationResult = _createQuestionRequestValidator.Validate(createQuestionRequest);
+            var validationResult = _createQuestionRequestValidator.Validate(createQuestionRequest);
             if (!validationResult.IsValid)
             {
                 throw new ValidationException(validationResult.Errors[0].ToString());
@@ -64,13 +65,27 @@ namespace WSBLearn.Application.Services
             return (questionDtos);
         }
 
-        public IEnumerable<QuestionDto> GetQuiz(int categoryId, int level)
+        public IEnumerable<QuestionDto> GetQuiz(int categoryId, int level, int userId)
         {
-            var category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(r => r.Id == categoryId);
+            var category = _dbContext.Categories
+                .Include(r => r.Questions)
+                .FirstOrDefault(r => r.Id == categoryId);
             if (category is null)
                 throw new NotFoundException("Category not found!");
             if ((level < 0) || (level > 3))
                 throw new ArgumentException("Given level is invalid");
+
+            var user = _dbContext.Users.Include(u => u.UserProgress)
+                .ThenInclude(u => u.CategoryProgress)
+                .ThenInclude(u => u.LevelProgresses)
+                .FirstOrDefault(u => u.Id == userId);
+            if (user is null)
+                throw new NotFoundException("User not found!");
+
+            var userCategoryProgress =
+                user.UserProgress.CategoryProgress.FirstOrDefault(u => u.CategoryId == categoryId);
+            if (userCategoryProgress is null)
+                CreateUserCategoryProgress(user, category);
 
             var questions = category.Questions.Where(r => r.Level == level).AsEnumerable();
             var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(questions);
@@ -105,7 +120,7 @@ namespace WSBLearn.Application.Services
             question.D = updateQuestionRequest.D;
             question.CorrectAnswer = updateQuestionRequest.CorrectAnswer;
             question.Level = updateQuestionRequest.Level;
-            question.Category = category;
+            question.CategoryId = updateQuestionRequest.CategoryId;
 
             var questionDto = _mapper.Map<QuestionDto>(question);
             _dbContext.SaveChanges();
@@ -121,8 +136,56 @@ namespace WSBLearn.Application.Services
 
             _dbContext.Questions.Remove(question);
             _dbContext.SaveChanges();
+        }
 
-            return;
+        private void CreateUserCategoryProgress(User user, Category category)
+        {
+            //ICollection<LevelProgress> defaultLevelProgresses = new[]
+            //{
+            //    new LevelProgress()
+            //    {
+            //        LevelName = "Easy",
+            //        FinishedQuizzes = 0,
+            //        QuizzesToFinish = category.LessonsPerLevel,
+            //        LevelCompleted = false,
+            //        //CategoryProgressId = categoryProgress.Id
+            //    },
+            //    new LevelProgress()
+            //    {
+            //        LevelName = "Medium",
+            //        FinishedQuizzes = 0,
+            //        QuizzesToFinish = category.LessonsPerLevel,
+            //        LevelCompleted = false,
+            //        //CategoryProgressId = categoryProgress.Id
+            //    },
+            //    new LevelProgress()
+            //    {
+            //        LevelName = "Hard",
+            //        FinishedQuizzes = 0,
+            //        QuizzesToFinish = category.LessonsPerLevel,
+            //        LevelCompleted = false,
+            //        //CategoryProgressId = categoryProgress.Id
+            //    }
+            //};
+
+            var categoryProgress = new CategoryProgress
+            {
+                CategoryName = category.Name,
+                CategoryId = category.Id,
+                UserProgressId = user.UserProgressId,
+                //LevelProgresses = defaultLevelProgresses
+            };
+
+
+            _dbContext.CategoryProgresses.Add(categoryProgress);
+            _dbContext.SaveChanges();
+
+            //foreach (var levelProgress in defaultLevelProgresses)
+            //{
+            //    //_dbContext.LevelProgresses.Add(levelProgress);
+            //    //categoryProgress.LevelProgresses.Add(levelProgress);
+            //    _dbContext.SaveChanges();
+            //}
         }
     }
 }

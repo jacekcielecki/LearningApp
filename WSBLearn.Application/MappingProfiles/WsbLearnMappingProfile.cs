@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using WSBLearn.Application.Dtos;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Category;
+using WSBLearn.Application.Requests.Question;
 using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.Application.MappingProfiles

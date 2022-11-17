@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WSBLearn.Dal.Persistence;
 
@@ -10,9 +11,10 @@ using WSBLearn.Dal.Persistence;
 namespace WSBLearn.Dal.Migrations
 {
     [DbContext(typeof(WsbLearnDbContext))]
-    partial class WsbLearnDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221113133257_addCategoryProgress")]
+    partial class addCategoryProgress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,14 +55,8 @@ namespace WSBLearn.Dal.Migrations
 
             modelBuilder.Entity("WSBLearn.Domain.Entities.CategoryProgress", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
@@ -74,34 +70,6 @@ namespace WSBLearn.Dal.Migrations
                     b.HasIndex("UserProgressId");
 
                     b.ToTable("CategoryProgresses");
-                });
-
-            modelBuilder.Entity("WSBLearn.Domain.Entities.LevelProgress", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("CategoryProgressId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FinishedQuizzes")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("LevelCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LevelName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("QuizzesToFinish")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryProgressId");
-
-                    b.ToTable("LevelProgresses");
                 });
 
             modelBuilder.Entity("WSBLearn.Domain.Entities.Question", b =>
@@ -253,17 +221,6 @@ namespace WSBLearn.Dal.Migrations
                     b.Navigation("UserProgress");
                 });
 
-            modelBuilder.Entity("WSBLearn.Domain.Entities.LevelProgress", b =>
-                {
-                    b.HasOne("WSBLearn.Domain.Entities.CategoryProgress", "CategoryProgress")
-                        .WithMany("LevelProgresses")
-                        .HasForeignKey("CategoryProgressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CategoryProgress");
-                });
-
             modelBuilder.Entity("WSBLearn.Domain.Entities.Question", b =>
                 {
                     b.HasOne("WSBLearn.Domain.Entities.Category", "Category")
@@ -300,11 +257,6 @@ namespace WSBLearn.Dal.Migrations
             modelBuilder.Entity("WSBLearn.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Questions");
-                });
-
-            modelBuilder.Entity("WSBLearn.Domain.Entities.CategoryProgress", b =>
-                {
-                    b.Navigation("LevelProgresses");
                 });
 
             modelBuilder.Entity("WSBLearn.Domain.Entities.User", b =>

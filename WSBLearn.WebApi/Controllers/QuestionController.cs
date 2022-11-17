@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
+using WSBLearn.Application.Extensions;
 using WSBLearn.Application.Interfaces;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Question;
 
 namespace WSBLearn.WebApi.Controllers
 {
@@ -13,10 +14,12 @@ namespace WSBLearn.WebApi.Controllers
     public class QuestionController : ControllerBase
     {
         private readonly IQuestionService _questionService;
+        private readonly ILogger<QuestionController> _logger;
 
-        public QuestionController(IQuestionService questionService)
+        public QuestionController(IQuestionService questionService, ILogger<QuestionController> logger)
         {
             _questionService = questionService;
+            _logger = logger;
         }
 
         // POST api/<QuestionController>
@@ -41,10 +44,11 @@ namespace WSBLearn.WebApi.Controllers
 
         // GET: api/<QuestionController>
         [HttpGet("{categoryId}/{level}")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin, User")]
         public ActionResult<IEnumerable<QuestionDto>> GetQuiz(int categoryId, [FromRoute] int level)
         {
-            IEnumerable<QuestionDto> questionDtos = _questionService.GetQuiz(categoryId, level);
+            var userId = HttpContext.GetUserId();
+            IEnumerable<QuestionDto> questionDtos = _questionService.GetQuiz(categoryId, level, userId);
 
             return Ok(questionDtos);
         }

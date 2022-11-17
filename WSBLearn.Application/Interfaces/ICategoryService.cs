@@ -1,5 +1,5 @@
 ﻿using WSBLearn.Application.Dtos;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Category;
 
 namespace WSBLearn.Application.Interfaces
 {

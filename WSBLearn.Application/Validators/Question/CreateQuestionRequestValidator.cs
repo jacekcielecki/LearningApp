@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Question;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.Question
 {
-    public class UpdateQuestionRequestValidator : AbstractValidator<UpdateQuestionRequest>
+    public class CreateQuestionRequestValidator : AbstractValidator<CreateQuestionRequest>
     {
-        public UpdateQuestionRequestValidator()
+        public CreateQuestionRequestValidator()
         {
             RuleFor(r => r.QuestionContent)
                 .NotNull()
@@ -13,8 +13,7 @@ namespace WSBLearn.Application.Validators
                 .MaximumLength(200);
 
             RuleFor(r => r.ImageUrl)
-                .MaximumLength(400)
-                .NotEmpty();
+                .MaximumLength(400);
 
             RuleFor(r => r.A)
                 .NotNull()

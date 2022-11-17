@@ -1,6 +1,5 @@
-﻿
-using WSBLearn.Application.Dtos;
-using WSBLearn.Application.Requests;
+﻿using WSBLearn.Application.Dtos;
+using WSBLearn.Application.Requests.Question;
 
 namespace WSBLearn.Application.Interfaces
 {
@@ -8,7 +7,7 @@ namespace WSBLearn.Application.Interfaces
     {
         int? Create(CreateQuestionRequest questionRequest, int categoryId);
         IEnumerable<QuestionDto> GetAllByCategory(int categoryId);
-        IEnumerable<QuestionDto> GetQuiz(int categoryId, int level);
+        IEnumerable<QuestionDto> GetQuiz(int categoryId, int level, int userId);
         QuestionDto Update(int id, UpdateQuestionRequest updateQuestionRequest);
         void Delete(int id);
     }

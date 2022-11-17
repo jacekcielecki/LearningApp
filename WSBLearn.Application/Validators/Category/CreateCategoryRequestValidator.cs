@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Category;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.Category
 {
     public class CreateCategoryRequestValidator : AbstractValidator<CreateCategoryRequest>
     {
@@ -11,12 +11,12 @@ namespace WSBLearn.Application.Validators
                 .NotNull()
                 .NotEmpty()
                 .MinimumLength(1)
-                .MaximumLength(40);            
-            
+                .MaximumLength(40);
+
             RuleFor(r => r.Description)
                 .NotEmpty()
-                .MaximumLength(140);            
-            
+                .MaximumLength(140);
+
             RuleFor(r => r.IconUrl)
                 .NotEmpty()
                 .MaximumLength(140);

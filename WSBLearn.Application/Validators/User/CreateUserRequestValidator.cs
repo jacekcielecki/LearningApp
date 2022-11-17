@@ -1,14 +1,14 @@
 ﻿using FluentValidation;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.User;
 using WSBLearn.Dal.Persistence;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.User
 {
-    public class UpdateUserRequestValidator: AbstractValidator<UpdateUserRequest>
+    public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
     {
         private readonly WsbLearnDbContext _dbContext;
 
-        public UpdateUserRequestValidator(WsbLearnDbContext dbContext)
+        public CreateUserRequestValidator(WsbLearnDbContext dbContext)
         {
             _dbContext = dbContext;
 
@@ -44,6 +44,9 @@ namespace WSBLearn.Application.Validators
                         context.AddFailure("Email Address", "Given Email Address is already in use");
                     }
                 });
+
+            RuleFor(r => r.ConfirmPassword)
+                .Equal(r => r.Password);
 
             RuleFor(r => r.RoleId)
                 .Custom((value, context) =>

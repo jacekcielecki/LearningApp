@@ -1,20 +1,19 @@
 ﻿using FluentValidation;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.User;
 using WSBLearn.Dal.Persistence;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.User
 {
-    public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
+    public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
     {
         private readonly WsbLearnDbContext _dbContext;
 
-        public CreateUserRequestValidator(WsbLearnDbContext dbContext)
+        public UpdateUserRequestValidator(WsbLearnDbContext dbContext)
         {
             _dbContext = dbContext;
 
             RuleFor(r => r.Username)
                 .NotNull()
-                .NotEmpty()
                 .MinimumLength(6)
                 .MaximumLength(40)
                 .Custom((value, context) =>
@@ -28,13 +27,11 @@ namespace WSBLearn.Application.Validators
 
             RuleFor(r => r.Password)
                 .NotNull()
-                .NotEmpty()
                 .MinimumLength(6)
                 .MaximumLength(40);
 
             RuleFor(r => r.EmailAddress)
                 .NotNull()
-                .NotEmpty()
                 .EmailAddress()
                 .Custom((value, context) =>
                 {
@@ -45,18 +42,9 @@ namespace WSBLearn.Application.Validators
                     }
                 });
 
-            RuleFor(r => r.ConfirmPassword)
-                .Equal(r => r.Password);
-
-            RuleFor(r => r.RoleId)
-                .Custom((value, context) =>
-                {
-                    var givenRoleExists = _dbContext.Roles.Any(r => r.Id == value);
-                    if (!givenRoleExists)
-                    {
-                        context.AddFailure("Role Id", "Given role does not exist!");
-                    }
-                });
+            RuleFor(r => r.ProfilePictureUrl)
+                .NotNull()
+                .MaximumLength(60);
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
-using WSBLearn.Application.Requests;
+using WSBLearn.Application.Requests.Question;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.Question
 {
-    public class CreateQuestionRequestValidator : AbstractValidator<CreateQuestionRequest>
+    public class UpdateQuestionRequestValidator : AbstractValidator<UpdateQuestionRequest>
     {
-        public CreateQuestionRequestValidator()
+        public UpdateQuestionRequestValidator()
         {
             RuleFor(r => r.QuestionContent)
                 .NotNull()
@@ -13,7 +13,8 @@ namespace WSBLearn.Application.Validators
                 .MaximumLength(200);
 
             RuleFor(r => r.ImageUrl)
-                .MaximumLength(400);
+                .MaximumLength(400)
+                .NotEmpty();
 
             RuleFor(r => r.A)
                 .NotNull()
@@ -43,7 +44,7 @@ namespace WSBLearn.Application.Validators
                 .NotEmpty()
                 .Custom((value, context) =>
                 {
-                    string[] validCorrectAnswers = {"a", "b", "c", "d"};
+                    string[] validCorrectAnswers = { "a", "b", "c", "d" };
                     if (!validCorrectAnswers.Contains(value.ToString().ToLower()))
                     {
                         context.AddFailure("CorrectAnswer", "CorrectAnswer must be either a, b, c or d");
