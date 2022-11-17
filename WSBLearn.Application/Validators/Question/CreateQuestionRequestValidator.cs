@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using WSBLearn.Application.Requests.Question;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.Question
 {
     public class CreateQuestionRequestValidator : AbstractValidator<CreateQuestionRequest>
     {
@@ -43,7 +43,7 @@ namespace WSBLearn.Application.Validators
                 .NotEmpty()
                 .Custom((value, context) =>
                 {
-                    string[] validCorrectAnswers = {"a", "b", "c", "d"};
+                    string[] validCorrectAnswers = { "a", "b", "c", "d" };
                     if (!validCorrectAnswers.Contains(value.ToString().ToLower()))
                     {
                         context.AddFailure("CorrectAnswer", "CorrectAnswer must be either a, b, c or d");

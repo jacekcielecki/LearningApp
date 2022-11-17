@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using WSBLearn.Application.Requests.User;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.User
 {
     public class UpdateUserPasswordRequestValidator : AbstractValidator<UpdateUserPasswordRequest>
     {

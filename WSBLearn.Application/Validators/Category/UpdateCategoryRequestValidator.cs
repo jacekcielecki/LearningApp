@@ -1,22 +1,22 @@
 ﻿using FluentValidation;
 using WSBLearn.Application.Requests.Category;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.Category
 {
-    public class CreateCategoryRequestValidator : AbstractValidator<CreateCategoryRequest>
+    public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRequest>
     {
-        public CreateCategoryRequestValidator()
+        public UpdateCategoryRequestValidator()
         {
             RuleFor(r => r.Name)
                 .NotNull()
                 .NotEmpty()
-                .MinimumLength(1)
-                .MaximumLength(40);            
-            
+                .MinimumLength(6)
+                .MaximumLength(40);
+
             RuleFor(r => r.Description)
                 .NotEmpty()
-                .MaximumLength(140);            
-            
+                .MaximumLength(140);
+
             RuleFor(r => r.IconUrl)
                 .NotEmpty()
                 .MaximumLength(140);

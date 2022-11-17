@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using WSBLearn.Application.Requests.Question;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.Question
 {
     public class UpdateQuestionRequestValidator : AbstractValidator<UpdateQuestionRequest>
     {

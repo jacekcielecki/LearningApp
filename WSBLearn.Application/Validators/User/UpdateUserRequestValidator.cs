@@ -2,9 +2,9 @@
 using WSBLearn.Application.Requests.User;
 using WSBLearn.Dal.Persistence;
 
-namespace WSBLearn.Application.Validators
+namespace WSBLearn.Application.Validators.User
 {
-    public class UpdateUserRequestValidator: AbstractValidator<UpdateUserRequest>
+    public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
     {
         private readonly WsbLearnDbContext _dbContext;
 
