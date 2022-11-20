@@ -14,6 +14,7 @@ using WSBLearn.Domain.Entities;
 using AutoMapper;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Requests.User;
+using WSBLearn.Application.Responses;
 
 namespace WSBLearn.Application.Services
 {
@@ -98,8 +99,7 @@ namespace WSBLearn.Application.Services
                 .ThenInclude(u => u.LevelProgresses)
                 .AsEnumerable();
 
-            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
-
+            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users); 
             return userDtos;
         }
 
@@ -114,6 +114,17 @@ namespace WSBLearn.Application.Services
            
             var userDto = _mapper.Map<UserDto>(user);
             return userDto;
+        }
+
+        public IEnumerable<UserRankingResponse> GetSortByExp()
+        {
+            var users = _dbContext.Users
+                .Include(u => u.UserProgress)
+                .OrderByDescending(r => r.UserProgress.ExperiencePoints)
+                .AsEnumerable();
+
+            var userRankingResponses = _mapper.Map<IEnumerable<UserRankingResponse>>(users);
+            return userRankingResponses;
         }
 
         public void Delete(int id)
@@ -183,7 +194,6 @@ namespace WSBLearn.Application.Services
             user.Password = _passwordHasher.HashPassword(user, updateUserPasswordRequest.NewPassword);
             _dbContext.SaveChanges();
 
-            return;
         }
 
         private string GenerateToken(User user)
