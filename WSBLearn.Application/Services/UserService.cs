@@ -139,27 +139,23 @@ namespace WSBLearn.Application.Services
 
         public UserDto Update(int id, UpdateUserRequest updateUserRequest)
         {
-            var user = _dbContext.Users.Include(u => u.Role).FirstOrDefault(u => u.Id == id);
+            var user = _dbContext.Users.FirstOrDefault(u => u.Id == id);
             if (user is null)
                 throw new NotFoundException("User with given id not found");
 
             ValidationResult validationResult = _updateUserRequestValidator.Validate(updateUserRequest);
             if (!validationResult.IsValid)
-            {
                 throw new ValidationException(validationResult.Errors[0].ToString());
-            }
 
             if (!string.IsNullOrEmpty(updateUserRequest.Username))
                 user.Username = updateUserRequest.Username;
             if (!string.IsNullOrEmpty(updateUserRequest.EmailAddress))
                 user.EmailAddress = updateUserRequest.EmailAddress;
-            if (!string.IsNullOrEmpty(updateUserRequest.Password))
-                user.Password = _passwordHasher.HashPassword(user, updateUserRequest.Password);
             if (!string.IsNullOrEmpty(updateUserRequest.ProfilePictureUrl))
                 user.ProfilePictureUrl = updateUserRequest.ProfilePictureUrl;
             _dbContext.SaveChanges();
-            var userDto = _mapper.Map<UserDto>(user);
 
+            var userDto = _mapper.Map<UserDto>(user);
             return userDto;
         }
 

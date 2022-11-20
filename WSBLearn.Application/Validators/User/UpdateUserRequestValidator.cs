@@ -13,7 +13,6 @@ namespace WSBLearn.Application.Validators.User
             _dbContext = dbContext;
 
             RuleFor(r => r.Username)
-                .NotNull()
                 .MinimumLength(6)
                 .MaximumLength(40)
                 .Custom((value, context) =>
@@ -25,13 +24,7 @@ namespace WSBLearn.Application.Validators.User
                     }
                 });
 
-            RuleFor(r => r.Password)
-                .NotNull()
-                .MinimumLength(6)
-                .MaximumLength(40);
-
             RuleFor(r => r.EmailAddress)
-                .NotNull()
                 .EmailAddress()
                 .Custom((value, context) =>
                 {
@@ -43,7 +36,6 @@ namespace WSBLearn.Application.Validators.User
                 });
 
             RuleFor(r => r.ProfilePictureUrl)
-                .NotNull()
                 .MaximumLength(60);
         }
     }
