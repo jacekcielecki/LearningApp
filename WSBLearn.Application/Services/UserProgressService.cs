@@ -18,6 +18,8 @@ namespace WSBLearn.Application.Services
 
         public QuizCompletedResponse CompleteQuiz(int userId, int categoryId, string quizLevelName, int expGained)
         {
+            if (expGained < 0 || expGained > 20)
+                throw new ArgumentException("ExpGained need to be between 0 and 20");
             var user = _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
@@ -26,12 +28,10 @@ namespace WSBLearn.Application.Services
                 .FirstOrDefault(u => u.Id == userId);
             if (user is null)
                 throw new NotFoundException("User with given id not Found");
-
             var userCategoryProgress =
                 user.UserProgress.CategoryProgress.FirstOrDefault(cp => cp.CategoryId == categoryId);
             if (userCategoryProgress is null)
                 throw new NotFoundException("User with given id has not started any quiz in this category");
-
             var userLevelProgress =
                 userCategoryProgress.LevelProgresses.FirstOrDefault(lp => lp.LevelName == quizLevelName);
             if (userLevelProgress is null)
@@ -43,7 +43,6 @@ namespace WSBLearn.Application.Services
             userLevelProgress.FinishedQuizzes++;
             if (userLevelProgress.FinishedQuizzes >= userLevelProgress.QuizzesToFinish)
                 userLevelProgress.LevelCompleted = true;
-
             _dbContext.SaveChanges();
 
             var quizCompletedResponse = new QuizCompletedResponse()
@@ -53,7 +52,6 @@ namespace WSBLearn.Application.Services
                 CurrentUserLevel = user.UserProgress.Level,
                 IsCategoryLevelCompleted = userLevelProgress.LevelCompleted
             };
-
             return quizCompletedResponse; 
         }
 
