@@ -87,9 +87,21 @@ namespace WSBLearn.Application.Services
             if (userCategoryProgress is null || userCategoryProgress.LevelProgresses is null)
                 CreateUserCategoryProgress(user, category);
 
-            var questions = category.Questions.Where(r => r.Level == level).AsEnumerable();
-            var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(questions);
+            var questions = category.Questions
+                .Where(r => r.Level == level).ToList();
+            var selectedQuestions = new List<Question>();
+            var random = new Random();
+            while (selectedQuestions.Count() < category.QuestionsPerLesson)
+            {
+                if (!questions.Any())
+                    break;
 
+                int randomQuestionId = random.Next(0, questions.Count() - 1);
+                selectedQuestions.Add(questions[randomQuestionId]);
+                questions.RemoveAt(randomQuestionId);
+            }
+
+            var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(selectedQuestions);
             return (questionDtos);
         }
 
