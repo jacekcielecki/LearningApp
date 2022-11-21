@@ -108,6 +108,8 @@ namespace WSBLearn.Application.Services
             var user = _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
+                .ThenInclude(u => u.CategoryProgress)
+                .ThenInclude(u => u.LevelProgresses)
                 .FirstOrDefault(u => u.Id == id);
             if (user is null)
                 throw new NotFoundException("User with given id not found");
@@ -139,7 +141,7 @@ namespace WSBLearn.Application.Services
 
         public UserDto Update(int id, UpdateUserRequest updateUserRequest)
         {
-            var user = _dbContext.Users.FirstOrDefault(u => u.Id == id);
+            var user = _dbContext.Users.Include(u => u.UserProgress).FirstOrDefault();
             if (user is null)
                 throw new NotFoundException("User with given id not found");
 
