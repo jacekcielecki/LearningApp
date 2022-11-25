@@ -5,7 +5,7 @@ namespace WSBLearn.Domain.Entities
 {
     public class LevelProgress
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string LevelName { get; set; }
         public int FinishedQuizzes { get; set; }
         public int QuizzesToFinish { get; set; }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests.User;
+using WSBLearn.Application.Responses;
 
 namespace WSBLearn.WebApi.Controllers
 {
@@ -23,6 +24,14 @@ namespace WSBLearn.WebApi.Controllers
         public ActionResult<IEnumerable<UserDto>> GetAll()
         {
             var users = _userService.GetAll();
+            return Ok(users);
+        }
+
+        [HttpGet("SortByExp")]
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<UserRankingResponse>> GetUsersSortByExp()
+        {
+            var users = _userService.GetSortByExp();
             return Ok(users);
         }
 

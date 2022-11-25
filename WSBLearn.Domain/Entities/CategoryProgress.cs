@@ -9,9 +9,9 @@ namespace WSBLearn.Domain.Entities
         public string CategoryName { get; set; }
         public int CategoryId { get; set; }
 
-        [Required]
+        [Required] 
         public int UserProgressId { get; set; }
-        [JsonIgnore]
+        [JsonIgnore] 
         public UserProgress UserProgress { get; set; }
 
         public virtual ICollection<LevelProgress> LevelProgresses { get; set; }

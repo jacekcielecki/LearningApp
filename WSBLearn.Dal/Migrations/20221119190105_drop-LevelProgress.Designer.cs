@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WSBLearn.Dal.Persistence;
 
@@ -10,9 +11,10 @@ using WSBLearn.Dal.Persistence;
 namespace WSBLearn.Dal.Migrations
 {
     [DbContext(typeof(WsbLearnDbContext))]
-    partial class WsbLearnDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221119190105_drop-LevelProgress")]
+    partial class dropLevelProgress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,11 +80,8 @@ namespace WSBLearn.Dal.Migrations
 
             modelBuilder.Entity("WSBLearn.Domain.Entities.LevelProgress", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("CategoryProgressId")
                         .HasColumnType("int");
@@ -104,7 +103,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasIndex("CategoryProgressId");
 
-                    b.ToTable("LevelProgresses");
+                    b.ToTable("LevelProgress");
                 });
 
             modelBuilder.Entity("WSBLearn.Domain.Entities.Question", b =>

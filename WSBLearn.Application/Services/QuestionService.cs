@@ -82,14 +82,26 @@ namespace WSBLearn.Application.Services
             if (user is null)
                 throw new NotFoundException("User not found!");
 
-            var userCategoryProgress =
-                user.UserProgress.CategoryProgress.FirstOrDefault(u => u.CategoryId == categoryId);
-            if (userCategoryProgress is null)
+            var userCategoryProgress = user.UserProgress.CategoryProgress
+                .FirstOrDefault(u => u.CategoryId == categoryId);
+            if (userCategoryProgress is null || userCategoryProgress.LevelProgresses is null)
                 CreateUserCategoryProgress(user, category);
 
-            var questions = category.Questions.Where(r => r.Level == level).AsEnumerable();
-            var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(questions);
+            var questions = category.Questions
+                .Where(r => r.Level == level).ToList();
+            var selectedQuestions = new List<Question>();
+            var random = new Random();
+            while (selectedQuestions.Count() < category.QuestionsPerLesson)
+            {
+                if (!questions.Any())
+                    break;
 
+                int randomQuestionId = random.Next(0, questions.Count() - 1);
+                selectedQuestions.Add(questions[randomQuestionId]);
+                questions.RemoveAt(randomQuestionId);
+            }
+
+            var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(selectedQuestions);
             return (questionDtos);
         }
 
@@ -140,52 +152,48 @@ namespace WSBLearn.Application.Services
 
         private void CreateUserCategoryProgress(User user, Category category)
         {
-            //ICollection<LevelProgress> defaultLevelProgresses = new[]
-            //{
-            //    new LevelProgress()
-            //    {
-            //        LevelName = "Easy",
-            //        FinishedQuizzes = 0,
-            //        QuizzesToFinish = category.LessonsPerLevel,
-            //        LevelCompleted = false,
-            //        //CategoryProgressId = categoryProgress.Id
-            //    },
-            //    new LevelProgress()
-            //    {
-            //        LevelName = "Medium",
-            //        FinishedQuizzes = 0,
-            //        QuizzesToFinish = category.LessonsPerLevel,
-            //        LevelCompleted = false,
-            //        //CategoryProgressId = categoryProgress.Id
-            //    },
-            //    new LevelProgress()
-            //    {
-            //        LevelName = "Hard",
-            //        FinishedQuizzes = 0,
-            //        QuizzesToFinish = category.LessonsPerLevel,
-            //        LevelCompleted = false,
-            //        //CategoryProgressId = categoryProgress.Id
-            //    }
-            //};
-
             var categoryProgress = new CategoryProgress
             {
                 CategoryName = category.Name,
                 CategoryId = category.Id,
-                UserProgressId = user.UserProgressId,
-                //LevelProgresses = defaultLevelProgresses
+                UserProgressId = user.UserProgressId
             };
-
-
             _dbContext.CategoryProgresses.Add(categoryProgress);
             _dbContext.SaveChanges();
 
-            //foreach (var levelProgress in defaultLevelProgresses)
-            //{
-            //    //_dbContext.LevelProgresses.Add(levelProgress);
-            //    //categoryProgress.LevelProgresses.Add(levelProgress);
-            //    _dbContext.SaveChanges();
-            //}
+            var defaultLevelProgressesList = new List<LevelProgress>
+            {
+                new LevelProgress
+                {
+                    LevelName = "Easy",
+                    FinishedQuizzes = 0,
+                    QuizzesToFinish = category.LessonsPerLevel,
+                    LevelCompleted = false,
+                    CategoryProgressId = categoryProgress.Id,
+                    CategoryProgress = categoryProgress
+                },
+                new LevelProgress
+                {
+                    LevelName = "Medium",
+                    FinishedQuizzes = 0,
+                    QuizzesToFinish = category.LessonsPerLevel,
+                    LevelCompleted = false,
+                    CategoryProgressId = categoryProgress.Id,
+                    CategoryProgress = categoryProgress
+                },
+                new LevelProgress
+                {
+                    LevelName = "Hard",
+                    FinishedQuizzes = 0,
+                    QuizzesToFinish = category.LessonsPerLevel,
+                    LevelCompleted = false,
+                    CategoryProgressId = categoryProgress.Id,
+                    CategoryProgress = categoryProgress
+                }
+            };
+
+            _dbContext.LevelProgresses.AddRange(defaultLevelProgressesList);
+            _dbContext.SaveChanges();
         }
     }
 }

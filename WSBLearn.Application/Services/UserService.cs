@@ -14,6 +14,7 @@ using WSBLearn.Domain.Entities;
 using AutoMapper;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Requests.User;
+using WSBLearn.Application.Responses;
 
 namespace WSBLearn.Application.Services
 {
@@ -98,8 +99,7 @@ namespace WSBLearn.Application.Services
                 .ThenInclude(u => u.LevelProgresses)
                 .AsEnumerable();
 
-            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
-
+            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users); 
             return userDtos;
         }
 
@@ -108,12 +108,25 @@ namespace WSBLearn.Application.Services
             var user = _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
+                .ThenInclude(u => u.CategoryProgress)
+                .ThenInclude(u => u.LevelProgresses)
                 .FirstOrDefault(u => u.Id == id);
             if (user is null)
                 throw new NotFoundException("User with given id not found");
            
             var userDto = _mapper.Map<UserDto>(user);
             return userDto;
+        }
+
+        public IEnumerable<UserRankingResponse> GetSortByExp()
+        {
+            var users = _dbContext.Users
+                .Include(u => u.UserProgress)
+                .OrderByDescending(r => r.UserProgress.ExperiencePoints)
+                .AsEnumerable();
+
+            var userRankingResponses = _mapper.Map<IEnumerable<UserRankingResponse>>(users);
+            return userRankingResponses;
         }
 
         public void Delete(int id)
@@ -128,27 +141,23 @@ namespace WSBLearn.Application.Services
 
         public UserDto Update(int id, UpdateUserRequest updateUserRequest)
         {
-            var user = _dbContext.Users.Include(u => u.Role).FirstOrDefault(u => u.Id == id);
+            var user = _dbContext.Users.Include(u => u.UserProgress).FirstOrDefault();
             if (user is null)
                 throw new NotFoundException("User with given id not found");
 
             ValidationResult validationResult = _updateUserRequestValidator.Validate(updateUserRequest);
             if (!validationResult.IsValid)
-            {
                 throw new ValidationException(validationResult.Errors[0].ToString());
-            }
 
             if (!string.IsNullOrEmpty(updateUserRequest.Username))
                 user.Username = updateUserRequest.Username;
             if (!string.IsNullOrEmpty(updateUserRequest.EmailAddress))
                 user.EmailAddress = updateUserRequest.EmailAddress;
-            if (!string.IsNullOrEmpty(updateUserRequest.Password))
-                user.Password = _passwordHasher.HashPassword(user, updateUserRequest.Password);
             if (!string.IsNullOrEmpty(updateUserRequest.ProfilePictureUrl))
                 user.ProfilePictureUrl = updateUserRequest.ProfilePictureUrl;
             _dbContext.SaveChanges();
-            var userDto = _mapper.Map<UserDto>(user);
 
+            var userDto = _mapper.Map<UserDto>(user);
             return userDto;
         }
 
@@ -183,7 +192,6 @@ namespace WSBLearn.Application.Services
             user.Password = _passwordHasher.HashPassword(user, updateUserPasswordRequest.NewPassword);
             _dbContext.SaveChanges();
 
-            return;
         }
 
         private string GenerateToken(User user)

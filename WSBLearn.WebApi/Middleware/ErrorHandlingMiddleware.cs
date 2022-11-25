@@ -26,6 +26,11 @@ namespace WSBLearn.WebApi.Middleware
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(badHttpRequestException.Message);
+            }            
+            catch (ArgumentException argumentException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(argumentException.Message);
             }
             catch (Exception)
             {
