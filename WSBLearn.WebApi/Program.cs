@@ -1,10 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using WSBLearn.Application;
 using WSBLearn.Application.Extensions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Services;
+using WSBLearn.Application.Settings;
 using WSBLearn.Dal.Extensions;
 using WSBLearn.WebApi.Extensions;
 using WSBLearn.WebApi.Middleware;
@@ -26,8 +26,10 @@ builder.Services.ConfigureSwagger();
 builder.Services.AddDalServices(builder.Configuration);
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IUserProgressService, UserProgressService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAchievementService, AchievementService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 builder.Services.AddSingleton(jwtSettings);
 builder.Services.AddAuthentication(option =>
