@@ -1,4 +1,4 @@
-﻿namespace WSBLearn.Application
+﻿namespace WSBLearn.Application.Settings
 {
     public class AzureBlobStorageSettings
     {

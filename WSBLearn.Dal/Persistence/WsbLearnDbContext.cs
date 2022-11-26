@@ -12,6 +12,7 @@ namespace WSBLearn.Dal.Persistence
         public DbSet<UserProgress> UserProgresses { get; set; }
         public DbSet<CategoryProgress> CategoryProgresses { get; set; }
         public DbSet<LevelProgress> LevelProgresses { get; set; }
+        public DbSet<Achievement> Achievements { get; set; }
 
         public WsbLearnDbContext(DbContextOptions<WsbLearnDbContext> options) : base(options)
         {
@@ -81,6 +82,13 @@ namespace WSBLearn.Dal.Persistence
             modelBuilder.Entity<LevelProgress>(eb =>
             {
                 eb.Property(x => x.LevelName)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<Achievement>(eb =>
+            {
+                eb.Property(x => x.Name)
+                    .HasMaxLength(20)
                     .IsRequired();
             });
         }

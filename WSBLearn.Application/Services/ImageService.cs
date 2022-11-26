@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
+using WSBLearn.Application.Settings;
 
 namespace WSBLearn.Application.Services
 {

@@ -15,6 +15,7 @@ using AutoMapper;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Requests.User;
 using WSBLearn.Application.Responses;
+using WSBLearn.Application.Settings;
 
 namespace WSBLearn.Application.Services
 {
@@ -95,6 +96,8 @@ namespace WSBLearn.Application.Services
             IEnumerable<User> users = _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
+                .ThenInclude(u => u.Achievements)
+                .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
                 .AsEnumerable();
@@ -107,6 +110,8 @@ namespace WSBLearn.Application.Services
         {
             var user = _dbContext.Users
                 .Include(u => u.Role)
+                .Include(u => u.UserProgress)
+                .ThenInclude(u => u.Achievements)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)

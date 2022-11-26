@@ -18,7 +18,6 @@ namespace WSBLearn.WebApi.Controllers
             _userProgressService = userProgressService;
         }
 
-        // Patch: api/<UserProgressController>
         [HttpPatch("{categoryId}/{level}/{quizLevelName}/{expGained}")]
         [Authorize(Roles = "Admin, User")]
         public ActionResult<QuizCompletedResponse> QuizCompleted(int categoryId, int level, string quizLevelName, int expGained)
@@ -27,6 +26,14 @@ namespace WSBLearn.WebApi.Controllers
             var quizCompletedResponse = _userProgressService.CompleteQuiz(userId, categoryId, quizLevelName, expGained);
 
             return Ok(quizCompletedResponse);
+        }
+
+        [HttpPatch("CompleteAchievement/{userId}/{achievementId}")]
+        [Authorize(Roles = "Admin, User")]
+        public ActionResult CompleteAchievement(int userId, int achievementId)
+        {
+            _userProgressService.CompleteAchievement(userId, achievementId);
+            return Ok();
         }
     }
 }

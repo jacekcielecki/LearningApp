@@ -16,5 +16,6 @@ namespace WSBLearn.Domain.Entities
         public virtual User User { get; set; }
 
         public virtual ICollection<CategoryProgress> CategoryProgress { get; set; }
+        public virtual ICollection<Achievement> Achievements { get; set; }
     }
 }

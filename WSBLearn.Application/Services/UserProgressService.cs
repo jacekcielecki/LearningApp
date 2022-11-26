@@ -55,6 +55,23 @@ namespace WSBLearn.Application.Services
             return quizCompletedResponse; 
         }
 
+        public void CompleteAchievement(int userId, int achievementId)
+        {
+            var user =_dbContext.Users
+                .Include(u => u.UserProgress)
+                .ThenInclude(u => u.Achievements)
+                .FirstOrDefault(u => u.Id == userId);
+            if (user is null)
+                throw new NotFoundException("User with given id not found");
+
+            var achievement = _dbContext.Achievements.FirstOrDefault(a => a.Id == achievementId);
+            if (achievement is null)
+                throw new NotFoundException("Achievement with given id not found");
+
+            user.UserProgress.Achievements.Add(achievement);
+            _dbContext.SaveChanges();
+        }
+
         private int DetermineUserLevel(int experiencePoints)
         {
             var userLevel = 1;
