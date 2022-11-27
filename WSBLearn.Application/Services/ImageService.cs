@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Settings;
+using WSBLearn.Application.Exceptions;
 
 namespace WSBLearn.Application.Services
 {
@@ -27,8 +28,11 @@ namespace WSBLearn.Application.Services
 
             try
             {
-                string blobContentType = string.Empty;
-                BlobClient client = container.GetBlobClient(blob.FileName);
+                var blobContentType = string.Empty;
+                var fileName = Path.GetFileNameWithoutExtension(blob.FileName).ToString();
+                var extension = Path.GetExtension(blob.FileName);
+                var randomFileName = fileName + "-" + Guid.NewGuid().ToString() + extension;
+                BlobClient client = container.GetBlobClient(randomFileName);
 
                 if (blob.FileName.EndsWith(".jpg"))
                 {
@@ -37,6 +41,14 @@ namespace WSBLearn.Application.Services
                 else if (blob.FileName.EndsWith(".png"))
                 {
                     blobContentType = "image/png";
+                }
+                else if (blob.FileName.EndsWith(".svg"))
+                {
+                    blobContentType = "image/svg+xml";
+                }
+                else
+                {
+                    throw new InvalidFileTypeException("File extension must be .jpg, .svg or .png");
                 }
 
                 var options = new BlobUploadOptions() { HttpHeaders = new BlobHttpHeaders() {ContentType = blobContentType } };

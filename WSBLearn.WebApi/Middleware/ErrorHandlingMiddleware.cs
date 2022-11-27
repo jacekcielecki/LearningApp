@@ -17,6 +17,11 @@ namespace WSBLearn.WebApi.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(notFoundException.Message);
             }
+            catch (InvalidFileTypeException invalidFileTypeException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(invalidFileTypeException.Message);
+            }
             catch (ValidationException validationException)
             {
                 context.Response.StatusCode = 400;
