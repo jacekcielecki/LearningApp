@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using WSBLearn.Application.Requests.User;
 using WSBLearn.Dal.Persistence;
+using WSBLearn.Application.Extensions;
 
 namespace WSBLearn.Application.Validators.User
 {
@@ -48,6 +49,15 @@ namespace WSBLearn.Application.Validators.User
             RuleFor(r => r.ConfirmPassword)
                 .Equal(r => r.Password);
 
+            RuleFor(r => r.ProfilePictureUrl)
+                .Custom((value, context) =>
+                {
+                    var isUrlOrEmpty = value!.UrlOrEmpty();
+                    if (!isUrlOrEmpty)
+                    {
+                        context.AddFailure("ProfilePictureUrl", "Field is not empty and not a valid fully-qualified http, https or ftp URL");
+                    }
+                });
         }
     }
 }

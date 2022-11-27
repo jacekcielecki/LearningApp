@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using WSBLearn.Application.Requests.Question;
+using WSBLearn.Application.Extensions;
 
 namespace WSBLearn.Application.Validators.Question
 {
@@ -59,6 +60,16 @@ namespace WSBLearn.Application.Validators.Question
                     if (!validLevels.Contains(value))
                     {
                         context.AddFailure("Level", "Level must be either 1, 2 or 3");
+                    }
+                });
+
+            RuleFor(r => r.ImageUrl)
+                .Custom((value, context) =>
+                {
+                    var isUrlOrEmpty = value!.UrlOrEmpty();
+                    if (!isUrlOrEmpty)
+                    {
+                        context.AddFailure("IconUrl", "Field is not empty and not a valid fully-qualified http, https or ftp URL");
                     }
                 });
         }
