@@ -22,7 +22,6 @@ namespace WSBLearn.WebApi.Controllers
             _logger = logger;
         }
 
-        // POST api/<QuestionController>
         [HttpPost("{categoryId}")]
         [Authorize(Roles = "Admin")]
         public ActionResult Create([FromBody] CreateQuestionRequest questionRequest, int categoryId)
@@ -32,7 +31,6 @@ namespace WSBLearn.WebApi.Controllers
             return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Question", questionId));
         }
 
-        // GET: api/<QuestionController>
         [HttpGet("{categoryId}")]
         [AllowAnonymous]
         public ActionResult<IEnumerable<QuestionDto>> GetAllByCategory(int categoryId)
@@ -42,7 +40,6 @@ namespace WSBLearn.WebApi.Controllers
             return Ok(questionDtos);
         }
 
-        // GET: api/<QuestionController>
         [HttpGet("{categoryId}/{level}")]
         [Authorize(Roles = "Admin, User")]
         public ActionResult<IEnumerable<QuestionDto>> GetQuiz(int categoryId, [FromRoute] int level)
@@ -53,7 +50,6 @@ namespace WSBLearn.WebApi.Controllers
             return Ok(questionDtos);
         }
 
-        // PUT api/<QuestionController>/5
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public ActionResult<QuestionDto> Update(int id, [FromBody] UpdateQuestionRequest updateQuestionRequest)
@@ -63,7 +59,6 @@ namespace WSBLearn.WebApi.Controllers
             return Ok(questionDto);
         }
 
-        // DELETE api/<QuestionController>/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)

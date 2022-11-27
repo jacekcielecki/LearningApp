@@ -7,6 +7,5 @@
         public string ConfirmPassword { get; set; } = string.Empty;
         public string EmailAddress { get; set; } = string.Empty;
         public string ProfilePictureUrl { get; set; } = string.Empty;
-        public int RoleId { get; set; }
     }
 }
