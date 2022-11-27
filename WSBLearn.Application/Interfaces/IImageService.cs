@@ -6,9 +6,9 @@ namespace WSBLearn.Application.Interfaces
 {
     public interface IImageService
     {
-        Task<BlobResponseDto> UploadAsync(IFormFile file);
-        Task<BlobDto?> DownloadAsync(string blobFilename);
-        Task<BlobResponseDto> DeleteAsync(string blobFilename);
-        Task<List<BlobDto>> ListAsync();
+        Task<BlobResponseDto> UploadAsync(string containerName, IFormFile file);
+        Task<BlobDto?> GetByNameAsync(string containerName, string blobFilename);
+        Task<BlobResponseDto> DeleteAsync(string containerName, string blobFilename);
+        Task<List<BlobDto>> GetAllAsync(string containerName);
     }
 }

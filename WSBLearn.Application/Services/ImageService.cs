@@ -20,10 +20,10 @@ namespace WSBLearn.Application.Services
             _storageSettings = storageSettings;
         }
 
-        public async Task<BlobResponseDto> UploadAsync(IFormFile blob)
+        public async Task<BlobResponseDto> UploadAsync(string containerName, IFormFile blob)
         {
             BlobResponseDto response = new();
-            BlobContainerClient container = new BlobContainerClient(_storageSettings.ConnectionString, _storageSettings.ContainerName);
+            var container = GetBlobContainerClient(containerName);
 
             try
             {
@@ -56,7 +56,7 @@ namespace WSBLearn.Application.Services
             catch (RequestFailedException ex)
                when (ex.ErrorCode == BlobErrorCode.BlobAlreadyExists)
             {
-                _logger.LogError($"File with name {blob.FileName} already exists in container. Set another name to store the file in the container: '{_storageSettings.ContainerName}.'");
+                _logger.LogError($"File with name {blob.FileName} already exists in container. Set another name to store the file in the container: '{_storageSettings.ImageContainerName}.'");
                 response.Status = $"File with name {blob.FileName} already exists. Please use another name to store your file.";
                 response.Error = true;
                 return response;
@@ -72,15 +72,13 @@ namespace WSBLearn.Application.Services
             return response;
         }
 
-        public async Task<BlobDto?> DownloadAsync(string blobFilename)
+        public async Task<BlobDto?> GetByNameAsync(string containerName, string blobFilename)
         {
-            // Get a reference to a container
-            BlobContainerClient client = new BlobContainerClient(_storageSettings.ConnectionString, _storageSettings.ContainerName);
+            var container = GetBlobContainerClient(containerName);
 
             try
             {
-                // Get a reference to the blob
-                BlobClient file = client.GetBlobClient(blobFilename);
+                BlobClient file = container.GetBlobClient(blobFilename);
 
                 if (await file.ExistsAsync())
                 {
@@ -88,8 +86,8 @@ namespace WSBLearn.Application.Services
                     Stream blobContent = data;
 
                     var content = await file.DownloadContentAsync();
-                    string name = blobFilename;
-                    string contentType = content.Value.Details.ContentType;
+                    var name = blobFilename;
+                    var contentType = content.Value.Details.ContentType;
 
                     return new BlobDto { Content = blobContent, Name = name, ContentType = contentType };
                 }
@@ -103,10 +101,10 @@ namespace WSBLearn.Application.Services
             return null;
         }
 
-        public async Task<BlobResponseDto> DeleteAsync(string blobFilename)
+        public async Task<BlobResponseDto> DeleteAsync(string containerName, string blobFilename)
         {
-            BlobContainerClient client = new BlobContainerClient(_storageSettings.ConnectionString, _storageSettings.ContainerName);
-            BlobClient file = client.GetBlobClient(blobFilename);
+            var container = GetBlobContainerClient(containerName);
+            BlobClient file = container.GetBlobClient(blobFilename);
 
             try
             {
@@ -122,9 +120,9 @@ namespace WSBLearn.Application.Services
             return new BlobResponseDto { Error = false, Status = $"File: {blobFilename} has been successfully deleted." };
         }
 
-        public async Task<List<BlobDto>> ListAsync()
+        public async Task<List<BlobDto>> GetAllAsync(string containerName)
         {
-            BlobContainerClient container = new BlobContainerClient(_storageSettings.ConnectionString, _storageSettings.ContainerName);
+            var container = GetBlobContainerClient(containerName);
             List<BlobDto> files = new List<BlobDto>();
 
             await foreach (BlobItem file in container.GetBlobsAsync())
@@ -142,6 +140,19 @@ namespace WSBLearn.Application.Services
             }
 
             return files;
+        }
+
+        private BlobContainerClient GetBlobContainerClient(string containerName)
+        {
+            switch (containerName)
+            {
+                case "image":
+                    return new BlobContainerClient(_storageSettings.ConnectionString, _storageSettings.ImageContainerName);
+                case "avatar":
+                    return new BlobContainerClient(_storageSettings.ConnectionString, _storageSettings.AvatarContainerName);
+                default:
+                    throw new NotSupportedException("Container with given name does not exist");
+            }
         }
     }
 

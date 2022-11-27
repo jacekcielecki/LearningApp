@@ -18,53 +18,48 @@ namespace WSBLearn.WebApi.Controllers
             _imageService = imageService;
         }
 
-        [HttpGet(nameof(Get))]
+        [HttpGet("{containerName}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAllAsync(string containerName = "image")
         {
-            List<BlobDto>? files = await _imageService.ListAsync();
+            List<BlobDto>? files = await _imageService.GetAllAsync(containerName);
 
             return StatusCode(StatusCodes.Status200OK, files);
         }
 
-        [HttpPost(nameof(Upload))]
+        [HttpPost("{containerName}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Upload(IFormFile file)
+        public async Task<IActionResult> UploadAsync(IFormFile file, string containerName = "image")
         {
-            BlobResponseDto? response = await _imageService.UploadAsync(file);
+            BlobResponseDto? response = await _imageService.UploadAsync(containerName, file);
 
-            if (response.Error == true)
-            {
+            if (response.Error)
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Status);
-            }
 
             return StatusCode(StatusCodes.Status200OK, response);
         }
 
-        [HttpGet("{filename}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Download(string filename)
-        {
-            BlobDto? file = await _imageService.DownloadAsync(filename);
 
-            if (file == null)
-            {
+        [HttpGet("{containerName}/{filename}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetByNameAsync(string filename, string containerName = "image")
+        {
+            BlobDto? file = await _imageService.GetByNameAsync(containerName, filename);
+
+            if (file is null)
                 return StatusCode(StatusCodes.Status500InternalServerError, $"File {filename} could not be downloaded.");
-            }
 
             return File(file.Content, file.ContentType, file.Name);
         }
 
-        [HttpDelete("filename")]
+        [HttpDelete("{containerName}/{filename}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(string filename)
+        public async Task<IActionResult> Delete(string filename, string containerName = "image")
         {
-            BlobResponseDto response = await _imageService.DeleteAsync(filename);
+            BlobResponseDto response = await _imageService.DeleteAsync(containerName, filename);
 
-            if (response.Error == true)
-            {
+            if (response.Error)
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Status);
-            }
 
             return StatusCode(StatusCodes.Status200OK, response.Status);
         }
