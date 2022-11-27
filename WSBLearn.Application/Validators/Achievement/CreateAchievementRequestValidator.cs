@@ -11,7 +11,7 @@ namespace WSBLearn.Application.Validators.Achievement
                 .NotNull()
                 .NotEmpty()
                 .MinimumLength(5)
-                .MaximumLength(40);
+                .MaximumLength(100);
 
             RuleFor(r => r.Description)
                 .NotNull()

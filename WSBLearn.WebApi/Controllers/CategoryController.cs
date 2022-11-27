@@ -19,7 +19,6 @@ namespace WSBLearn.WebApi.Controllers
             _categoryService = categoryService;
         }
 
-        // POST api/<CategoryController>
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public ActionResult Create([FromBody] CreateCategoryRequest createCategoryRequest)
@@ -29,7 +28,6 @@ namespace WSBLearn.WebApi.Controllers
             return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Category", result));
         }
 
-        // GET: api/<CategoryController>
         [HttpGet]
         [AllowAnonymous]
         public ActionResult<IEnumerable<CategoryDto>> GetAll()
@@ -39,7 +37,6 @@ namespace WSBLearn.WebApi.Controllers
             return Ok(categories);
         }
 
-        // GET api/<CategoryController>/5
         [HttpGet("{id}")]
         [AllowAnonymous]
         public ActionResult<CategoryDto> GetById(int id)
@@ -49,7 +46,6 @@ namespace WSBLearn.WebApi.Controllers
             return Ok(category);
         }
 
-        // PUT api/<CategoryController>/5
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public ActionResult<CategoryDto> Update(int id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
@@ -59,7 +55,6 @@ namespace WSBLearn.WebApi.Controllers
             return Ok(category);
         }
 
-        // DELETE api/<CategoryController>/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)

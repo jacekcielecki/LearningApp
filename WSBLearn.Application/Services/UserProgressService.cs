@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Responses;
@@ -43,6 +44,15 @@ namespace WSBLearn.Application.Services
             userLevelProgress.FinishedQuizzes++;
             if (userLevelProgress.FinishedQuizzes >= userLevelProgress.QuizzesToFinish)
                 userLevelProgress.LevelCompleted = true;
+            if (!userCategoryProgress.CategoryCompleted)
+            {
+                userCategoryProgress.CategoryCompleted = true;
+                foreach (var level in userCategoryProgress.LevelProgresses)
+                {
+                    if (!level.LevelCompleted)
+                        userCategoryProgress.CategoryCompleted = false;
+                }
+            }
             _dbContext.SaveChanges();
 
             var quizCompletedResponse = new QuizCompletedResponse()
