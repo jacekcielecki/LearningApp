@@ -9,6 +9,7 @@ namespace WSBLearn.Domain.Entities
         public int ExperiencePoints { get; set; }
         public int Level { get; set; }
         public int TotalCompletedQuiz { get; set; }
+        public int TotalCompletedCategory { get; set; }
 
         [JsonIgnore]
         public int UserId { get; set; }
