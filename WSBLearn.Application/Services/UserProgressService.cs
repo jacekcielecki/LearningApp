@@ -46,11 +46,16 @@ namespace WSBLearn.Application.Services
                 userLevelProgress.LevelCompleted = true;
             if (!userCategoryProgress.CategoryCompleted)
             {
-                userCategoryProgress.CategoryCompleted = true;
+                var allLevelsCompleted = true;
                 foreach (var level in userCategoryProgress.LevelProgresses)
                 {
                     if (!level.LevelCompleted)
-                        userCategoryProgress.CategoryCompleted = false;
+                        allLevelsCompleted = false;
+                }
+                if (allLevelsCompleted)
+                {
+                    userCategoryProgress.CategoryCompleted = true;
+                    user.UserProgress.TotalCompletedCategory++;
                 }
             }
             _dbContext.SaveChanges();
