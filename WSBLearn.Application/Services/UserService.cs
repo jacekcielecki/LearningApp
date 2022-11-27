@@ -16,6 +16,7 @@ using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Requests.User;
 using WSBLearn.Application.Responses;
 using WSBLearn.Application.Settings;
+using WSBLearn.Application.Constants;
 
 namespace WSBLearn.Application.Services
 {
@@ -48,7 +49,6 @@ namespace WSBLearn.Application.Services
         public void Register(CreateUserRequest createUserRequest)
         {
             var validationResult = _createUserRequestValidator.Validate(createUserRequest);
-
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
             var user = new User()
@@ -56,7 +56,7 @@ namespace WSBLearn.Application.Services
                 Username = createUserRequest.Username,
                 EmailAddress = createUserRequest.EmailAddress,
                 RoleId = 2,
-                ProfilePictureUrl = createUserRequest.ProfilePictureUrl,
+                ProfilePictureUrl = string.IsNullOrEmpty(createUserRequest.ProfilePictureUrl) ? Defaults.ProfilePictureUrl : createUserRequest.ProfilePictureUrl,
             };
             user.Password = _passwordHasher.HashPassword(user, createUserRequest.Password);
             _dbContext.Users.Add(user);
