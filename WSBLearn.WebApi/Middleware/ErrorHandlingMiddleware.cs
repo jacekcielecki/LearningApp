@@ -1,4 +1,5 @@
-﻿using WSBLearn.Application.Constants;
+﻿using System;
+using WSBLearn.Application.Constants;
 using WSBLearn.Application.Exceptions;
 using ValidationException = FluentValidation.ValidationException;
 
@@ -31,11 +32,16 @@ namespace WSBLearn.WebApi.Middleware
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(badHttpRequestException.Message);
-            }            
+            }
             catch (ArgumentException argumentException)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(argumentException.Message);
+            }
+            catch (ResourceProtectedException resourceProtectedException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(resourceProtectedException.Message);
             }
             catch (Exception)
             {

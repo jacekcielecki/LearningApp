@@ -12,11 +12,11 @@ using WSBLearn.Application.Interfaces;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 using AutoMapper;
+using WSBLearn.Application.Constants;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Requests.User;
 using WSBLearn.Application.Responses;
 using WSBLearn.Application.Settings;
-using WSBLearn.Application.Constants;
 
 namespace WSBLearn.Application.Services
 {
@@ -126,7 +126,7 @@ namespace WSBLearn.Application.Services
         public IEnumerable<UserRankingResponse> GetSortByExp()
         {
             var users = _dbContext.Users
-                .Include(u => u.UserProgress)
+                .Include(u => u.UserProgress).Skip(1)
                 .OrderByDescending(r => r.UserProgress.ExperiencePoints)
                 .AsEnumerable();
 
@@ -139,6 +139,8 @@ namespace WSBLearn.Application.Services
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == id);
             if (user is null)
                 throw new NotFoundException("User with given id not found");
+            if (user.Id == 1 && user.Username == "root")
+                throw new ResourceProtectedException("Action forbidden, resource is protected");
 
             _dbContext.Users.Remove(user);
             _dbContext.SaveChanges();
@@ -149,6 +151,8 @@ namespace WSBLearn.Application.Services
             var user = _dbContext.Users.Include(u => u.UserProgress).FirstOrDefault();
             if (user is null)
                 throw new NotFoundException("User with given id not found");
+            if (user.Id == 1 && user.Username == "root")
+                throw new ResourceProtectedException("Action forbidden, resource is protected");
 
             ValidationResult validationResult = _updateUserRequestValidator.Validate(updateUserRequest);
             if (!validationResult.IsValid)
@@ -171,6 +175,8 @@ namespace WSBLearn.Application.Services
             var user = _dbContext.Users.Include(u => u.Role).FirstOrDefault(u => u.Id == id);
             if (user is null)
                 throw new NotFoundException("User with given id not found");
+            if (user.Id == 1 && user.Username == "root")
+                throw new ResourceProtectedException("Action forbidden, resource is protected");
             var role = _dbContext.Roles.FirstOrDefault(r => r.Id == roleId);
             if (role is null)
                 throw new NotFoundException("Role with given id not found");
@@ -187,6 +193,8 @@ namespace WSBLearn.Application.Services
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == id);
             if (user is null)
                 throw new NotFoundException("User with given id not found");
+            if (user.Id == 1 && user.Username == "root")
+                throw new ResourceProtectedException("Action forbidden, resource is protected");
             var passwordVerification = _passwordHasher.VerifyHashedPassword(user, user.Password, updateUserPasswordRequest.OldPassword);
             if (passwordVerification == PasswordVerificationResult.Failed)
                 throw new BadHttpRequestException("Invalid Password");
