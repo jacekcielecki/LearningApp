@@ -1,7 +1,7 @@
 ## About The Project
 
 LearningApp is .NET web api designed for quiz application. Api follows simple onion type architecture. <br>
-Frontend part of application is also available here: [click](https://github.com/jacekcielecki/Learning-App)
+Frontend part of application is also available here: [click](https://github.com/L3monPL/QuizAppAngular14)
 
 
 ## Built with
