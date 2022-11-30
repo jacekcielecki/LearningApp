@@ -148,10 +148,10 @@ namespace WSBLearn.Application.Services
 
         public UserDto Update(int id, UpdateUserRequest updateUserRequest)
         {
-            var user = _dbContext.Users.Include(u => u.UserProgress).FirstOrDefault();
+            var user = _dbContext.Users.Include(u => u.UserProgress).FirstOrDefault(u => u.Id == id);
             if (user is null)
                 throw new NotFoundException("User with given id not found");
-            if (user.Id == 1 && user.Username == "root")
+            if (user.Id == 1 && user.EmailAddress == "root")
                 throw new ResourceProtectedException("Action forbidden, resource is protected");
 
             ValidationResult validationResult = _updateUserRequestValidator.Validate(updateUserRequest);

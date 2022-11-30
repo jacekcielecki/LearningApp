@@ -50,6 +50,7 @@ namespace WSBLearn.Application.Validators.User
                 .Equal(r => r.Password);
 
             RuleFor(r => r.ProfilePictureUrl)
+                .MaximumLength(400)
                 .Custom((value, context) =>
                 {
                     var isUrlOrEmpty = value!.UrlOrEmpty();
