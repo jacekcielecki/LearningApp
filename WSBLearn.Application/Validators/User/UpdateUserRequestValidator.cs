@@ -36,7 +36,7 @@ namespace WSBLearn.Application.Validators.User
                 });
 
             RuleFor(r => r.ProfilePictureUrl)
-                .MaximumLength(60);
+                .MaximumLength(400);
         }
     }
 }
