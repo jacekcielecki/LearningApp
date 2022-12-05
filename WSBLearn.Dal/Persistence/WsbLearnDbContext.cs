@@ -13,6 +13,7 @@ namespace WSBLearn.Dal.Persistence
         public DbSet<CategoryProgress> CategoryProgresses { get; set; }
         public DbSet<LevelProgress> LevelProgresses { get; set; }
         public DbSet<Achievement> Achievements { get; set; }
+        public DbSet<CategoryGroup> CategoryGroups { get; set; }
 
         public WsbLearnDbContext(DbContextOptions<WsbLearnDbContext> options) : base(options)
         {
@@ -20,10 +21,21 @@ namespace WSBLearn.Dal.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CategoryGroup>(eb =>
+            {
+                eb.Property(x => x.Name)
+                    .HasMaxLength(400)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<CategoryGroup>()
+                .HasMany(c => c.Categories)
+                .WithMany(e => e.CategoryGroups);
+
             modelBuilder.Entity<Category>(eb =>
             {
                 eb.Property(x => x.Name)
-                    .HasMaxLength(20)
+                    .HasMaxLength(400)
                     .IsRequired();
             });
 

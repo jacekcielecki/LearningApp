@@ -1,34 +1,18 @@
 ﻿using FluentValidation;
 using WSBLearn.Application.Extensions;
-using WSBLearn.Application.Requests.Category;
+using WSBLearn.Application.Requests.CategoryGroup;
 
-namespace WSBLearn.Application.Validators.Category
+namespace WSBLearn.Application.Validators.CategoryGroup
 {
-    public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRequest>
+    public class UpdateCategoryGroupValidator : AbstractValidator<UpdateCategoryGroupRequest>
     {
-        public UpdateCategoryRequestValidator()
+        public UpdateCategoryGroupValidator()
         {
             RuleFor(r => r.Name)
                 .NotNull()
                 .NotEmpty()
                 .MinimumLength(1)
                 .MaximumLength(40);
-
-            RuleFor(r => r.Description)
-                .NotEmpty()
-                .MaximumLength(140);
-
-            RuleFor(r => r.IconUrl)
-                .NotEmpty()
-                .MaximumLength(140);
-
-            RuleFor(r => r.QuestionsPerLesson)
-                .NotNull()
-                .NotEmpty();
-
-            RuleFor(r => r.LessonsPerLevel)
-                .NotNull()
-                .NotEmpty();
 
             RuleFor(r => r.IconUrl)
                 .Custom((value, context) =>
