@@ -44,7 +44,7 @@ namespace WSBLearn.Application.Services
                 throw new ValidationException(validationResult.Errors[0].ToString());
             }
 
-            Question question = _mapper.Map<Question>(createQuestionRequest);
+            var question = _mapper.Map<Question>(createQuestionRequest);
             question.Category = category;
 
             _dbContext.Questions.Add(question);

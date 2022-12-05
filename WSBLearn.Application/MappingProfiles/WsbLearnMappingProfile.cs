@@ -2,6 +2,7 @@
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Requests.Achievement;
 using WSBLearn.Application.Requests.Category;
+using WSBLearn.Application.Requests.CategoryGroup;
 using WSBLearn.Application.Requests.Question;
 using WSBLearn.Application.Responses;
 using WSBLearn.Domain.Entities;
@@ -12,13 +13,17 @@ namespace WSBLearn.Application.MappingProfiles
     {
         public WsbLearnMappingProfile()
         {
+            //Achievement
+            CreateMap<Achievement, AchievementDto>().ReverseMap();
+            CreateMap<CreateAchievementRequest, Achievement>();
+
             //Category
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<CreateCategoryRequest, Category>();
 
-            //Question
-            CreateMap<Question, QuestionDto>().ReverseMap();
-            CreateMap<CreateQuestionRequest, Question>();
+            //CategoryGroup
+            CreateMap<CreateCategoryGroupRequest, CategoryGroup>();
+            CreateMap<CategoryGroup, CategoryGroupDto>().ReverseMap();
 
             //User
             CreateMap<User, UserDto>();
@@ -29,8 +34,9 @@ namespace WSBLearn.Application.MappingProfiles
                 .ForMember(u => u.Level,
                     opt => opt.MapFrom(e => e.UserProgress.Level));
 
-            CreateMap<Achievement, AchievementDto>().ReverseMap();
-            CreateMap<CreateAchievementRequest, Achievement>();
+            //Question
+            CreateMap<Question, QuestionDto>().ReverseMap();
+            CreateMap<CreateQuestionRequest, Question>();
         }
     }
 }

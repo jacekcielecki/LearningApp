@@ -10,5 +10,6 @@
         public int LessonsPerLevel { get; set; }
 
         public virtual ICollection<Question> Questions { get; set; }
+        public virtual ICollection<CategoryGroup> CategoryGroups { get; set; }
     }
 }
