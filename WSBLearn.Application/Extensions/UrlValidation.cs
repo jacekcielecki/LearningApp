@@ -2,9 +2,9 @@
 {
     public static class UrlValidation
     {
-        public static bool UrlOrEmpty(this string url)
+        public static bool UrlOrEmpty(this string? url)
         {
-            if (url is null || string.IsNullOrEmpty(url.ToString()))
+            if (string.IsNullOrEmpty(url))
                 return true;
 
             return url is string valueAsString &&
