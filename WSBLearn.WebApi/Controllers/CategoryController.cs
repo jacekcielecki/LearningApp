@@ -9,7 +9,6 @@ namespace WSBLearn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -19,6 +18,22 @@ namespace WSBLearn.WebApi.Controllers
             _categoryService = categoryService;
         }
 
+        [HttpGet]
+        public ActionResult<IEnumerable<CategoryDto>> GetAll()
+        {
+            IEnumerable<CategoryDto>? categories = _categoryService.GetAll();
+
+            return Ok(categories);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<CategoryDto> GetById(int id)
+        {
+            CategoryDto category = _categoryService.GetById(id);
+
+            return Ok(category);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public ActionResult Create([FromBody] CreateCategoryRequest createCategoryRequest)
@@ -26,24 +41,6 @@ namespace WSBLearn.WebApi.Controllers
             var result = _categoryService.Create(createCategoryRequest);
 
             return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Category", result));
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult<IEnumerable<CategoryDto>> GetAll()
-        {
-            IEnumerable<CategoryDto>? categories =  _categoryService.GetAll();
-
-            return Ok(categories);
-        }
-
-        [HttpGet("{id}")]
-        [AllowAnonymous]
-        public ActionResult<CategoryDto> GetById(int id)
-        {
-            CategoryDto category = _categoryService.GetById(id);
-
-            return Ok(category);
         }
 
         [HttpPut("{id}")]

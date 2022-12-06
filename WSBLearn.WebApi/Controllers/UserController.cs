@@ -9,7 +9,6 @@ namespace WSBLearn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -20,35 +19,24 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public ActionResult<IEnumerable<UserDto>> GetAll()
         {
-            var users = _userService.GetAll();
-            return Ok(users);
-        }
-
-        [HttpGet("SortByExp")]
-        [AllowAnonymous]
-        public ActionResult<IEnumerable<UserRankingResponse>> GetUsersSortByExp()
-        {
-            var users = _userService.GetSortByExp();
-            return Ok(users);
+            var dtos = _userService.GetAll();
+            return Ok(dtos);
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public ActionResult<UserDto> GetById(int id)
         {
-            var user = _userService.GetById(id);
-            return Ok(user);
+            var dto = _userService.GetById(id);
+            return Ok(dto);
         }
 
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public ActionResult DeleteUser(int id)
+        [HttpGet("SortByExp")]
+        public ActionResult<IEnumerable<UserRankingResponse>> GetUsersSortByExp()
         {
-            _userService.Delete(id);
-            return Ok("User successfully deleted");
+            var dtos = _userService.GetSortByExp();
+            return Ok(dtos);
         }
 
         [HttpPatch("{id}")]
@@ -58,7 +46,6 @@ namespace WSBLearn.WebApi.Controllers
             var updatedUserDto = _userService.Update(id, updateUserRequest);
             return Ok(updatedUserDto);
         }
-
 
         [HttpPatch("updateRole/{id}/{roleId}")]
         [Authorize(Roles = "Admin")]
@@ -74,6 +61,14 @@ namespace WSBLearn.WebApi.Controllers
         {
             _userService.UpdateUserPassword(id, updateUserPasswordRequest);
             return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult DeleteUser(int id)
+        {
+            _userService.Delete(id);
+            return Ok("User successfully deleted");
         }
     }
 }

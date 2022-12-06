@@ -10,16 +10,31 @@ namespace WSBLearn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class QuestionController : ControllerBase
     {
         private readonly IQuestionService _questionService;
-        private readonly ILogger<QuestionController> _logger;
 
-        public QuestionController(IQuestionService questionService, ILogger<QuestionController> logger)
+        public QuestionController(IQuestionService questionService)
         {
             _questionService = questionService;
-            _logger = logger;
+        }
+
+        [HttpGet("{categoryId}")]
+        public ActionResult<IEnumerable<QuestionDto>> GetAllByCategory(int categoryId)
+        {
+            var dtos = _questionService.GetAllByCategory(categoryId);
+
+            return Ok(dtos);
+        }
+
+        [HttpGet("{categoryId}/{level}")]
+        [Authorize(Roles = "Admin, User")]
+        public ActionResult<IEnumerable<QuestionDto>> GetQuiz(int categoryId, [FromRoute] int level)
+        {
+            var userId = HttpContext.GetUserId();
+            var dtos = _questionService.GetQuiz(categoryId, level, userId);
+
+            return Ok(dtos);
         }
 
         [HttpPost("{categoryId}")]
@@ -31,24 +46,7 @@ namespace WSBLearn.WebApi.Controllers
             return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Question", questionId));
         }
 
-        [HttpGet("{categoryId}")]
-        [AllowAnonymous]
-        public ActionResult<IEnumerable<QuestionDto>> GetAllByCategory(int categoryId)
-        {
-            IEnumerable<QuestionDto> questionDtos = _questionService.GetAllByCategory(categoryId);
 
-            return Ok(questionDtos);
-        }
-
-        [HttpGet("{categoryId}/{level}")]
-        [Authorize(Roles = "Admin, User")]
-        public ActionResult<IEnumerable<QuestionDto>> GetQuiz(int categoryId, [FromRoute] int level)
-        {
-            var userId = HttpContext.GetUserId();
-            IEnumerable<QuestionDto> questionDtos = _questionService.GetQuiz(categoryId, level, userId);
-
-            return Ok(questionDtos);
-        }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]

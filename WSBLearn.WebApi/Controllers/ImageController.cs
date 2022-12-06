@@ -8,7 +8,6 @@ namespace WSBLearn.WebApi.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class ImageController : ControllerBase
     {
         private readonly IImageService _imageService;
@@ -24,21 +23,8 @@ namespace WSBLearn.WebApi.Controllers
         {
             List<BlobDto>? files = await _imageService.GetAllAsync(containerName);
 
-            return StatusCode(StatusCodes.Status200OK, files);
+            return Ok(files);
         }
-
-        [HttpPost("{containerName}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UploadAsync(IFormFile file, string containerName = "image")
-        {
-            BlobResponseDto? response = await _imageService.UploadAsync(containerName, file);
-
-            if (response.Error)
-                return StatusCode(StatusCodes.Status500InternalServerError, response.Status);
-
-            return StatusCode(StatusCodes.Status200OK, response);
-        }
-
 
         [HttpGet("{containerName}/{filename}")]
         [Authorize(Roles = "Admin")]
@@ -52,6 +38,18 @@ namespace WSBLearn.WebApi.Controllers
             return File(file.Content, file.ContentType, file.Name);
         }
 
+        [HttpPost("{containerName}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UploadAsync(IFormFile file, string containerName = "image")
+        {
+            BlobResponseDto? response = await _imageService.UploadAsync(containerName, file);
+
+            if (response.Error)
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Status);
+
+            return Ok(response);
+        }
+
         [HttpDelete("{containerName}/{filename}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string filename, string containerName = "image")
@@ -61,8 +59,7 @@ namespace WSBLearn.WebApi.Controllers
             if (response.Error)
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Status);
 
-            return StatusCode(StatusCodes.Status200OK, response.Status);
+            return Ok(response.Status);
         }
-
     }
 }

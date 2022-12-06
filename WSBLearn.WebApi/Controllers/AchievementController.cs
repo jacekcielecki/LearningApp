@@ -16,18 +16,18 @@ namespace WSBLearn.WebApi.Controllers
             _achievementService = achievementService;
         }
 
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var response = _achievementService.GetAll();
+            return Ok(response);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public IActionResult Create([FromBody] CreateAchievementRequest request)
         {
             var response = _achievementService.Create(request);
-            return Ok(response);
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var response = _achievementService.GetAll();
             return Ok(response);
         }
 

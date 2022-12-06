@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests.CategoryGroup;
 
@@ -8,7 +9,7 @@ namespace WSBLearn.WebApi.Controllers
     [ApiController]
     public class CategoryGroupController : ControllerBase
     {
-        private ICategoryGroupService _categoryGroupService;
+        private readonly ICategoryGroupService _categoryGroupService;
 
         public CategoryGroupController(ICategoryGroupService categoryGroupService)
         {
@@ -30,27 +31,23 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] CreateCategoryGroupRequest request)
+        [Authorize(Roles = "Admin")]
+        public ActionResult Create([FromBody] CreateCategoryGroupRequest request)
         {
             var id = _categoryGroupService.Create(request);
             return Ok(id);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, [FromBody] UpdateCategoryGroupRequest request)
+        [Authorize(Roles = "Admin")]
+        public ActionResult Update(int id, [FromBody] UpdateCategoryGroupRequest request)
         {
             var entity = _categoryGroupService.Update(id, request);
             return Ok(entity);
         }
 
-        [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
-        {
-            _categoryGroupService.Delete(id);
-            return Ok();
-        }
-
         [HttpPut("addCategory/{id:int}/{categoryId:int}")]
+        [Authorize(Roles = "Admin")]
         public ActionResult AddCategory(int id, int categoryId)
         {
             var entity = _categoryGroupService.AddCategory(id, categoryId);
@@ -58,10 +55,19 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpPut("removeCategory/{id:int}/{categoryId:int}")]
+        [Authorize(Roles = "Admin")]
         public ActionResult RemoveCategory(int id, int categoryId)
         {
             var entity = _categoryGroupService.RemoveCategory(id, categoryId);
             return Ok(entity);
+        }
+
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult Delete(int id)
+        {
+            _categoryGroupService.Delete(id);
+            return Ok();
         }
     }
 }
