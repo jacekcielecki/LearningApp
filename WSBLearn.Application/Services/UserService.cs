@@ -46,21 +46,21 @@ namespace WSBLearn.Application.Services
             _mapper = mapper;
         }
 
-        public void Register(CreateUserRequest createUserRequest)
+        public async Task RegisterAsync(CreateUserRequest request)
         {
-            var validationResult = _createUserRequestValidator.Validate(createUserRequest);
+            var validationResult = await _createUserRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
             var user = new User()
             {
-                Username = createUserRequest.Username,
-                EmailAddress = createUserRequest.EmailAddress,
+                Username = request.Username,
+                EmailAddress = request.EmailAddress,
                 RoleId = 2,
-                ProfilePictureUrl = string.IsNullOrEmpty(createUserRequest.ProfilePictureUrl) ? Defaults.ProfilePictureUrl : createUserRequest.ProfilePictureUrl,
+                ProfilePictureUrl = string.IsNullOrEmpty(request.ProfilePictureUrl) ? Defaults.ProfilePictureUrl : request.ProfilePictureUrl,
             };
-            user.Password = _passwordHasher.HashPassword(user, createUserRequest.Password);
-            _dbContext.Users.Add(user);
-            _dbContext.SaveChanges();
+            user.Password = _passwordHasher.HashPassword(user, request.Password);
+            await _dbContext.Users.AddAsync(user);
+            await _dbContext.SaveChangesAsync();
 
             var userProgress = new UserProgress
             {
@@ -70,17 +70,17 @@ namespace WSBLearn.Application.Services
                 UserId = user.Id
             };
             _dbContext.UserProgresses.Add(userProgress);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             user.UserProgressId = userProgress.Id;
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public string Login(LoginDto loginDto)
+        public async Task<string> LoginAsync(LoginDto loginDto)
         {
-            var user = _dbContext.Users
-                .Include(u => u.Role)
-                .FirstOrDefault(u => u.EmailAddress == loginDto.Login || u.Username == loginDto.Login);
+            var user = await _dbContext.Users
+                .Include(e => e.Role)
+                .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Login || e.Username == loginDto.Login);
             if (user is null)
                 throw new BadHttpRequestException("Invalid username or password");
 
@@ -91,120 +91,115 @@ namespace WSBLearn.Application.Services
             return GenerateToken(user);
         }
 
-        public IEnumerable<UserDto> GetAll()
+        public async Task<List<UserDto>> GetAllAsync()
         {
-            IEnumerable<User> users = _dbContext.Users
+            var entities = await _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.Achievements)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
-                .AsEnumerable();
+                .ToListAsync();
 
-            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users); 
-            return userDtos;
+            return _mapper.Map<List<UserDto>>(entities);
         }
 
-        public UserDto GetById(int id)
+        public async Task<UserDto> GetByIdAsync(int id)
         {
-            var user = _dbContext.Users
-                .Include(u => u.Role)
-                .Include(u => u.UserProgress)
-                .ThenInclude(u => u.Achievements)
-                .Include(u => u.UserProgress)
-                .ThenInclude(u => u.CategoryProgress)
-                .ThenInclude(u => u.LevelProgresses)
-                .FirstOrDefault(u => u.Id == id);
-            if (user is null)
+            var entity = await _dbContext.Users
+                .Include(e => e.Role)
+                .Include(e => e.UserProgress)
+                .ThenInclude(e => e.Achievements)
+                .Include(e => e.UserProgress)
+                .ThenInclude(e => e.CategoryProgress)
+                .ThenInclude(e => e.LevelProgresses)
+                .FirstOrDefaultAsync(e => e.Id == id);
+            if (entity is null)
                 throw new NotFoundException("User with given id not found");
            
-            var userDto = _mapper.Map<UserDto>(user);
-            return userDto;
+            return _mapper.Map<UserDto>(entity);
         }
 
-        public IEnumerable<UserRankingResponse> GetSortByExp()
+        public async Task<List<UserRankingResponse>> GetSortByExpAsync()
         {
-            var users = _dbContext.Users
+            var entities = await _dbContext.Users
                 .Include(u => u.UserProgress).Skip(1)
                 .OrderByDescending(r => r.UserProgress.ExperiencePoints)
-                .AsEnumerable();
+                .ToListAsync();
 
-            var userRankingResponses = _mapper.Map<IEnumerable<UserRankingResponse>>(users);
-            return userRankingResponses;
+            return _mapper.Map<List<UserRankingResponse>>(entities);
         }
 
-        public void Delete(int id)
+        public async Task<UserDto> Update(int id, UpdateUserRequest request)
         {
-            var user = _dbContext.Users.FirstOrDefault(u => u.Id == id);
-            if (user is null)
+            var entity = await _dbContext.Users.FindAsync(id);
+            if (entity is null)
                 throw new NotFoundException("User with given id not found");
-            if (user.Id == 1 && user.Username == "root")
+            if (entity.Id == 1 && entity.EmailAddress == "root")
                 throw new ResourceProtectedException("Action forbidden, resource is protected");
-
-            _dbContext.Users.Remove(user);
-            _dbContext.SaveChanges();
-        }
-
-        public UserDto Update(int id, UpdateUserRequest updateUserRequest)
-        {
-            var user = _dbContext.Users.Include(u => u.UserProgress).FirstOrDefault(u => u.Id == id);
-            if (user is null)
-                throw new NotFoundException("User with given id not found");
-            if (user.Id == 1 && user.EmailAddress == "root")
-                throw new ResourceProtectedException("Action forbidden, resource is protected");
-
-            ValidationResult validationResult = _updateUserRequestValidator.Validate(updateUserRequest);
+            var validationResult = await _updateUserRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
 
-            if (!string.IsNullOrEmpty(updateUserRequest.Username))
-                user.Username = updateUserRequest.Username;
-            if (!string.IsNullOrEmpty(updateUserRequest.EmailAddress))
-                user.EmailAddress = updateUserRequest.EmailAddress;
-            if (!string.IsNullOrEmpty(updateUserRequest.ProfilePictureUrl))
-                user.ProfilePictureUrl = updateUserRequest.ProfilePictureUrl;
-            _dbContext.SaveChanges();
+            if (!string.IsNullOrEmpty(request.Username))
+                entity.Username = request.Username;
+            if (!string.IsNullOrEmpty(request.EmailAddress))
+                entity.EmailAddress = request.EmailAddress;
+            if (!string.IsNullOrEmpty(request.ProfilePictureUrl))
+                entity.ProfilePictureUrl = request.ProfilePictureUrl;
+            await _dbContext.SaveChangesAsync();
 
-            var userDto = _mapper.Map<UserDto>(user);
-            return userDto;
+            return _mapper.Map<UserDto>(entity);
         }
 
-        public UserDto UpdateUserRole(int id, int roleId)
+        public async Task<UserDto> UpdateUserRoleAsync(int id, int roleId)
         {
-            var user = _dbContext.Users.Include(u => u.Role).FirstOrDefault(u => u.Id == id);
-            if (user is null)
+            var entity = await _dbContext.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
+            if (entity is null)
                 throw new NotFoundException("User with given id not found");
-            if (user.Id == 1 && user.Username == "root")
+            if (entity.Id == 1 && entity.Username == "root")
                 throw new ResourceProtectedException("Action forbidden, resource is protected");
             var role = _dbContext.Roles.FirstOrDefault(r => r.Id == roleId);
             if (role is null)
                 throw new NotFoundException("Role with given id not found");
 
-            user.RoleId = roleId;
-            _dbContext.SaveChanges();
+            entity.RoleId = roleId;
+            await _dbContext.SaveChangesAsync();
 
-            var userDto = _mapper.Map<UserDto>(user);
-            return userDto;
+            return _mapper.Map<UserDto>(entity);
         }
 
-        public void UpdateUserPassword(int id, UpdateUserPasswordRequest updateUserPasswordRequest)
+        public async Task UpdateUserPasswordAsync(int id, UpdateUserPasswordRequest request)
         {
-            var user = _dbContext.Users.FirstOrDefault(u => u.Id == id);
-            if (user is null)
+            var entity = await _dbContext.Users.FindAsync(id);
+            if (entity is null)
                 throw new NotFoundException("User with given id not found");
-            if (user.Id == 1 && user.Username == "root")
+            if (entity.Id == 1 && entity.Username == "root")
                 throw new ResourceProtectedException("Action forbidden, resource is protected");
-            var passwordVerification = _passwordHasher.VerifyHashedPassword(user, user.Password, updateUserPasswordRequest.OldPassword);
+            var passwordVerification = _passwordHasher.VerifyHashedPassword(entity, entity.Password, request.OldPassword);
             if (passwordVerification == PasswordVerificationResult.Failed)
                 throw new BadHttpRequestException("Invalid Password");
-            var validationResult = _updateUserPasswordRequestValidator.Validate(updateUserPasswordRequest);
+            var validationResult = await _updateUserPasswordRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
 
-            user.Password = _passwordHasher.HashPassword(user, updateUserPasswordRequest.NewPassword);
-            _dbContext.SaveChanges();
+            entity.Password = _passwordHasher.HashPassword(entity, request.NewPassword);
+            await _dbContext.SaveChangesAsync();
+        }
 
+        public async Task Delete(int id)
+        {
+            var entity = await _dbContext.Users.FindAsync(id);
+            if (entity is null)
+                throw new NotFoundException("User with given id not found");
+            if (entity.Id == 1 && entity.Username == "root")
+                throw new ResourceProtectedException("Action forbidden, resource is protected");
+
+            _dbContext.Users.Remove(entity);
+            await _dbContext.SaveChangesAsync();
         }
 
         private string GenerateToken(User user)

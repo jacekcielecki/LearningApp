@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Responses;
@@ -17,24 +16,23 @@ namespace WSBLearn.Application.Services
             _dbContext = dbContext;
         }
 
-        public QuizCompletedResponse CompleteQuiz(int userId, int categoryId, string quizLevelName, int expGained)
+        public async Task<QuizCompletedResponse> CompleteQuizAsync(int userId, int categoryId, string quizLevelName, int expGained)
         {
-            if (expGained < 0 || expGained > 20)
+            if (expGained is < 0 or > 20)
                 throw new ArgumentException("ExpGained need to be between 0 and 20");
-            var user = _dbContext.Users
+            var user = await _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
-                .FirstOrDefault(u => u.Id == userId);
+                .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
                 throw new NotFoundException("User with given id not Found");
-            var userCategoryProgress =
-                user.UserProgress.CategoryProgress.FirstOrDefault(cp => cp.CategoryId == categoryId);
+            var userCategoryProgress = user.UserProgress.CategoryProgress.FirstOrDefault(e => e.CategoryId == categoryId);
             if (userCategoryProgress is null)
                 throw new NotFoundException("User with given id has not started any quiz in this category");
             var userLevelProgress =
-                userCategoryProgress.LevelProgresses.FirstOrDefault(lp => lp.LevelName == quizLevelName);
+                userCategoryProgress.LevelProgresses.FirstOrDefault(e => e.LevelName == quizLevelName);
             if (userLevelProgress is null)
                 throw new ValidationException("Something went wrong");
 
@@ -58,7 +56,7 @@ namespace WSBLearn.Application.Services
                     user.UserProgress.TotalCompletedCategory++;
                 }
             }
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             var quizCompletedResponse = new QuizCompletedResponse()
             {
@@ -67,24 +65,25 @@ namespace WSBLearn.Application.Services
                 CurrentUserLevel = user.UserProgress.Level,
                 IsCategoryLevelCompleted = userLevelProgress.LevelCompleted
             };
+
             return quizCompletedResponse; 
         }
 
-        public void CompleteAchievement(int userId, int achievementId)
+        public async Task CompleteAchievementAsync(int userId, int achievementId)
         {
-            var user =_dbContext.Users
+            var user =await _dbContext.Users
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.Achievements)
-                .FirstOrDefault(u => u.Id == userId);
+                .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
                 throw new NotFoundException("User with given id not found");
-
             var achievement = _dbContext.Achievements.FirstOrDefault(a => a.Id == achievementId);
             if (achievement is null)
                 throw new NotFoundException("Achievement with given id not found");
-
+            
             user.UserProgress.Achievements.Add(achievement);
-            _dbContext.SaveChanges();
+
+            await _dbContext.SaveChangesAsync();
         }
 
         private int DetermineUserLevel(int experiencePoints)

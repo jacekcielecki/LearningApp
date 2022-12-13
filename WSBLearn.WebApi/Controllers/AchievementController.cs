@@ -17,33 +17,33 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var response = _achievementService.GetAll();
+            var response = await _achievementService.GetAllAsync();
             return Ok(response);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult Create([FromBody] CreateAchievementRequest request)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateAchievementRequest request)
         {
-            var response = _achievementService.Create(request);
+            var response = await _achievementService.CreateAsync(request);
             return Ok(response);
         }
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin")]
-        public IActionResult Update(int id, [FromBody] UpdateAchievementRequest request)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateAchievementRequest request)
         {
-            var response = _achievementService.Update(id, request);
+            var response = await _achievementService.UpdateAsync(id, request);
             return Ok(response);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            _achievementService.Delete(id);
+            await _achievementService.DeleteAsync(id);
             return Ok();
         }
     }

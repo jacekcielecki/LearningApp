@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Extensions;
 using WSBLearn.Application.Interfaces;
-using WSBLearn.Application.Responses;
 
 namespace WSBLearn.WebApi.Controllers
 {
@@ -20,19 +19,19 @@ namespace WSBLearn.WebApi.Controllers
 
         [HttpPatch("{categoryId}/{level}/{quizLevelName}/{expGained}")]
         [Authorize(Roles = "Admin, User")]
-        public ActionResult<QuizCompletedResponse> QuizCompleted(int categoryId, int level, string quizLevelName, int expGained)
+        public async Task<IActionResult> QuizCompletedAsync(int categoryId, int level, string quizLevelName, int expGained)
         {
             var userId = HttpContext.GetUserId();
-            var quizCompletedResponse = _userProgressService.CompleteQuiz(userId, categoryId, quizLevelName, expGained);
+            var response = await _userProgressService.CompleteQuizAsync(userId, categoryId, quizLevelName, expGained);
 
-            return Ok(quizCompletedResponse);
+            return Ok(response);
         }
 
         [HttpPatch("CompleteAchievement/{userId}/{achievementId}")]
         [Authorize(Roles = "Admin, User")]
-        public ActionResult CompleteAchievement(int userId, int achievementId)
+        public async Task<IActionResult> CompleteAchievement(int userId, int achievementId)
         {
-            _userProgressService.CompleteAchievement(userId, achievementId);
+            await _userProgressService.CompleteAchievementAsync(userId, achievementId);
             return Ok();
         }
     }

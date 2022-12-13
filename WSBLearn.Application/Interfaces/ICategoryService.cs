@@ -5,10 +5,10 @@ namespace WSBLearn.Application.Interfaces
 {
     public interface ICategoryService
     {
-        int? Create(CreateCategoryRequest createCategoryRequest);
-        IEnumerable<CategoryDto>? GetAll();
-        CategoryDto GetById(int id);
-        CategoryDto Update(int id, UpdateCategoryRequest updateCategoryRequest);
-        void Delete(int id);
+        Task<List<CategoryDto>?> GetAllAsync();
+        Task<CategoryDto> GetByIdAsync(int id);
+        Task<CategoryDto> CreateAsync(CreateCategoryRequest createCategoryRequest);
+        Task<CategoryDto> UpdateAsync(int id, UpdateCategoryRequest updateCategoryRequest);
+        Task DeleteAsync(int id);
     }
 }

@@ -29,9 +29,9 @@ namespace WSBLearn.Application.Services
             try
             {
                 var blobContentType = string.Empty;
-                var fileName = Path.GetFileNameWithoutExtension(blob.FileName).ToString();
+                var fileName = Path.GetFileNameWithoutExtension(blob.FileName);
                 var extension = Path.GetExtension(blob.FileName);
-                var randomFileName = fileName + "-" + Guid.NewGuid().ToString() + extension;
+                var randomFileName = fileName + "-" + Guid.NewGuid() + extension;
                 BlobClient client = container.GetBlobClient(randomFileName);
 
                 if (blob.FileName.EndsWith(".jpg"))
@@ -64,7 +64,6 @@ namespace WSBLearn.Application.Services
                 response.Blob.Name = client.Name;
             }
 
-            // If the file already exists, catch the exception and do not upload it
             catch (RequestFailedException ex)
                when (ex.ErrorCode == BlobErrorCode.BlobAlreadyExists)
             {
@@ -135,11 +134,11 @@ namespace WSBLearn.Application.Services
         public async Task<List<BlobDto>> GetAllAsync(string containerName)
         {
             var container = GetBlobContainerClient(containerName);
-            List<BlobDto> files = new List<BlobDto>();
+            var files = new List<BlobDto>();
 
             await foreach (BlobItem file in container.GetBlobsAsync())
             {
-                string uri = container.Uri.ToString();
+                var uri = container.Uri.ToString();
                 var name = file.Name;
                 var fullUri = $"{uri}/{name}";
 
@@ -156,15 +155,14 @@ namespace WSBLearn.Application.Services
 
         private BlobContainerClient GetBlobContainerClient(string containerName)
         {
-            switch (containerName)
+            return containerName switch
             {
-                case "image":
-                    return new BlobContainerClient(_storageSettings.ConnectionString, _storageSettings.ImageContainerName);
-                case "avatar":
-                    return new BlobContainerClient(_storageSettings.ConnectionString, _storageSettings.AvatarContainerName);
-                default:
-                    throw new NotSupportedException("Container with given name does not exist");
-            }
+                "image" => new BlobContainerClient(_storageSettings.ConnectionString,
+                    _storageSettings.ImageContainerName),
+                "avatar" => new BlobContainerClient(_storageSettings.ConnectionString,
+                    _storageSettings.AvatarContainerName),
+                _ => throw new NotSupportedException("Container with given name does not exist")
+            };
         }
     }
 

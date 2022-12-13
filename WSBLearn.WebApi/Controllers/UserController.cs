@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests.User;
-using WSBLearn.Application.Responses;
 
 namespace WSBLearn.WebApi.Controllers
 {
@@ -19,56 +17,56 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<UserDto>> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var dtos = _userService.GetAll();
-            return Ok(dtos);
+            var response = await _userService.GetAllAsync();
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<UserDto> GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var dto = _userService.GetById(id);
-            return Ok(dto);
+            var response = await _userService.GetByIdAsync(id);
+            return Ok(response);
         }
 
         [HttpGet("SortByExp")]
-        public ActionResult<IEnumerable<UserRankingResponse>> GetUsersSortByExp()
+        public async Task<IActionResult> GetSortByExpAsync()
         {
-            var dtos = _userService.GetSortByExp();
-            return Ok(dtos);
+            var response = await _userService.GetSortByExpAsync();
+            return Ok(response);
         }
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<UserDto> UpdateUser(int id, [FromBody] UpdateUserRequest updateUserRequest)
+        public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UpdateUserRequest request)
         {
-            var updatedUserDto = _userService.Update(id, updateUserRequest);
-            return Ok(updatedUserDto);
+            var response = await _userService.UpdateAsync(id, request);
+            return Ok(response);
         }
 
         [HttpPatch("updateRole/{id}/{roleId}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<UserDto> UpdateUserRole(int id, int roleId)
+        public async Task<IActionResult> UpdateUserRoleAsync(int id, int roleId)
         {
-            var updatedUserDto = _userService.UpdateUserRole(id, roleId);
-            return Ok(updatedUserDto);
+            var response = await _userService.UpdateUserRoleAsync(id, roleId);
+            return Ok(response);
         }
 
         [HttpPatch("updatePassword/{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<UserDto> UpdateUserPassword(int id, [FromBody] UpdateUserPasswordRequest updateUserPasswordRequest)
+        public async Task<IActionResult> UpdateUserPasswordAsync(int id, [FromBody] UpdateUserPasswordRequest request)
         {
-            _userService.UpdateUserPassword(id, updateUserPasswordRequest);
+            await _userService.UpdateUserPasswordAsync(id, request);
             return Ok();
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult DeleteUser(int id)
+        public async Task<IActionResult> DeleteUserAsync(int id)
         {
-            _userService.Delete(id);
-            return Ok("User successfully deleted");
+            await _userService.DeleteAsync(id);
+            return Ok();
         }
     }
 }

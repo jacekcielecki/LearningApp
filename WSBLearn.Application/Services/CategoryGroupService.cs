@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
-using WSBLearn.Application.Requests.Category;
 using WSBLearn.Application.Requests.CategoryGroup;
-using WSBLearn.Application.Validators.Category;
 using WSBLearn.Dal.Persistence;
 using WSBLearn.Domain.Entities;
 
@@ -29,65 +26,58 @@ namespace WSBLearn.Application.Services
             _updateCategoryGroupRequestValidator = updateCategoryGroupRequestValidator;
         }
 
-        public int Create(CreateCategoryGroupRequest request)
+        public async Task<List<CategoryGroupDto>> GetAllAsync()
         {
-            var validationResult = _createCategoryGroupRequestValidator.Validate(request);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors[0].ToString());
+            var entities = await _dbContext.CategoryGroups
+                .Include(e => e.Categories)
+                .ToListAsync();
 
-            var entity = _mapper.Map<CategoryGroup>(request);
-            _dbContext.CategoryGroups.Add(entity);
-            _dbContext.SaveChanges();
-
-            return entity.Id;
+            return _mapper.Map<List<CategoryGroupDto>>(entities);
         }
 
-        public IEnumerable<CategoryGroupDto> GetAll()
+        public async Task<CategoryGroupDto> GetByIdAsync(int id)
         {
-            var entities = _dbContext.CategoryGroups.Include(e => e.Categories).AsEnumerable();
-            return _mapper.Map<IEnumerable<CategoryGroupDto>>(entities);
-        }
-
-        public CategoryGroupDto GetById(int id)
-        {
-            var entity = _dbContext.CategoryGroups
-                .Include(e => e.Categories).FirstOrDefault(e => e.Id == id);
+            var entity = await _dbContext.CategoryGroups
+                .Include(e => e.Categories)
+                .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null)
                 throw new NotFoundException("CategoryGroup with given id not found");
 
             return _mapper.Map<CategoryGroupDto>(entity);
         }
 
-        public CategoryGroupDto Update(int id, UpdateCategoryGroupRequest request)
+        public async Task<CategoryGroupDto> CreateAsync(CreateCategoryGroupRequest request)
         {
-            var entity = _dbContext.CategoryGroups.FirstOrDefault(e => e.Id == id);
+            var validationResult = await _createCategoryGroupRequestValidator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors[0].ToString());
+            var entity = _mapper.Map<CategoryGroup>(request);
+            await _dbContext.CategoryGroups.AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
+
+            return _mapper.Map<CategoryGroupDto>(entity);
+        }
+
+        public async Task<CategoryGroupDto> UpdateAsync(int id, UpdateCategoryGroupRequest request)
+        {
+            var entity = await _dbContext.CategoryGroups.FindAsync(id);
             if (entity is null)
                 throw new NotFoundException("CategoryGroup with given id not found");
-
-            var validationResult = _updateCategoryGroupRequestValidator.Validate(request);
+            var validationResult = await _updateCategoryGroupRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
             entity.Name = request.Name;
             entity.IconUrl = request.IconUrl;
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<CategoryGroupDto>(entity);
         }
 
-        public void Delete(int id)
+        public async Task<CategoryGroupDto> AddCategoryAsync(int id, int categoryId)
         {
-            var entity = _dbContext.CategoryGroups.FirstOrDefault(e => e.Id == id);
-            if (entity is null)
-                throw new NotFoundException("CategoryGroup with given id not found");
-
-            _dbContext.Remove(entity);
-            _dbContext.SaveChanges();
-        }
-
-        public CategoryGroupDto AddCategory(int id, int categoryId)
-        {
-            var entity = _dbContext.CategoryGroups
-                .Include(e => e.Categories).FirstOrDefault(e => e.Id == id);
+            var entity = await _dbContext.CategoryGroups
+                .Include(e => e.Categories)
+                .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null)
                 throw new NotFoundException("CategoryGroup with given id not found");
             var category = _dbContext.Categories.FirstOrDefault(e => e.Id == categoryId);
@@ -95,25 +85,36 @@ namespace WSBLearn.Application.Services
                 throw new NotFoundException("Category with given id not found");
 
             entity.Categories.Add(category);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<CategoryGroupDto>(entity);
         }
 
-        public CategoryGroupDto RemoveCategory(int id, int categoryId)
+        public async Task<CategoryGroupDto> RemoveCategoryAsync(int id, int categoryId)
         {
-            var entity = _dbContext.CategoryGroups
-                .Include(e => e.Categories).FirstOrDefault(e => e.Id == id);
+            var entity = await _dbContext.CategoryGroups
+                .Include(e => e.Categories)
+                .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null)
                 throw new NotFoundException("CategoryGroup with given id not found");
-            var category = _dbContext.Categories.FirstOrDefault(e => e.Id == categoryId);
+            var category = await _dbContext.Categories.FindAsync(categoryId);
             if (category is null)
                 throw new NotFoundException("Category with given id not found");
 
             entity.Categories.Remove(category);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<CategoryGroupDto>(entity);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _dbContext.CategoryGroups.FindAsync(id);
+            if (entity is null)
+                throw new NotFoundException("CategoryGroup with given id not found");
+
+            _dbContext.Remove(entity);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
