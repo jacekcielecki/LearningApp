@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests.CategoryGroup;
@@ -17,56 +18,56 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var entities = _categoryGroupService.GetAll();
-            return Ok(entities);
+            var response = await _categoryGroupService.GetAllAsync();
+            return Ok(response);
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var entity = _categoryGroupService.GetById(id);
-            return Ok(entity);
+            var response = await _categoryGroupService.GetByIdAsync(id);
+            return Ok(response);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public ActionResult Create([FromBody] CreateCategoryGroupRequest request)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateCategoryGroupRequest request)
         {
-            var id = _categoryGroupService.Create(request);
-            return Ok(id);
+            var response = await _categoryGroupService.CreateAsync(request);
+            return Ok(response);
         }
 
         [HttpPut("{id:int}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult Update(int id, [FromBody] UpdateCategoryGroupRequest request)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateCategoryGroupRequest request)
         {
-            var entity = _categoryGroupService.Update(id, request);
-            return Ok(entity);
+            var response = await _categoryGroupService.UpdateAsync(id, request);
+            return Ok(response);
         }
 
         [HttpPut("addCategory/{id:int}/{categoryId:int}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult AddCategory(int id, int categoryId)
+        public async Task<IActionResult> AddCategory(int id, int categoryId)
         {
-            var entity = _categoryGroupService.AddCategory(id, categoryId);
-            return Ok(entity);
+            var response = await _categoryGroupService.AddCategoryAsync(id, categoryId);
+            return Ok(response);
         }
 
         [HttpPut("removeCategory/{id:int}/{categoryId:int}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult RemoveCategory(int id, int categoryId)
+        public async Task<IActionResult> RemoveCategory(int id, int categoryId)
         {
-            var entity = _categoryGroupService.RemoveCategory(id, categoryId);
-            return Ok(entity);
+            var response = await _categoryGroupService.RemoveCategoryAsync(id, categoryId);
+            return Ok(response);
         }
 
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            _categoryGroupService.Delete(id);
+            await _categoryGroupService.DeleteAsync(id);
             return Ok();
         }
     }

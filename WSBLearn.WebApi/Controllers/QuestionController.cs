@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WSBLearn.Application.Constants;
-using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Extensions;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests.Question;
@@ -20,50 +18,43 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet("{categoryId}")]
-        public ActionResult<IEnumerable<QuestionDto>> GetAllByCategory(int categoryId)
+        public async Task<IActionResult> GetAllByCategoryAsync(int categoryId)
         {
-            var dtos = _questionService.GetAllByCategory(categoryId);
-
-            return Ok(dtos);
+            var response = await _questionService.GetAllByCategoryAsync(categoryId);
+            return Ok(response);
         }
 
         [HttpGet("{categoryId}/{level}")]
         [Authorize(Roles = "Admin, User")]
-        public ActionResult<IEnumerable<QuestionDto>> GetQuiz(int categoryId, [FromRoute] int level)
+        public async Task<IActionResult> GetQuizAsync(int categoryId, [FromRoute] int level)
         {
             var userId = HttpContext.GetUserId();
-            var dtos = _questionService.GetQuiz(categoryId, level, userId);
-
-            return Ok(dtos);
+            var response = await _questionService.GetQuizAsync(categoryId, level, userId);
+            return Ok(response);
         }
 
         [HttpPost("{categoryId}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult Create([FromBody] CreateQuestionRequest questionRequest, int categoryId)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateQuestionRequest request, int categoryId)
         {
-            var questionId = _questionService.Create(questionRequest, categoryId);
-
-            return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Question", questionId));
+            var response = await _questionService.CreateAsync(request, categoryId);
+            return Ok(response);
         }
-
-
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<QuestionDto> Update(int id, [FromBody] UpdateQuestionRequest updateQuestionRequest)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateQuestionRequest request)
         {
-            QuestionDto questionDto = _questionService.Update(id, updateQuestionRequest);
-
-            return Ok(questionDto);
+            var response = await _questionService.UpdateAsync(id, request);
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            _questionService.Delete(id);
-
-            return Ok(string.Format(CrudMessages.DeleteEntitySuccess, "Question"));
+            await _questionService.DeleteAsync(id);
+            return Ok();
         }
     }
 }

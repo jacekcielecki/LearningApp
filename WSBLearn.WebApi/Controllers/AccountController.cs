@@ -17,16 +17,16 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            string token = _userService.Login(loginDto);
-            return Ok(token);
+            var response = await _userService.LoginAsync(loginDto);
+            return Ok(response);
         }
 
         [HttpPost("register")]
-        public ActionResult RegisterUser([FromBody] CreateUserRequest createUserRequest)
+        public async Task<IActionResult> RegisterUser([FromBody] CreateUserRequest createUserRequest)
         {
-            _userService.Register(createUserRequest);
+            await _userService.RegisterAsync(createUserRequest);
             return Ok();
         }
     }

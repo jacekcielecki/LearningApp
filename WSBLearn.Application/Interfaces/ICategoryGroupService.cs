@@ -5,12 +5,12 @@ namespace WSBLearn.Application.Interfaces
 {
     public interface ICategoryGroupService
     {
-        int Create(CreateCategoryGroupRequest request);
-        IEnumerable<CategoryGroupDto> GetAll();
-        CategoryGroupDto GetById(int id);
-        CategoryGroupDto Update(int id, UpdateCategoryGroupRequest request);
-        void Delete(int id);
-        CategoryGroupDto AddCategory(int id, int categoryId);
-        CategoryGroupDto RemoveCategory(int id, int categoryId);
+        Task<List<CategoryGroupDto>> GetAllAsync();
+        Task<CategoryGroupDto> GetByIdAsync(int id);
+        Task<CategoryGroupDto> CreateAsync(CreateCategoryGroupRequest request);
+        Task<CategoryGroupDto> UpdateAsync(int id, UpdateCategoryGroupRequest request);
+        Task<CategoryGroupDto> AddCategoryAsync(int id, int categoryId);
+        Task<CategoryGroupDto> RemoveCategoryAsync(int id, int categoryId);
+        Task DeleteAsync(int id);
     }
 }

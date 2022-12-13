@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
@@ -25,49 +26,49 @@ namespace WSBLearn.Application.Services
             _updateAchievementRequest = updateAchievementRequest;
         }
 
-        public AchievementDto Create(CreateAchievementRequest request)
+        public async Task<List<AchievementDto>> GetAllAsync()
         {
-            var validationResult = _createAchievementRequest.Validate(request);
+            var entities = await _dbContext.Achievements.ToListAsync();
+
+            return _mapper.Map<List<AchievementDto>>(entities);
+        }
+
+        public async Task<AchievementDto> CreateAsync(CreateAchievementRequest request)
+        {
+            var validationResult = await _createAchievementRequest.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
             var entity = _mapper.Map<Achievement>(request);
             _dbContext.Achievements.Add(entity);
-            _dbContext.SaveChanges();
-            var dto = _mapper.Map<AchievementDto>(entity);
+            await _dbContext.SaveChangesAsync();
 
-            return dto;
+            return _mapper.Map<AchievementDto>(entity);
         }
 
-        public IEnumerable<AchievementDto> GetAll()
+        public async Task<AchievementDto> UpdateAsync(int id, UpdateAchievementRequest request)
         {
-            var entities = _dbContext.Achievements.AsEnumerable();
-            return _mapper.Map<IEnumerable<AchievementDto>>(entities);
-        }
-
-        public AchievementDto Update(int id, UpdateAchievementRequest request)
-        {
-            var validationResult = _updateAchievementRequest.Validate(request);
+            var validationResult = await _updateAchievementRequest.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
-            var entity = _dbContext.Achievements.FirstOrDefault(a => a.Id == id);
+            var entity = await _dbContext.Achievements.FindAsync(id);
             if (entity is null)
                 throw new NotFoundException("Achievement with given id not found");
 
             entity.Name = request.Name;
             entity.Description = request.Description;
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<AchievementDto>(entity);
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var entity = _dbContext.Achievements.FirstOrDefault(a => a.Id == id);
+            var entity = await _dbContext.Achievements.FindAsync(id);
             if (entity is null)
                 throw new NotFoundException("Achievement with given id not found");
 
             _dbContext.Remove(entity);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

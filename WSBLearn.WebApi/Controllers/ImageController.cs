@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 
 namespace WSBLearn.WebApi.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     public class ImageController : ControllerBase
@@ -21,8 +19,7 @@ namespace WSBLearn.WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllAsync(string containerName = "image")
         {
-            List<BlobDto>? files = await _imageService.GetAllAsync(containerName);
-
+            var files = await _imageService.GetAllAsync(containerName);
             return Ok(files);
         }
 
@@ -30,8 +27,7 @@ namespace WSBLearn.WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetByNameAsync(string filename, string containerName = "image")
         {
-            BlobDto? file = await _imageService.GetByNameAsync(containerName, filename);
-
+            var file = await _imageService.GetByNameAsync(containerName, filename);
             if (file is null)
                 return StatusCode(StatusCodes.Status500InternalServerError, $"File {filename} could not be downloaded.");
 
@@ -42,8 +38,7 @@ namespace WSBLearn.WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UploadAsync(IFormFile file, string containerName = "image")
         {
-            BlobResponseDto? response = await _imageService.UploadAsync(containerName, file);
-
+            var response = await _imageService.UploadAsync(containerName, file);
             if (response.Error)
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Status);
 
@@ -52,10 +47,9 @@ namespace WSBLearn.WebApi.Controllers
 
         [HttpDelete("{containerName}/{filename}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(string filename, string containerName = "image")
+        public async Task<IActionResult> DeleteAsync(string filename, string containerName = "image")
         {
-            BlobResponseDto response = await _imageService.DeleteAsync(containerName, filename);
-
+            var response = await _imageService.DeleteAsync(containerName, filename);
             if (response.Error)
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Status);
 

@@ -5,10 +5,10 @@ namespace WSBLearn.Application.Interfaces
 {
     public interface IQuestionService
     {
-        int? Create(CreateQuestionRequest questionRequest, int categoryId);
-        IEnumerable<QuestionDto> GetAllByCategory(int categoryId);
-        IEnumerable<QuestionDto> GetQuiz(int categoryId, int level, int userId);
-        QuestionDto Update(int id, UpdateQuestionRequest updateQuestionRequest);
-        void Delete(int id);
+        Task<List<QuestionDto>> GetAllByCategoryAsync(int categoryId);
+        Task<List<QuestionDto>> GetQuizAsync(int categoryId, int level, int userId);
+        Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId);
+        Task<QuestionDto> UpdateAsync(int id, UpdateQuestionRequest request);
+        Task DeleteAsync(int id);
     }
 }

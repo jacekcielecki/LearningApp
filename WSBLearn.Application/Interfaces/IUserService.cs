@@ -6,14 +6,14 @@ namespace WSBLearn.Application.Interfaces
 {
     public interface IUserService
     {
-        string Login(LoginDto loginDto);
-        void Register(CreateUserRequest createUserRequest);
-        IEnumerable<UserDto> GetAll();
-        IEnumerable<UserRankingResponse> GetSortByExp();
-        void Delete(int id);
-        UserDto GetById(int id);
-        UserDto Update(int id, UpdateUserRequest updateUserRequest);
-        UserDto UpdateUserRole(int id, int roleId);
-        void UpdateUserPassword(int id, UpdateUserPasswordRequest updateUserPasswordRequest);
+        Task<string> LoginAsync(LoginDto loginDto);
+        Task RegisterAsync(CreateUserRequest request);
+        Task<List<UserDto>> GetAllAsync();
+        Task<UserDto> GetByIdAsync(int id);
+        Task<List<UserRankingResponse>> GetSortByExpAsync();
+        Task<UserDto> UpdateAsync(int id, UpdateUserRequest request);
+        Task<UserDto> UpdateUserRoleAsync(int id, int roleId);
+        Task UpdateUserPasswordAsync(int id, UpdateUserPasswordRequest request);
+        Task DeleteAsync(int id);
     }
 }

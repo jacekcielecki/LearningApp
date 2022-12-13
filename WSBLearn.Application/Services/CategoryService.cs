@@ -31,72 +31,68 @@ namespace WSBLearn.Application.Services
             _updateCategoryRequestValidator = updateCategoryRequestValidator;
         }
 
-        public int? Create(CreateCategoryRequest createCategoryRequest)
+        public async Task<List<CategoryDto>?> GetAllAsync()
         {
-            ValidationResult validationResult = _createCategoryRequestValidator.Validate(createCategoryRequest);
+            IEnumerable<Category> entities = await _dbContext.Categories
+                .Include(r => r.Questions)
+                .ToListAsync();
+
+            return _mapper.Map<List<CategoryDto>>(entities);
+        }
+
+        public async Task<CategoryDto> GetByIdAsync(int id)
+        {
+            var entity = await _dbContext.Categories
+                .Include(r => r.Questions)
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (entity is null)
+                throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+
+            return _mapper.Map<CategoryDto>(entity);
+        }
+
+        public async Task<CategoryDto> CreateAsync(CreateCategoryRequest createCategoryRequest)
+        {
+            var validationResult = await _createCategoryRequestValidator.ValidateAsync(createCategoryRequest);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
 
-            Category category = _mapper.Map<Category>(createCategoryRequest);
-            _dbContext.Categories.Add(category);
-            _dbContext.SaveChanges();
+            var entity = _mapper.Map<Category>(createCategoryRequest);
+            await _dbContext.Categories.AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
 
-            return category.Id;
+            return _mapper.Map<CategoryDto>(entity);
         }
 
-        public IEnumerable<CategoryDto>? GetAll()
+        public async Task<CategoryDto> UpdateAsync(int id, UpdateCategoryRequest request)
         {
-            IEnumerable<Category> categories = _dbContext.Categories.Include(r => r.Questions).AsEnumerable();
-            var categoryDtos = _mapper.Map<IEnumerable<CategoryDto>>(categories);
-
-            return categoryDtos;
-        }
-
-        public CategoryDto GetById(int id)
-        {
-            Category? category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(c => c.Id == id);
-            if (category is null)
+            var entity = await _dbContext.Categories.FindAsync(id);
+            if (entity is null)
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
-
-            var categoryDto = _mapper.Map<CategoryDto>(category);
-
-            return categoryDto;
-        }
-
-        public CategoryDto Update(int id, UpdateCategoryRequest updateCategoryRequest)
-        {
-            Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
-            if (category is null)
-                throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
-
-            ValidationResult validationResult = _updateCategoryRequestValidator.Validate(updateCategoryRequest);
+            var validationResult = await _updateCategoryRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
-            {
                 throw new ValidationException(validationResult.Errors[0].ToString());
-            }
 
-            category.Name = updateCategoryRequest.Name;
-            category.Description = updateCategoryRequest.Description;
-            category.IconUrl = updateCategoryRequest.IconUrl;
-            category.QuestionsPerLesson = updateCategoryRequest.QuestionsPerLesson;
-            category.LessonsPerLevel = updateCategoryRequest.LessonsPerLevel;
+            entity.Name = request.Name;
+            entity.Description = request.Description;
+            entity.IconUrl = request.IconUrl;
+            entity.QuestionsPerLesson = request.QuestionsPerLesson;
+            entity.LessonsPerLevel = request.LessonsPerLevel;
+            await _dbContext.SaveChangesAsync();
 
-            var categoryDto = _mapper.Map<CategoryDto>(category);
-            _dbContext.SaveChanges();
-
-            return categoryDto;
+            return _mapper.Map<CategoryDto>(entity);
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            Category? category = _dbContext.Categories.Include(r => r.Questions).FirstOrDefault(c => c.Id == id);
-            if (category is null)
+            var entity = _dbContext.Categories
+                .Include(r => r.Questions)
+                .FirstOrDefault(c => c.Id == id);
+            if (entity is null)
                 throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
 
-            _dbContext.Categories.Remove(category);
-            _dbContext.SaveChanges();
-
-            return;
+            _dbContext.Categories.Remove(entity);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

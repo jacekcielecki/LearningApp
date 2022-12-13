@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WSBLearn.Application.Constants;
-using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Interfaces;
 using WSBLearn.Application.Requests.Category;
 
@@ -19,46 +17,41 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<CategoryDto>> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            IEnumerable<CategoryDto>? categories = _categoryService.GetAll();
-
-            return Ok(categories);
+            var response = await _categoryService.GetAllAsync();
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<CategoryDto> GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
-            CategoryDto category = _categoryService.GetById(id);
-
-            return Ok(category);
+            var response = await _categoryService.GetByIdAsync(id);
+            return Ok(response);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public ActionResult Create([FromBody] CreateCategoryRequest createCategoryRequest)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateCategoryRequest createCategoryRequest)
         {
-            var result = _categoryService.Create(createCategoryRequest);
-
-            return Created("Success", string.Format(CrudMessages.CreateEntitySuccess, "Category", result));
+            var response = await _categoryService.CreateAsync(createCategoryRequest);
+            return Ok(response);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<CategoryDto> Update(int id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
         {
-            CategoryDto category = _categoryService.Update(id, updateCategoryRequest);
-
-            return Ok(category);
+            var response = await _categoryService.UpdateAsync(id, updateCategoryRequest);
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            _categoryService.Delete(id);
-
-            return Ok(string.Format(CrudMessages.DeleteEntitySuccess, "Category"));
+            await _categoryService.DeleteAsync(id);
+            return Ok();
         }
     }
 }
