@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Exceptions;
@@ -16,16 +14,14 @@ namespace WSBLearn.Application.Services
     public class CategoryService : ICategoryService
     {
         private readonly WsbLearnDbContext _dbContext;
-        private readonly ILogger<CategoryService> _logger;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateCategoryRequest> _createCategoryRequestValidator;
         private readonly IValidator<UpdateCategoryRequest> _updateCategoryRequestValidator;
 
-        public CategoryService(WsbLearnDbContext dbContext, ILogger<CategoryService> logger, IMapper mapper, 
+        public CategoryService(WsbLearnDbContext dbContext, IMapper mapper, 
             IValidator<CreateCategoryRequest> createCategoryRequestValidator, IValidator<UpdateCategoryRequest> updateCategoryRequestValidator)
         {
             _dbContext = dbContext;
-            _logger = logger;
             _mapper = mapper;
             _createCategoryRequestValidator = createCategoryRequestValidator;
             _updateCategoryRequestValidator = updateCategoryRequestValidator;

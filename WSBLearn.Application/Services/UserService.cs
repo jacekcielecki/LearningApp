@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -131,7 +130,7 @@ namespace WSBLearn.Application.Services
             return _mapper.Map<List<UserRankingResponse>>(entities);
         }
 
-        public async Task<UserDto> Update(int id, UpdateUserRequest request)
+        public async Task<UserDto> UpdateAsync(int id, UpdateUserRequest request)
         {
             var entity = await _dbContext.Users.FindAsync(id);
             if (entity is null)
@@ -190,7 +189,7 @@ namespace WSBLearn.Application.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task Delete(int id)
+        public async Task DeleteAsync(int id)
         {
             var entity = await _dbContext.Users.FindAsync(id);
             if (entity is null)
