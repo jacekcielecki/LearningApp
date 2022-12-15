@@ -14,7 +14,6 @@ using AutoMapper;
 using WSBLearn.Application.Constants;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Requests.User;
-using WSBLearn.Application.Responses;
 using WSBLearn.Application.Settings;
 
 namespace WSBLearn.Application.Services
@@ -120,14 +119,14 @@ namespace WSBLearn.Application.Services
             return _mapper.Map<UserDto>(entity);
         }
 
-        public async Task<List<UserRankingResponse>> GetSortByExpAsync()
+        public async Task<List<UserRankingDto>> GetSortByExpAsync()
         {
             var entities = await _dbContext.Users
                 .Include(u => u.UserProgress).Skip(1)
                 .OrderByDescending(r => r.UserProgress.ExperiencePoints)
                 .ToListAsync();
 
-            return _mapper.Map<List<UserRankingResponse>>(entities);
+            return _mapper.Map<List<UserRankingDto>>(entities);
         }
 
         public async Task<UserDto> UpdateAsync(int id, UpdateUserRequest request)

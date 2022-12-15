@@ -1,6 +1,6 @@
-﻿namespace WSBLearn.Application.Responses
+﻿namespace WSBLearn.Application.Dtos
 {
-    public class QuizCompletedResponse
+    public class QuizCompletedDto
     {
         public int TotalExperiencePoints { get; set; }
         public int TotalCompletedQuiz { get; set; }
