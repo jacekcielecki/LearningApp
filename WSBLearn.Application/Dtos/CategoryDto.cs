@@ -1,6 +1,4 @@
-﻿using WSBLearn.Domain.Entities;
-
-namespace WSBLearn.Application.Dtos
+﻿namespace WSBLearn.Application.Dtos
 {
     public class CategoryDto
     {
@@ -10,7 +8,6 @@ namespace WSBLearn.Application.Dtos
         public string? IconUrl { get; set; }
         public int QuestionsPerLesson { get; set; }
         public int LessonsPerLevel { get; set; }
-
-        public virtual ICollection<Question> Questions { get; set; }
+        public virtual ICollection<QuestionDto> Questions { get; set; }
     }
 }

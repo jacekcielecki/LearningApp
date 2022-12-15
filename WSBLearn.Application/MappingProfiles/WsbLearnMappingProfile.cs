@@ -22,8 +22,14 @@ namespace WSBLearn.Application.MappingProfiles
             CreateMap<CreateCategoryRequest, Category>();
 
             //CategoryGroup
-            CreateMap<CreateCategoryGroupRequest, CategoryGroup>();
             CreateMap<CategoryGroup, CategoryGroupDto>().ReverseMap();
+            CreateMap<CreateCategoryGroupRequest, CategoryGroup>();
+
+            //CategoryProgress
+            CreateMap<CategoryProgress, CategoryProgressDto>().ReverseMap();
+
+            //LevelProgress
+            CreateMap<LevelProgress, LevelProgressDto>().ReverseMap();
 
             //User
             CreateMap<User, UserDto>();
@@ -34,9 +40,15 @@ namespace WSBLearn.Application.MappingProfiles
                 .ForMember(u => u.Level,
                     opt => opt.MapFrom(e => e.UserProgress.Level));
 
+            //UserProgress
+            CreateMap<UserProgress, UserProgressDto>().ReverseMap();
+
             //Question
             CreateMap<Question, QuestionDto>().ReverseMap();
             CreateMap<CreateQuestionRequest, Question>();
+
+            //Role
+            CreateMap<Role, RoleDto>().ReverseMap();
         }
     }
 }
