@@ -1,8 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-
-namespace WSBLearn.Domain.Entities
+﻿namespace WSBLearn.Domain.Entities
 {
     public class Question
     {
@@ -15,11 +11,7 @@ namespace WSBLearn.Domain.Entities
         public string? D { get; set; }
         public char CorrectAnswer { get; set; }
         public int Level { get; set; }
-
-        [Required]
         public int CategoryId { get; set; }
-
-        [JsonIgnore]
         public Category Category { get; set; }
     }
 }
