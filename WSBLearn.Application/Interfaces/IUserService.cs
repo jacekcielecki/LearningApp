@@ -1,6 +1,5 @@
 ﻿using WSBLearn.Application.Dtos;
 using WSBLearn.Application.Requests.User;
-using WSBLearn.Application.Responses;
 
 namespace WSBLearn.Application.Interfaces
 {
@@ -10,7 +9,7 @@ namespace WSBLearn.Application.Interfaces
         Task RegisterAsync(CreateUserRequest request);
         Task<List<UserDto>> GetAllAsync();
         Task<UserDto> GetByIdAsync(int id);
-        Task<List<UserRankingResponse>> GetSortByExpAsync();
+        Task<List<UserRankingDto>> GetSortByExpAsync();
         Task<UserDto> UpdateAsync(int id, UpdateUserRequest request);
         Task<UserDto> UpdateUserRoleAsync(int id, int roleId);
         Task UpdateUserPasswordAsync(int id, UpdateUserPasswordRequest request);

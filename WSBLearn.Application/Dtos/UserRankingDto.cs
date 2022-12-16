@@ -1,6 +1,6 @@
-﻿namespace WSBLearn.Application.Responses
+﻿namespace WSBLearn.Application.Dtos
 {
-    public class UserRankingResponse
+    public class UserRankingDto
     {
         public int Id { get; set; }
         public string UserName { get; set; }

@@ -4,7 +4,6 @@ using WSBLearn.Application.Requests.Achievement;
 using WSBLearn.Application.Requests.Category;
 using WSBLearn.Application.Requests.CategoryGroup;
 using WSBLearn.Application.Requests.Question;
-using WSBLearn.Application.Responses;
 using WSBLearn.Domain.Entities;
 
 namespace WSBLearn.Application.MappingProfiles
@@ -34,7 +33,7 @@ namespace WSBLearn.Application.MappingProfiles
             //User
             CreateMap<User, UserDto>();
 
-            CreateMap<User, UserRankingResponse>()
+            CreateMap<User, UserRankingDto>()
                 .ForMember(u => u.ExperiencePoints,
                     opt => opt.MapFrom(e => e.UserProgress.ExperiencePoints))
                 .ForMember(u => u.Level,

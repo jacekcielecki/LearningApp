@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WSBLearn.Application.Exceptions;
 using WSBLearn.Application.Interfaces;
-using WSBLearn.Application.Responses;
+using WSBLearn.Application.Dtos;
 using WSBLearn.Dal.Persistence;
 
 namespace WSBLearn.Application.Services
@@ -16,7 +16,7 @@ namespace WSBLearn.Application.Services
             _dbContext = dbContext;
         }
 
-        public async Task<QuizCompletedResponse> CompleteQuizAsync(int userId, int categoryId, string quizLevelName, int expGained)
+        public async Task<QuizCompletedDto> CompleteQuizAsync(int userId, int categoryId, string quizLevelName, int expGained)
         {
             if (expGained is < 0 or > 20)
                 throw new ArgumentException("ExpGained need to be between 0 and 20");
@@ -58,7 +58,7 @@ namespace WSBLearn.Application.Services
             }
             await _dbContext.SaveChangesAsync();
 
-            var quizCompletedResponse = new QuizCompletedResponse()
+            var quizCompletedResponse = new QuizCompletedDto()
             {
                 TotalExperiencePoints = user.UserProgress.ExperiencePoints,
                 TotalCompletedQuiz = user.UserProgress.TotalCompletedQuiz,
