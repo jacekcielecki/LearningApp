@@ -11,28 +11,28 @@ namespace WSBLearn.Application.Validators.Question
             RuleFor(r => r.QuestionContent)
                 .NotNull()
                 .NotEmpty()
-                .MaximumLength(200);
+                .MaximumLength(1000);
 
             RuleFor(r => r.ImageUrl)
-                .MaximumLength(400);
+                .MaximumLength(1000);
 
             RuleFor(r => r.A)
                 .NotNull()
                 .NotEmpty()
-                .MaximumLength(30);
+                .MaximumLength(1000);
 
             RuleFor(r => r.B)
                 .NotEmpty()
-                .MaximumLength(30);
+                .MaximumLength(1000);
 
             RuleFor(r => r.C)
-                .MaximumLength(30)
+                .MaximumLength(1000)
                 .NotNull()
                 .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
                 .WithMessage("Answer 'c' need to be specified when it is set as a CorrectAnswer");
 
             RuleFor(r => r.D)
-                .MaximumLength(30)
+                .MaximumLength(1000)
                 .NotNull()
                 .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
                 .WithMessage("Answer 'd' need to be specified when it is set as a CorrectAnswer");
