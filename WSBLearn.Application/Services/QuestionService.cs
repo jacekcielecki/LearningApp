@@ -39,6 +39,16 @@ namespace WSBLearn.Application.Services
             return _mapper.Map<List<QuestionDto>>(entities);
         }
 
+        public async Task<List<QuestionDto>> GetAllByLevelAsync(int categoryId, int level)
+        {
+            var entities = await _dbContext.Questions
+                .Where(r => r.CategoryId == categoryId)
+                .Where(r => r.Level == level)
+                .ToListAsync();
+
+            return _mapper.Map<List<QuestionDto>>(entities);
+        }
+
         public async Task<List<QuestionDto>> GetQuizAsync(int categoryId, int level, int userId)
         {
             var category = await _dbContext.Categories

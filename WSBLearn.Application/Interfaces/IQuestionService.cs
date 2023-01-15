@@ -10,5 +10,6 @@ namespace WSBLearn.Application.Interfaces
         Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId);
         Task<QuestionDto> UpdateAsync(int id, UpdateQuestionRequest request);
         Task DeleteAsync(int id);
+        Task<List<QuestionDto>> GetAllByLevelAsync(int categoryId, int level);
     }
 }
