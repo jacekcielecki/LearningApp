@@ -23,6 +23,14 @@ namespace WSBLearn.WebApi.Controllers
             var response = await _questionService.GetAllByCategoryAsync(categoryId);
             return Ok(response);
         }
+        
+        [HttpGet("all/{categoryId}/{level}")]
+        public async Task<IActionResult> GetAllByLevelAsync(int categoryId, int level)
+        {
+            var response = await _questionService.GetAllByLevelAsync(categoryId, level);
+            return Ok(response);
+        }
+        
 
         [HttpGet("{categoryId}/{level}")]
         [Authorize(Roles = "Admin, User")]

@@ -9,6 +9,5 @@
     public static class Defaults
     {
         public const string ProfilePictureUrl = "https://wsblearnstorage.blob.core.windows.net/avatarcontainer/default_profilepic-3fc14e29-cce0-462a-8081-2a2399da74f2.png";
-
     }
 }
