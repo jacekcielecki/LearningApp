@@ -16,7 +16,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet("{containerName}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> GetAllAsync(string containerName = "image")
         {
             var files = await _imageService.GetAllAsync(containerName);
@@ -24,7 +24,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpGet("{containerName}/{filename}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> GetByNameAsync(string filename, string containerName = "image")
         {
             var file = await _imageService.GetByNameAsync(containerName, filename);

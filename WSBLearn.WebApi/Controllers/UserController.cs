@@ -54,7 +54,7 @@ namespace WSBLearn.WebApi.Controllers
         }
 
         [HttpPatch("updatePassword/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> UpdateUserPasswordAsync(int id, [FromBody] UpdateUserPasswordRequest request)
         {
             await _userService.UpdateUserPasswordAsync(id, request);
