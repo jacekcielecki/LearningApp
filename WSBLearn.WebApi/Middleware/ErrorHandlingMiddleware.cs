@@ -1,53 +1,43 @@
-﻿using System;
-using WSBLearn.Application.Constants;
+﻿using Newtonsoft.Json;
+using System.Net;
 using WSBLearn.Application.Exceptions;
-using ValidationException = FluentValidation.ValidationException;
 
 namespace WSBLearn.WebApi.Middleware
 {
     public class ErrorHandlingMiddleware : IMiddleware
     {
+        private readonly RequestDelegate _next;
+
+        public ErrorHandlingMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
             {
-                await next.Invoke(context);
+                await _next.Invoke(context);
             }
-            catch (NotFoundException notFoundException)
+            catch (Exception ex)
             {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(notFoundException.Message);
+                await HandleExceptionAsync(context, ex);
             }
-            catch (InvalidFileTypeException invalidFileTypeException)
+        }
+
+        private Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            var code = exception switch
             {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(invalidFileTypeException.Message);
-            }
-            catch (ValidationException validationException)
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(validationException.Message);
-            }
-            catch (BadHttpRequestException badHttpRequestException)
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(badHttpRequestException.Message);
-            }
-            catch (ArgumentException argumentException)
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(argumentException.Message);
-            }
-            catch (ResourceProtectedException resourceProtectedException)
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(resourceProtectedException.Message);
-            }
-            catch (Exception)
-            {
-                context.Response.StatusCode = 500;
-                await context.Response.WriteAsync(Messages.GenericErrorMessage);
-            }
+                NotFoundException _ => HttpStatusCode.NotFound,
+                UnauthorizedAccessException _ => HttpStatusCode.Unauthorized,
+                _ => HttpStatusCode.InternalServerError
+            };
+
+            var result = JsonConvert.SerializeObject(new {error = exception.Message});
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int) code;
+            return context.Response.WriteAsync(result);
         }
     }
 }
