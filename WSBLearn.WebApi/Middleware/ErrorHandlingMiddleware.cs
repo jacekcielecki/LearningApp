@@ -6,18 +6,11 @@ namespace WSBLearn.WebApi.Middleware
 {
     public class ErrorHandlingMiddleware : IMiddleware
     {
-        private readonly RequestDelegate _next;
-
-        public ErrorHandlingMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
-
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
             {
-                await _next.Invoke(context);
+                await next.Invoke(context);
             }
             catch (Exception ex)
             {
