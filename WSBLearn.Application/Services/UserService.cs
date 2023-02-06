@@ -80,11 +80,11 @@ namespace WSBLearn.Application.Services
                 .Include(e => e.Role)
                 .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Login || e.Username == loginDto.Login);
             if (user is null)
-                throw new BadHttpRequestException("Invalid username or password");
+                throw new BadHttpRequestException("Invalid email or password");
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, loginDto.Password);
             if (result == PasswordVerificationResult.Failed)
-                throw new BadHttpRequestException("Invalid username or password");
+                throw new BadHttpRequestException("Invalid email or password");
 
             return GenerateToken(user);
         }
