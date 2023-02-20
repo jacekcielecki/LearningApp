@@ -3,7 +3,7 @@ using LearningApp.Application.Extensions;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Services;
 using LearningApp.Application.Settings;
-using LearningApp.Dal.Extensions;
+using LearningApp.Infrastructure.Extensions;
 using LearningApp.WebApi.Extensions;
 using LearningApp.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using LearningApp.Application.Dtos;
 using LearningApp.Application.Exceptions;
 using LearningApp.Application.Interfaces;
-using LearningApp.Dal.Persistence;
+using LearningApp.Infrastructure.Persistence;
 
 namespace LearningApp.Application.Services
 {

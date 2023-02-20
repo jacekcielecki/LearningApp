@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LearningApp.Dal\LearningApp.Dal.csproj" />
+    <ProjectReference Include="..\LearningApp.Infrastructure\LearningApp.Infrastructure.csproj" />
     <ProjectReference Include="..\LearningApp.Domain\LearningApp.Domain.csproj" />
   </ItemGroup>
 

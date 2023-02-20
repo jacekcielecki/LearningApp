@@ -5,8 +5,8 @@ using LearningApp.Application.Dtos;
 using LearningApp.Application.Exceptions;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Category;
-using LearningApp.Dal.Persistence;
 using LearningApp.Domain.Entities;
+using LearningApp.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearningApp.Application.Services

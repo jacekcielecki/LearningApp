@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using LearningApp.Application.Requests.User;
 using LearningApp.Application.Extensions;
-using LearningApp.Dal.Persistence;
+using LearningApp.Infrastructure.Persistence;
 
 namespace LearningApp.Application.Validators.User
 {

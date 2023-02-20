@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LearningApp.Application\LearningApp.Application.csproj" />
-    <ProjectReference Include="..\LearningApp.Dal\LearningApp.Dal.csproj" />
+    <ProjectReference Include="..\LearningApp.Infrastructure\LearningApp.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

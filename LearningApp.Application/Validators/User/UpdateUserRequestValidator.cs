@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using LearningApp.Application.Requests.User;
-using LearningApp.Dal.Persistence;
+using LearningApp.Infrastructure.Persistence;
 
 namespace LearningApp.Application.Validators.User
 {
