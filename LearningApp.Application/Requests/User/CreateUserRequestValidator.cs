@@ -1,18 +1,20 @@
 ﻿using FluentValidation;
-using LearningApp.Application.Requests.User;
+using LearningApp.Application.Extensions;
 using LearningApp.Infrastructure.Persistence;
 
-namespace LearningApp.Application.Validators.User
+namespace LearningApp.Application.Requests.User
 {
-    public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
+    public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
     {
         private readonly WsbLearnDbContext _dbContext;
 
-        public UpdateUserRequestValidator(WsbLearnDbContext dbContext)
+        public CreateUserRequestValidator(WsbLearnDbContext dbContext)
         {
             _dbContext = dbContext;
 
             RuleFor(r => r.Username)
+                .NotNull()
+                .NotEmpty()
                 .MinimumLength(6)
                 .MaximumLength(40)
                 .Custom((value, context) =>
@@ -24,7 +26,15 @@ namespace LearningApp.Application.Validators.User
                     }
                 });
 
+            RuleFor(r => r.Password)
+                .NotNull()
+                .NotEmpty()
+                .MinimumLength(6)
+                .MaximumLength(40);
+
             RuleFor(r => r.EmailAddress)
+                .NotNull()
+                .NotEmpty()
                 .EmailAddress()
                 .Custom((value, context) =>
                 {
@@ -35,8 +45,19 @@ namespace LearningApp.Application.Validators.User
                     }
                 });
 
+            RuleFor(r => r.ConfirmPassword)
+                .Equal(r => r.Password);
+
             RuleFor(r => r.ProfilePictureUrl)
-                .MaximumLength(400);
+                .MaximumLength(400)
+                .Custom((value, context) =>
+                {
+                    var isUrlOrEmpty = value!.UrlOrEmpty();
+                    if (!isUrlOrEmpty)
+                    {
+                        context.AddFailure("ProfilePictureUrl", "Field is not empty and not a valid fully-qualified http, https or ftp URL");
+                    }
+                });
         }
     }
 }

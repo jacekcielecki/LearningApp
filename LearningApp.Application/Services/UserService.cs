@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using AutoMapper;
 using LearningApp.Application.Requests.User;
-using LearningApp.Application.Constants;
 using LearningApp.Application.Dtos;
 using LearningApp.Application.Exceptions;
 using LearningApp.Application.Settings;
 using LearningApp.Application.Interfaces;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
+using LearningApp.Application.Common;
 
 namespace LearningApp.Application.Services
 {

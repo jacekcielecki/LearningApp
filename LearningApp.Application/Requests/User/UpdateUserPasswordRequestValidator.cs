@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using LearningApp.Application.Requests.User;
 
-namespace LearningApp.Application.Validators.User
+namespace LearningApp.Application.Requests.User
 {
     public class UpdateUserPasswordRequestValidator : AbstractValidator<UpdateUserPasswordRequest>
     {

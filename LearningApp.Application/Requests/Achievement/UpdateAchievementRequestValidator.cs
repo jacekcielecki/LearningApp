@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using LearningApp.Application.Requests.Achievement;
 
-namespace LearningApp.Application.Validators.Achievement
+namespace LearningApp.Application.Requests.Achievement
 {
     public class UpdateAchievementRequestValidator : AbstractValidator<UpdateAchievementRequest>
     {

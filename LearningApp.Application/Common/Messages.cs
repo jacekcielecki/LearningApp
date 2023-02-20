@@ -1,4 +1,4 @@
-﻿namespace LearningApp.Application.Constants
+﻿namespace LearningApp.Application.Common
 {
     public static class Messages
     {

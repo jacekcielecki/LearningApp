@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using LearningApp.Application.Constants;
+using LearningApp.Application.Common;
 using LearningApp.Application.Dtos;
 using LearningApp.Application.Exceptions;
 using LearningApp.Application.Interfaces;

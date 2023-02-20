@@ -1,12 +1,11 @@
 ﻿using FluentValidation;
 using LearningApp.Application.Extensions;
-using LearningApp.Application.Requests.Category;
 
-namespace LearningApp.Application.Validators.Category
+namespace LearningApp.Application.Requests.Category
 {
-    public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRequest>
+    public class CreateCategoryRequestValidator : AbstractValidator<CreateCategoryRequest>
     {
-        public UpdateCategoryRequestValidator()
+        public CreateCategoryRequestValidator()
         {
             RuleFor(r => r.Name)
                 .NotNull()

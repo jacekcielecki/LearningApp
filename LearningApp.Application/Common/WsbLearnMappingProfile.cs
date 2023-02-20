@@ -6,7 +6,7 @@ using LearningApp.Application.Requests.CategoryGroup;
 using LearningApp.Application.Requests.Question;
 using LearningApp.Domain.Entities;
 
-namespace LearningApp.Application.MappingProfiles
+namespace LearningApp.Application.Common
 {
     public class WsbLearnMappingProfile : Profile
     {

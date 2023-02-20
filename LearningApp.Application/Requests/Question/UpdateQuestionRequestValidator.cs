@@ -1,12 +1,11 @@
 ﻿using FluentValidation;
-using LearningApp.Application.Requests.Question;
 using LearningApp.Application.Extensions;
 
-namespace LearningApp.Application.Validators.Question
+namespace LearningApp.Application.Requests.Question
 {
-    public class CreateQuestionRequestValidator : AbstractValidator<CreateQuestionRequest>
+    public class UpdateQuestionRequestValidator : AbstractValidator<UpdateQuestionRequest>
     {
-        public CreateQuestionRequestValidator()
+        public UpdateQuestionRequestValidator()
         {
             RuleFor(r => r.QuestionContent)
                 .NotNull()
@@ -14,7 +13,8 @@ namespace LearningApp.Application.Validators.Question
                 .MaximumLength(1000);
 
             RuleFor(r => r.ImageUrl)
-                .MaximumLength(1000);
+                .MaximumLength(1000)
+                .NotEmpty();
 
             RuleFor(r => r.A)
                 .NotNull()
@@ -28,14 +28,16 @@ namespace LearningApp.Application.Validators.Question
             RuleFor(r => r.C)
                 .MaximumLength(1000)
                 .NotNull()
-                .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
-                .WithMessage("Answer 'c' need to be specified when it is set as a CorrectAnswer");
+                .Unless(r => r.CorrectAnswer.ToString().ToLower() != "c")
+                .WithMessage("Answer 'c' need to be specified when it is set as a CorrectAnswer")
+                .NotEmpty();
 
             RuleFor(r => r.D)
                 .MaximumLength(1000)
                 .NotNull()
-                .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
-                .WithMessage("Answer 'd' need to be specified when it is set as a CorrectAnswer");
+                .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d")
+                .WithMessage("Answer 'd' need to be specified when it is set as a CorrectAnswer")
+                .NotEmpty();
 
             RuleFor(r => r.CorrectAnswer)
                 .NotNull()

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
+using LearningApp.Application.Requests.User;
 using LearningApp.Application.Settings;
-using LearningApp.Application.Validators.User;
 using LearningApp.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;

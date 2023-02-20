@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
 using LearningApp.Application.Extensions;
-using LearningApp.Application.Requests.CategoryGroup;
 
-namespace LearningApp.Application.Validators.CategoryGroup
+namespace LearningApp.Application.Requests.CategoryGroup
 {
     public class CreateCategoryGroupValidator : AbstractValidator<CreateCategoryGroupRequest>
     {

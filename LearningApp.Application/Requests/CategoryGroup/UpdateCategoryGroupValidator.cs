@@ -1,34 +1,17 @@
 ﻿using FluentValidation;
-using LearningApp.Application.Requests.Category;
 using LearningApp.Application.Extensions;
 
-namespace LearningApp.Application.Validators.Category
+namespace LearningApp.Application.Requests.CategoryGroup
 {
-    public class CreateCategoryRequestValidator : AbstractValidator<CreateCategoryRequest>
+    public class UpdateCategoryGroupValidator : AbstractValidator<UpdateCategoryGroupRequest>
     {
-        public CreateCategoryRequestValidator()
+        public UpdateCategoryGroupValidator()
         {
             RuleFor(r => r.Name)
                 .NotNull()
                 .NotEmpty()
                 .MinimumLength(1)
                 .MaximumLength(40);
-
-            RuleFor(r => r.Description)
-                .NotEmpty()
-                .MaximumLength(140);
-
-            RuleFor(r => r.IconUrl)
-                .NotEmpty()
-                .MaximumLength(140);
-
-            RuleFor(r => r.QuestionsPerLesson)
-                .NotNull()
-                .NotEmpty();
-
-            RuleFor(r => r.LessonsPerLevel)
-                .NotNull()
-                .NotEmpty();
 
             RuleFor(r => r.IconUrl)
                 .Custom((value, context) =>
