@@ -9,7 +9,8 @@ namespace LearningApp.Application.Extensions
 {
     public static class ConfigureServicesExtension
     {
-        public static void AddApplicationServices(this IServiceCollection services, JwtAuthenticationSettings jwtSettings, AzureBlobStorageSettings blobSettings)
+        public static void AddApplicationServices(this IServiceCollection services, 
+            JwtAuthenticationSettings jwtSettings, AzureBlobStorageSettings blobSettings)
         {
             services.AddAutoMapper(typeof(ConfigureServicesExtension).Assembly);
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
