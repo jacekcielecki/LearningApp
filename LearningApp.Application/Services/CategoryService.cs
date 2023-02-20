@@ -42,7 +42,7 @@ namespace LearningApp.Application.Services
                 .Include(r => r.Questions)
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (entity is null)
-                throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Category"));
 
             return _mapper.Map<CategoryDto>(entity);
         }
@@ -64,7 +64,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Categories.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Category"));
             var validationResult = await _updateCategoryRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
@@ -85,7 +85,7 @@ namespace LearningApp.Application.Services
                 .Include(r => r.Questions)
                 .FirstOrDefault(c => c.Id == id);
             if (entity is null)
-                throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Category"));
 
             _dbContext.Categories.Remove(entity);
             await _dbContext.SaveChangesAsync();

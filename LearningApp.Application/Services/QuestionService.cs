@@ -92,7 +92,7 @@ namespace LearningApp.Application.Services
         {
             var category = await _dbContext.Categories.FindAsync(categoryId);
             if (category is null)
-                throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Category"));
             var validationResult = await _createQuestionRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
@@ -109,10 +109,10 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Questions.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException(string.Format(Messages.InvalidId, "Question"));
+                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Question"));
             var category = await _dbContext.Categories.FindAsync(request.CategoryId);
             if (category is null)
-                throw new NotFoundException(string.Format(Messages.InvalidId, "Category"));
+                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Category"));
             var validationResult = await _updateQuestionRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
@@ -135,7 +135,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Questions.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException(string.Format(Messages.InvalidId, "Question"));
+                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Question"));
 
             _dbContext.Questions.Remove(entity);
             await _dbContext.SaveChangesAsync();

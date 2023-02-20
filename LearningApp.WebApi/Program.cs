@@ -55,9 +55,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddLogging();
 builder.Services.AddMvc();
 builder.Services.AddApplicationServices(jwtSettings, blobSettings);
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
 
 var app = builder.Build();
 

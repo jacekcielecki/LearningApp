@@ -14,7 +14,6 @@ using LearningApp.Application.Settings;
 using LearningApp.Application.Interfaces;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
-using LearningApp.Application.Common;
 
 namespace LearningApp.Application.Services
 {
@@ -26,6 +25,7 @@ namespace LearningApp.Application.Services
         private readonly IValidator<UpdateUserRequest> _updateUserRequestValidator;
         private readonly IValidator<UpdateUserPasswordRequest> _updateUserPasswordRequestValidator;
         private readonly JwtAuthenticationSettings _authenticationSettings;
+        private readonly AzureBlobStorageSettings _blobStorageSettings;
         private readonly IMapper _mapper;
 
         public UserService(WsbLearnDbContext dbContext, IPasswordHasher<User> passwordHasher,
@@ -33,7 +33,7 @@ namespace LearningApp.Application.Services
             IValidator<UpdateUserRequest> updateUserRequestValidator,
             IValidator<UpdateUserPasswordRequest> updateUserPasswordRequestValidator,
         JwtAuthenticationSettings authenticationSettings,
-            IMapper mapper)
+            AzureBlobStorageSettings blobStorageSettings, IMapper mapper)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
@@ -41,6 +41,7 @@ namespace LearningApp.Application.Services
             _updateUserRequestValidator = updateUserRequestValidator;
             _updateUserPasswordRequestValidator = updateUserPasswordRequestValidator;
             _authenticationSettings = authenticationSettings;
+            _blobStorageSettings = blobStorageSettings;
             _mapper = mapper;
         }
 
@@ -54,7 +55,7 @@ namespace LearningApp.Application.Services
                 Username = request.Username,
                 EmailAddress = request.EmailAddress,
                 RoleId = 2,
-                ProfilePictureUrl = string.IsNullOrEmpty(request.ProfilePictureUrl) ? Defaults.ProfilePictureUrl : request.ProfilePictureUrl,
+                ProfilePictureUrl = string.IsNullOrEmpty(request.ProfilePictureUrl) ? _blobStorageSettings.DefaultProfilePictureUrl : request.ProfilePictureUrl,
             };
             user.Password = _passwordHasher.HashPassword(user, request.Password);
             await _dbContext.Users.AddAsync(user);
