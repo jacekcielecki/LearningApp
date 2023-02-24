@@ -53,7 +53,7 @@ namespace LearningApp.Application.Services
 
                 var options = new BlobUploadOptions() { HttpHeaders = new BlobHttpHeaders() { ContentType = blobContentType } };
 
-                await using (Stream? data = blob.OpenReadStream())
+                await using (Stream data = blob.OpenReadStream())
                 {
                     await client.UploadAsync(data, options);
                 }
@@ -83,7 +83,7 @@ namespace LearningApp.Application.Services
             return response;
         }
 
-        public async Task<BlobDto?> GetByNameAsync(string containerName, string blobFilename)
+        public async Task<BlobDto> GetByNameAsync(string containerName, string blobFilename)
         {
             var container = GetBlobContainerClient(containerName);
 

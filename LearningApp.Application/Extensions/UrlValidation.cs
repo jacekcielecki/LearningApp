@@ -2,7 +2,7 @@
 {
     public static class UrlValidation
     {
-        public static bool UrlOrEmpty(this string? url)
+        public static bool UrlOrEmpty(this string url)
         {
             if (string.IsNullOrEmpty(url))
                 return true;

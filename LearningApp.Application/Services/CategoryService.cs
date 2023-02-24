@@ -27,7 +27,7 @@ namespace LearningApp.Application.Services
             _updateCategoryRequestValidator = updateCategoryRequestValidator;
         }
 
-        public async Task<List<CategoryDto>?> GetAllAsync()
+        public async Task<List<CategoryDto>> GetAllAsync()
         {
             IEnumerable<Category> entities = await _dbContext.Categories
                 .Include(r => r.Questions)
