@@ -1,12 +1,12 @@
-﻿using Azure.Storage.Blobs.Models;
+﻿using Azure;
 using Azure.Storage.Blobs;
-using Azure;
+using Azure.Storage.Blobs.Models;
+using LearningApp.Application.Dtos;
+using LearningApp.Application.Interfaces;
+using LearningApp.Application.Settings;
+using LearningApp.Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using LearningApp.Application.Settings;
-using LearningApp.Application.Interfaces;
-using LearningApp.Application.Dtos;
-using LearningApp.Application.Exceptions;
 
 namespace LearningApp.Application.Services
 {
@@ -48,7 +48,7 @@ namespace LearningApp.Application.Services
                 }
                 else
                 {
-                    throw new InvalidFileTypeException("File extension must be .jpg, .svg or .png");
+                    throw new InvalidFileTypeException();
                 }
 
                 var options = new BlobUploadOptions() { HttpHeaders = new BlobHttpHeaders() { ContentType = blobContentType } };

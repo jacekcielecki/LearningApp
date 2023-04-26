@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using LearningApp.Application.Dtos;
-using LearningApp.Application.Exceptions;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.CategoryGroup;
 using LearningApp.Domain.Entities;
+using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,7 +41,7 @@ namespace LearningApp.Application.Services
                 .Include(e => e.Categories)
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null)
-                throw new NotFoundException("CategoryGroup with given id not found");
+                throw new NotFoundException(nameof(CategoryGroup));
 
             return _mapper.Map<CategoryGroupDto>(entity);
         }
@@ -62,7 +62,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.CategoryGroups.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException("CategoryGroup with given id not found");
+                throw new NotFoundException(nameof(CategoryGroup));
             var validationResult = await _updateCategoryGroupRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
@@ -79,10 +79,10 @@ namespace LearningApp.Application.Services
                 .Include(e => e.Categories)
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null)
-                throw new NotFoundException("CategoryGroup with given id not found");
+                throw new NotFoundException(nameof(CategoryGroup));
             var category = _dbContext.Categories.FirstOrDefault(e => e.Id == categoryId);
             if (category is null)
-                throw new NotFoundException("Category with given id not found");
+                throw new NotFoundException(nameof(Category));
 
             entity.Categories.Add(category);
             await _dbContext.SaveChangesAsync();
@@ -96,10 +96,10 @@ namespace LearningApp.Application.Services
                 .Include(e => e.Categories)
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null)
-                throw new NotFoundException("CategoryGroup with given id not found");
+                throw new NotFoundException(nameof(CategoryGroup));
             var category = await _dbContext.Categories.FindAsync(categoryId);
             if (category is null)
-                throw new NotFoundException("Category with given id not found");
+                throw new NotFoundException(nameof(Category));
 
             entity.Categories.Remove(category);
             await _dbContext.SaveChangesAsync();
@@ -111,7 +111,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.CategoryGroups.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException("CategoryGroup with given id not found");
+                throw new NotFoundException(nameof(CategoryGroup));
 
             _dbContext.Remove(entity);
             await _dbContext.SaveChangesAsync();

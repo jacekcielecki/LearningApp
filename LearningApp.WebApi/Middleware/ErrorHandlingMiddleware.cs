@@ -1,4 +1,4 @@
-﻿using LearningApp.Application.Exceptions;
+﻿using LearningApp.Domain.Exceptions;
 using Newtonsoft.Json;
 using System.Net;
 

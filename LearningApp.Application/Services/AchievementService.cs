@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using LearningApp.Application.Dtos;
-using LearningApp.Application.Exceptions;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Achievement;
 using LearningApp.Domain.Entities;
+using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,7 +52,7 @@ namespace LearningApp.Application.Services
                 throw new ValidationException(validationResult.Errors[0].ToString());
             var entity = await _dbContext.Achievements.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException("Achievement with given id not found");
+                throw new NotFoundException(nameof(Achievement));
 
             entity.Name = request.Name;
             entity.Description = request.Description;
@@ -65,7 +65,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Achievements.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException("Achievement with given id not found");
+                throw new NotFoundException(nameof(Achievement));
 
             _dbContext.Remove(entity);
             await _dbContext.SaveChangesAsync();

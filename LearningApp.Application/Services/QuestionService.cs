@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using LearningApp.Application.Common;
 using LearningApp.Application.Dtos;
-using LearningApp.Application.Exceptions;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Question;
 using LearningApp.Domain.Entities;
+using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,7 +33,7 @@ namespace LearningApp.Application.Services
                 .Where(e => e.CategoryId == categoryId)
                 .ToListAsync();
             if (entities is null)
-                throw new NotFoundException("Category not found!");
+                throw new NotFoundException(nameof(Question));
 
             return _mapper.Map<List<QuestionDto>>(entities);
         }
@@ -55,7 +54,7 @@ namespace LearningApp.Application.Services
                 .Include(r => r.Questions)
                 .FirstOrDefaultAsync(r => r.Id == categoryId);
             if (category is null)
-                throw new NotFoundException("Category not found!");
+                throw new NotFoundException(nameof(Category));
             if (level is < 0 or > 3)
                 throw new ArgumentException("Given level is invalid");
 
@@ -64,7 +63,7 @@ namespace LearningApp.Application.Services
                 .ThenInclude(u => u.LevelProgresses)
                 .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
-                throw new NotFoundException("User not found!");
+                throw new NotFoundException(nameof(User));
 
             var userCategoryProgress = user.UserProgress.CategoryProgress
                 .FirstOrDefault(u => u.CategoryId == categoryId);
@@ -92,7 +91,7 @@ namespace LearningApp.Application.Services
         {
             var category = await _dbContext.Categories.FindAsync(categoryId);
             if (category is null)
-                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Category"));
+                throw new NotFoundException(nameof(Category));
             var validationResult = await _createQuestionRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
@@ -109,10 +108,10 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Questions.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Question"));
+                throw new NotFoundException(nameof(Question));
             var category = await _dbContext.Categories.FindAsync(request.CategoryId);
             if (category is null)
-                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Category"));
+                throw new NotFoundException(nameof(Category));
             var validationResult = await _updateQuestionRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
@@ -135,7 +134,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Questions.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException(string.Format(ValidationExceptions.InvalidId, "Question"));
+                throw new NotFoundException(nameof(Question));
 
             _dbContext.Questions.Remove(entity);
             await _dbContext.SaveChangesAsync();
