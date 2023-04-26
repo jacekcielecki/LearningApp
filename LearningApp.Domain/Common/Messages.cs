@@ -1,6 +1,6 @@
 ﻿namespace LearningApp.Domain.Common
 {
-    public static class ErrorMessages
+    public static class Messages
     {
         public const string InvalidLevel = "Given level is invalid";
         public const string InvalidGainedExperience = "Specified gained experience need to be between 0 and 20";

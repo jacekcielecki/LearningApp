@@ -4,7 +4,7 @@ namespace LearningApp.Domain.Exceptions
 {
     public class ResourceProtectedException : Exception
     {
-        public ResourceProtectedException() : base(ErrorMessages.AccessProtectedResource)
+        public ResourceProtectedException() : base(Messages.AccessProtectedResource)
         {
         }
     }

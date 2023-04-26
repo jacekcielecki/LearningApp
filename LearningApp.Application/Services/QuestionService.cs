@@ -57,7 +57,7 @@ namespace LearningApp.Application.Services
             if (category is null)
                 throw new NotFoundException(nameof(Category));
             if (level is < 0 or > 3)
-                throw new ArgumentException(ErrorMessages.InvalidLevel);
+                throw new ArgumentException(Messages.InvalidLevel);
 
             var user = await _dbContext.Users.Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)

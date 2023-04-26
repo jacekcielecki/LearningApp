@@ -21,7 +21,7 @@ namespace LearningApp.Application.Services
         public async Task<QuizCompletedDto> CompleteQuizAsync(int userId, int categoryId, string quizLevelName, int expGained)
         {
             if (expGained is < 0 or > 20)
-                throw new ArgumentException(ErrorMessages.InvalidGainedExperience);
+                throw new ArgumentException(Messages.InvalidGainedExperience);
             var user = await _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
@@ -32,11 +32,11 @@ namespace LearningApp.Application.Services
                 throw new NotFoundException(nameof(User));
             var userCategoryProgress = user.UserProgress.CategoryProgress.FirstOrDefault(e => e.CategoryId == categoryId);
             if (userCategoryProgress is null)
-                throw new NotFoundException(ErrorMessages.QuizNotStarted);
+                throw new NotFoundException(Messages.QuizNotStarted);
             var userLevelProgress =
                 userCategoryProgress.LevelProgresses.FirstOrDefault(e => e.LevelName == quizLevelName);
             if (userLevelProgress is null)
-                throw new ValidationException(ErrorMessages.GenericErrorMessage);
+                throw new ValidationException(Messages.GenericErrorMessage);
 
             user.UserProgress.ExperiencePoints += expGained;
             user.UserProgress.TotalCompletedQuiz++;

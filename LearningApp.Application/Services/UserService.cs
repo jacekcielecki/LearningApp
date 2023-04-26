@@ -82,11 +82,11 @@ namespace LearningApp.Application.Services
                 .Include(e => e.Role)
                 .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Login || e.Username == loginDto.Login);
             if (user is null)
-                throw new BadHttpRequestException(ErrorMessages.AuthorizationFailed);
+                throw new BadHttpRequestException(Messages.AuthorizationFailed);
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, loginDto.Password);
             if (result == PasswordVerificationResult.Failed)
-                throw new BadHttpRequestException(ErrorMessages.AuthorizationFailed);
+                throw new BadHttpRequestException(Messages.AuthorizationFailed);
 
             return GenerateToken(user);
         }
@@ -182,7 +182,7 @@ namespace LearningApp.Application.Services
                 throw new ResourceProtectedException();
             var passwordVerification = _passwordHasher.VerifyHashedPassword(entity, entity.Password, request.OldPassword);
             if (passwordVerification == PasswordVerificationResult.Failed)
-                throw new BadHttpRequestException(ErrorMessages.InvalidPassword);
+                throw new BadHttpRequestException(Messages.InvalidPassword);
             var validationResult = await _updateUserPasswordRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
