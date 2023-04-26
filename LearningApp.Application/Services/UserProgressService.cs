@@ -1,9 +1,10 @@
 ﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using LearningApp.Application.Dtos;
-using LearningApp.Application.Exceptions;
 using LearningApp.Application.Interfaces;
+using LearningApp.Domain.Entities;
+using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningApp.Application.Services
 {
@@ -27,7 +28,7 @@ namespace LearningApp.Application.Services
                 .ThenInclude(u => u.LevelProgresses)
                 .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
-                throw new NotFoundException("User with given id not Found");
+                throw new NotFoundException(nameof(User));
             var userCategoryProgress = user.UserProgress.CategoryProgress.FirstOrDefault(e => e.CategoryId == categoryId);
             if (userCategoryProgress is null)
                 throw new NotFoundException("User with given id has not started any quiz in this category");
@@ -76,10 +77,10 @@ namespace LearningApp.Application.Services
                 .ThenInclude(u => u.Achievements)
                 .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
-                throw new NotFoundException("User with given id not found");
+                throw new NotFoundException(nameof(User));
             var achievement = _dbContext.Achievements.FirstOrDefault(a => a.Id == achievementId);
             if (achievement is null)
-                throw new NotFoundException("Achievement with given id not found");
+                throw new NotFoundException(nameof(Achievement));
 
             user.UserProgress.Achievements.Add(achievement);
 

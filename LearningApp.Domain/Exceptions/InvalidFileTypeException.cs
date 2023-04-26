@@ -1,8 +1,8 @@
-﻿namespace LearningApp.Application.Exceptions
+﻿namespace LearningApp.Domain.Exceptions
 {
     public class InvalidFileTypeException : Exception
     {
-        public InvalidFileTypeException(string message) : base(message)
+        public InvalidFileTypeException() : base("File extension must be .jpg, .svg or .png")
         {
         }
     }

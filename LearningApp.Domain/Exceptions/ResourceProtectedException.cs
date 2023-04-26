@@ -1,4 +1,4 @@
-﻿namespace LearningApp.Application.Exceptions
+﻿namespace LearningApp.Domain.Exceptions
 {
     public class ResourceProtectedException : Exception
     {

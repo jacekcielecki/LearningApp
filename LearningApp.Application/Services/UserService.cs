@@ -1,19 +1,19 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using AutoMapper;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
+using LearningApp.Application.Dtos;
+using LearningApp.Application.Interfaces;
+using LearningApp.Application.Requests.User;
+using LearningApp.Application.Settings;
+using LearningApp.Domain.Entities;
+using LearningApp.Domain.Exceptions;
+using LearningApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using AutoMapper;
-using LearningApp.Application.Requests.User;
-using LearningApp.Application.Dtos;
-using LearningApp.Application.Exceptions;
-using LearningApp.Application.Settings;
-using LearningApp.Application.Interfaces;
-using LearningApp.Domain.Entities;
-using LearningApp.Infrastructure.Persistence;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace LearningApp.Application.Services
 {
@@ -114,8 +114,9 @@ namespace LearningApp.Application.Services
                 .ThenInclude(e => e.CategoryProgress)
                 .ThenInclude(e => e.LevelProgresses)
                 .FirstOrDefaultAsync(e => e.Id == id);
+
             if (entity is null)
-                throw new NotFoundException("User with given id not found");
+                throw new NotFoundException(nameof(User));
 
             return _mapper.Map<UserDto>(entity);
         }
@@ -134,7 +135,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Users.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException("User with given id not found");
+                throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.EmailAddress == "root")
                 throw new ResourceProtectedException("Action forbidden, resource is protected");
             var validationResult = await _updateUserRequestValidator.ValidateAsync(request);
@@ -158,12 +159,12 @@ namespace LearningApp.Application.Services
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Id == id);
             if (entity is null)
-                throw new NotFoundException("User with given id not found");
+                throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root")
                 throw new ResourceProtectedException("Action forbidden, resource is protected");
             var role = _dbContext.Roles.FirstOrDefault(r => r.Id == roleId);
             if (role is null)
-                throw new NotFoundException("Role with given id not found");
+                throw new NotFoundException(nameof(Role));
 
             entity.RoleId = roleId;
             await _dbContext.SaveChangesAsync();
@@ -175,7 +176,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Users.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException("User with given id not found");
+                throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root")
                 throw new ResourceProtectedException("Action forbidden, resource is protected");
             var passwordVerification = _passwordHasher.VerifyHashedPassword(entity, entity.Password, request.OldPassword);
@@ -193,7 +194,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Users.FindAsync(id);
             if (entity is null)
-                throw new NotFoundException("User with given id not found");
+                throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root")
                 throw new ResourceProtectedException("Action forbidden, resource is protected");
 
