@@ -17,5 +17,8 @@
     <ProjectReference Include="..\LearningApp.Application\LearningApp.Application.csproj" />
     <ProjectReference Include="..\LearningApp.Infrastructure\LearningApp.Infrastructure.csproj" />
   </ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="LearningApp.WebApi.Tests"></InternalsVisibleTo>
+	</ItemGroup>
 
 </Project>
