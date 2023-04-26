@@ -4,6 +4,7 @@ using Azure.Storage.Blobs.Models;
 using LearningApp.Application.Dtos;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Settings;
+using LearningApp.Domain.Common;
 using LearningApp.Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -28,7 +29,7 @@ namespace LearningApp.Application.Services
 
             try
             {
-                var blobContentType = string.Empty;
+                var blobContentType = "";
                 var fileName = Path.GetFileNameWithoutExtension(blob.FileName);
                 var extension = Path.GetExtension(blob.FileName);
                 var randomFileName = fileName + "-" + Guid.NewGuid() + extension;
@@ -58,7 +59,7 @@ namespace LearningApp.Application.Services
                     await client.UploadAsync(data, options);
                 }
 
-                response.Status = $"File {blob.FileName} Uploaded Successfully";
+                response.Status = BlobStorageMessages.FileUploadedSuccessfully(blob.FileName);
                 response.Error = false;
                 response.Blob.Uri = client.Uri.AbsoluteUri;
                 response.Blob.Name = client.Name;
@@ -67,15 +68,15 @@ namespace LearningApp.Application.Services
             catch (RequestFailedException ex)
                when (ex.ErrorCode == BlobErrorCode.BlobAlreadyExists)
             {
-                _logger.LogError($"File with name {blob.FileName} already exists in container. Set another name to store the file in the container: '{_storageSettings.ImageContainerName}.'");
-                response.Status = $"File with name {blob.FileName} already exists. Please use another name to store your file.";
+                _logger.LogError(BlobStorageMessages.FileNameTaken(blob.FileName, _storageSettings.ImageContainerName));
+                response.Status = BlobStorageMessages.FileNameTaken(blob.FileName, _storageSettings.ImageContainerName);
                 response.Error = true;
                 return response;
             }
             catch (RequestFailedException ex)
             {
-                _logger.LogError($"Unhandled Exception. ID: {ex.StackTrace} - Message: {ex.Message}");
-                response.Status = $"Unexpected error: {ex.StackTrace}. Check log with StackTrace ID.";
+                _logger.LogError(BlobStorageMessages.UnhandledException(ex.StackTrace, ex.Message));
+                response.Status = BlobStorageMessages.UnhandledException(ex.StackTrace, ex.Message);
                 response.Error = true;
                 return response;
             }
@@ -106,7 +107,7 @@ namespace LearningApp.Application.Services
             catch (RequestFailedException ex)
                 when (ex.ErrorCode == BlobErrorCode.BlobNotFound)
             {
-                _logger.LogError($"File {blobFilename} was not found.");
+                _logger.LogError(BlobStorageMessages.FileNotFound(blobFilename));
             }
 
             return null;
@@ -124,11 +125,11 @@ namespace LearningApp.Application.Services
             catch (RequestFailedException ex)
                 when (ex.ErrorCode == BlobErrorCode.BlobNotFound)
             {
-                _logger.LogError($"File {blobFilename} was not found.");
-                return new BlobResponseDto { Error = true, Status = $"File with name {blobFilename} not found." };
+                _logger.LogError(BlobStorageMessages.FileNotFound(blobFilename));
+                return new BlobResponseDto { Error = true, Status = BlobStorageMessages.FileNotFound(blobFilename) };
             }
 
-            return new BlobResponseDto { Error = false, Status = $"File: {blobFilename} has been successfully deleted." };
+            return new BlobResponseDto { Error = false, Status = BlobStorageMessages.FileDeletedSuccessfully(blobFilename) };
         }
 
         public async Task<List<BlobDto>> GetAllAsync(string containerName)
@@ -161,7 +162,7 @@ namespace LearningApp.Application.Services
                     _storageSettings.ImageContainerName),
                 "avatar" => new BlobContainerClient(_storageSettings.ConnectionString,
                     _storageSettings.AvatarContainerName),
-                _ => throw new NotSupportedException("Container with given name does not exist")
+                _ => throw new NotSupportedException(BlobStorageMessages.InvalidContainer)
             };
         }
     }

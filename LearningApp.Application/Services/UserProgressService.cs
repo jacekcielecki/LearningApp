@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using LearningApp.Application.Dtos;
 using LearningApp.Application.Interfaces;
+using LearningApp.Domain.Common;
 using LearningApp.Domain.Entities;
 using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
@@ -20,7 +21,7 @@ namespace LearningApp.Application.Services
         public async Task<QuizCompletedDto> CompleteQuizAsync(int userId, int categoryId, string quizLevelName, int expGained)
         {
             if (expGained is < 0 or > 20)
-                throw new ArgumentException("ExpGained need to be between 0 and 20");
+                throw new ArgumentException(ErrorMessages.InvalidGainedExperience);
             var user = await _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
@@ -31,11 +32,11 @@ namespace LearningApp.Application.Services
                 throw new NotFoundException(nameof(User));
             var userCategoryProgress = user.UserProgress.CategoryProgress.FirstOrDefault(e => e.CategoryId == categoryId);
             if (userCategoryProgress is null)
-                throw new NotFoundException("User with given id has not started any quiz in this category");
+                throw new NotFoundException(ErrorMessages.QuizNotStarted);
             var userLevelProgress =
                 userCategoryProgress.LevelProgresses.FirstOrDefault(e => e.LevelName == quizLevelName);
             if (userLevelProgress is null)
-                throw new ValidationException("Something went wrong");
+                throw new ValidationException(ErrorMessages.GenericErrorMessage);
 
             user.UserProgress.ExperiencePoints += expGained;
             user.UserProgress.TotalCompletedQuiz++;
