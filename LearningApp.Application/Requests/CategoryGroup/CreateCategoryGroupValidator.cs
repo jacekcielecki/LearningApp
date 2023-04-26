@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LearningApp.Application.Extensions;
+using LearningApp.Domain.Common;
 
 namespace LearningApp.Application.Requests.CategoryGroup
 {
@@ -19,7 +20,7 @@ namespace LearningApp.Application.Requests.CategoryGroup
                     var isUrlOrEmpty = value!.UrlOrEmpty();
                     if (!isUrlOrEmpty)
                     {
-                        context.AddFailure("IconUrl", "Field is not empty and not a valid fully-qualified http, https or ftp URL");
+                        context.AddFailure("IconUrl", ValidationMessages.InvalidUrl);
                     }
                 });
         }

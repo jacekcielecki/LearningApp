@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "WSBLearn.WebApi": {
+    "LearningApp.WebApi": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

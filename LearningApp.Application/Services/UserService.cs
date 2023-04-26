@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using LearningApp.Domain.Common;
 
 namespace LearningApp.Application.Services
 {
@@ -81,11 +82,11 @@ namespace LearningApp.Application.Services
                 .Include(e => e.Role)
                 .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Login || e.Username == loginDto.Login);
             if (user is null)
-                throw new BadHttpRequestException("Invalid email or password");
+                throw new BadHttpRequestException(ErrorMessages.AuthorizationFailed);
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, loginDto.Password);
             if (result == PasswordVerificationResult.Failed)
-                throw new BadHttpRequestException("Invalid email or password");
+                throw new BadHttpRequestException(ErrorMessages.AuthorizationFailed);
 
             return GenerateToken(user);
         }
@@ -137,7 +138,7 @@ namespace LearningApp.Application.Services
             if (entity is null)
                 throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.EmailAddress == "root")
-                throw new ResourceProtectedException("Action forbidden, resource is protected");
+                throw new ResourceProtectedException();
             var validationResult = await _updateUserRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
@@ -161,7 +162,7 @@ namespace LearningApp.Application.Services
             if (entity is null)
                 throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root")
-                throw new ResourceProtectedException("Action forbidden, resource is protected");
+                throw new ResourceProtectedException();
             var role = _dbContext.Roles.FirstOrDefault(r => r.Id == roleId);
             if (role is null)
                 throw new NotFoundException(nameof(Role));
@@ -178,10 +179,10 @@ namespace LearningApp.Application.Services
             if (entity is null)
                 throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root")
-                throw new ResourceProtectedException("Action forbidden, resource is protected");
+                throw new ResourceProtectedException();
             var passwordVerification = _passwordHasher.VerifyHashedPassword(entity, entity.Password, request.OldPassword);
             if (passwordVerification == PasswordVerificationResult.Failed)
-                throw new BadHttpRequestException("Invalid Password");
+                throw new BadHttpRequestException(ErrorMessages.InvalidPassword);
             var validationResult = await _updateUserPasswordRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors[0].ToString());
@@ -196,7 +197,7 @@ namespace LearningApp.Application.Services
             if (entity is null)
                 throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root")
-                throw new ResourceProtectedException("Action forbidden, resource is protected");
+                throw new ResourceProtectedException();
 
             _dbContext.Users.Remove(entity);
             await _dbContext.SaveChangesAsync();

@@ -1,8 +1,10 @@
-﻿namespace LearningApp.Domain.Exceptions
+﻿using LearningApp.Domain.Common;
+
+namespace LearningApp.Domain.Exceptions
 {
     public class NotFoundException : Exception
     {
-        public NotFoundException(string entityName) : base($"{entityName} with given id not found.")
+        public NotFoundException(string entityName) : base(ErrorMessages.InvalidId(entityName))
         {
         }
     }

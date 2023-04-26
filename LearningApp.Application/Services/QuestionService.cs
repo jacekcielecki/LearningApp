@@ -3,6 +3,7 @@ using FluentValidation;
 using LearningApp.Application.Dtos;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Question;
+using LearningApp.Domain.Common;
 using LearningApp.Domain.Entities;
 using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
@@ -56,7 +57,7 @@ namespace LearningApp.Application.Services
             if (category is null)
                 throw new NotFoundException(nameof(Category));
             if (level is < 0 or > 3)
-                throw new ArgumentException("Given level is invalid");
+                throw new ArgumentException(ErrorMessages.InvalidLevel);
 
             var user = await _dbContext.Users.Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
@@ -153,7 +154,7 @@ namespace LearningApp.Application.Services
 
             var defaultLevelProgressesList = new List<LevelProgress>
             {
-                new LevelProgress
+                new()
                 {
                     LevelName = "Easy",
                     FinishedQuizzes = 0,
@@ -162,7 +163,7 @@ namespace LearningApp.Application.Services
                     CategoryProgressId = categoryProgress.Id,
                     CategoryProgress = categoryProgress
                 },
-                new LevelProgress
+                new()
                 {
                     LevelName = "Medium",
                     FinishedQuizzes = 0,
@@ -171,7 +172,7 @@ namespace LearningApp.Application.Services
                     CategoryProgressId = categoryProgress.Id,
                     CategoryProgress = categoryProgress
                 },
-                new LevelProgress
+                new()
                 {
                     LevelName = "Hard",
                     FinishedQuizzes = 0,

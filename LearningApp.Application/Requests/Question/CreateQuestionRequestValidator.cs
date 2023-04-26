@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LearningApp.Application.Extensions;
+using LearningApp.Domain.Common;
 
 namespace LearningApp.Application.Requests.Question
 {
@@ -28,13 +29,13 @@ namespace LearningApp.Application.Requests.Question
                 .MaximumLength(1000)
                 .NotNull()
                 .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
-                .WithMessage("Answer 'c' need to be specified when it is set as a CorrectAnswer");
+                .WithMessage(ValidationMessages.AnswerRequired('c'));
 
             RuleFor(r => r.D)
                 .MaximumLength(1000)
                 .NotNull()
                 .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
-                .WithMessage("Answer 'd' need to be specified when it is set as a CorrectAnswer");
+                .WithMessage(ValidationMessages.AnswerRequired('d'));
 
             RuleFor(r => r.CorrectAnswer)
                 .NotNull()
@@ -44,7 +45,7 @@ namespace LearningApp.Application.Requests.Question
                     string[] validCorrectAnswers = { "a", "b", "c", "d" };
                     if (!validCorrectAnswers.Contains(value.ToString().ToLower()))
                     {
-                        context.AddFailure("CorrectAnswer", "CorrectAnswer must be either a, b, c or d");
+                        context.AddFailure("CorrectAnswer", ValidationMessages.CorrectAnswerOutOfRange);
                     }
                 });
 
@@ -56,7 +57,7 @@ namespace LearningApp.Application.Requests.Question
                     int[] validLevels = { 1, 2, 3 };
                     if (!validLevels.Contains(value))
                     {
-                        context.AddFailure("Level", "Level must be either 1, 2 or 3");
+                        context.AddFailure("Level", ValidationMessages.LevelOutOfRange);
                     }
                 });
 
@@ -66,7 +67,7 @@ namespace LearningApp.Application.Requests.Question
                     var isUrlOrEmpty = value!.UrlOrEmpty();
                     if (!isUrlOrEmpty)
                     {
-                        context.AddFailure("IconUrl", "Field is not empty and not a valid fully-qualified http, https or ftp URL");
+                        context.AddFailure("IconUrl", ValidationMessages.InvalidUrl);
                     }
                 });
         }

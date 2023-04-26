@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using LearningApp.Domain.Common;
 using LearningApp.Infrastructure.Persistence;
 
 namespace LearningApp.Application.Requests.User
@@ -19,7 +20,7 @@ namespace LearningApp.Application.Requests.User
                     var isUsernameNotUnique = _dbContext.Users.Any(u => u.Username == value);
                     if (isUsernameNotUnique)
                     {
-                        context.AddFailure("Username", $"User {value} already exists");
+                        context.AddFailure("Username", ValidationMessages.UsernameTaken(value));
                     }
                 });
 
@@ -30,7 +31,7 @@ namespace LearningApp.Application.Requests.User
                     var isEmailAddressNotUnique = _dbContext.Users.Any(u => u.EmailAddress == value);
                     if (isEmailAddressNotUnique)
                     {
-                        context.AddFailure("Email Address", "Given Email Address is already in use");
+                        context.AddFailure("Email Address", ValidationMessages.EmailAddressTaken(value));
                     }
                 });
 
