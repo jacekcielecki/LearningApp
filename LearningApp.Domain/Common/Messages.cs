@@ -17,7 +17,7 @@
         public const string InvalidUrl = "Field is not empty and not a valid fully-qualified http, https or ftp URL";
         public const string CorrectAnswerOutOfRange = "CorrectAnswer must be either a, b, c or d";
         public const string LevelOutOfRange = "Level must be either 1, 2 or 3";
-        public static string AnswerRequired(char answer) => $"Answer '{answer}' need to be specified when set as CorrectAnswer";
+        public static string AnswerRequired(char answer) => $"Answer '{answer}' need to be specified when set as the CorrectAnswer";
         public static string UsernameTaken(string username) => $"User with \"{username}\" username already exists";
         public static string EmailAddressTaken(string email) => $"User with \"{email}\" email address already exists";
     }

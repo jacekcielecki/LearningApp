@@ -12,7 +12,7 @@ namespace LearningApp.Infrastructure.Extensions
             using var scope = app.ApplicationServices.CreateScope();
             var services = scope.ServiceProvider;
             var context = services.GetRequiredService<WsbLearnDbContext>();
-            if (context.Database.GetPendingMigrations().Any())
+            if (context.Database.IsRelational() && context.Database.GetPendingMigrations().Any())
             {
                 context.Database.Migrate();
             }
