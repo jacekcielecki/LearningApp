@@ -70,11 +70,32 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Name = "Test Achievement Name",
                 Description = "Test Achievement Description",
             };
-
             await SeedDb(itemToDelete);
 
             //act
-            var response = await _client.DeleteAsync($"/api/Achievement/1");
+            var response = await _client.DeleteAsync("/api/Achievement/1");
+
+            //assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task UpdateAsync_WithItemToUpdate_ReturnsStatusOk()
+        {
+            //arrange
+            var itemToUpdate = new Achievement
+            {
+                Id = 1,
+                Name = "Test Achievement Name",
+                Description = "Test Achievement Description",
+            };
+            await SeedDb(itemToUpdate);
+
+            var updatedItem = itemToUpdate;
+            updatedItem.Description = "Updated description";
+
+            //act
+            var response = await _client.PatchAsync($"api/Achievement/{itemToUpdate.Id}", updatedItem.ToJsonHttpContent());
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
