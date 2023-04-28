@@ -1,4 +1,3 @@
-using System.Text;
 using LearningApp.Application.Extensions;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Services;
@@ -8,6 +7,7 @@ using LearningApp.WebApi.Extensions;
 using LearningApp.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,3 +84,5 @@ void AddServicesDependencyInjection()
     builder.Services.AddScoped<IAchievementService, AchievementService>();
     builder.Services.AddScoped<ICategoryGroupService, CategoryGroupService>();
 }
+
+public partial class Program {}
