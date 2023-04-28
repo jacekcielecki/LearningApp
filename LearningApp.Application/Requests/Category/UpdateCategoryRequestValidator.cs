@@ -18,10 +18,6 @@ namespace LearningApp.Application.Requests.Category
                 .NotEmpty()
                 .MaximumLength(140);
 
-            RuleFor(r => r.IconUrl)
-                .NotEmpty()
-                .MaximumLength(140);
-
             RuleFor(r => r.QuestionsPerLesson)
                 .NotNull()
                 .NotEmpty();
@@ -38,7 +34,8 @@ namespace LearningApp.Application.Requests.Category
                     {
                         context.AddFailure("IconUrl", ValidationMessages.InvalidUrl);
                     }
-                });
+                })
+                .MaximumLength(140);
         }
     }
 }
