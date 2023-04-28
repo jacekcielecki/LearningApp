@@ -1,4 +1,8 @@
-﻿using LearningApp.Infrastructure.Persistence;
+﻿using LearningApp.Application.Requests.Achievement;
+using LearningApp.Domain.Entities;
+using LearningApp.Infrastructure.Persistence;
+using LearningApp.WebApi.Tests.Helpers;
+using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,10 +11,11 @@ namespace LearningApp.WebApi.Tests.Controllers
     public class AchievementControllerTests
     {
         private readonly HttpClient _client;
+        private readonly WebApplicationFactory<Program> _factory;
 
         public AchievementControllerTests()
         {
-            var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
@@ -19,11 +24,13 @@ namespace LearningApp.WebApi.Tests.Controllers
 
                     if (dbContextOptions is not null) services.Remove(dbContextOptions);
 
+                    services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
+                    services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
                     services.AddDbContext<WsbLearnDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
                 });
             });
 
-            _client = factory.CreateClient();
+            _client = _factory.CreateClient();
         }
 
         [Fact]
@@ -34,6 +41,53 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task CreateAsync_WithValidItemToCreate_ReturnsStatusOk()
+        {
+            //arrange
+            var itemToCreate = new CreateAchievementRequest
+            {
+                Name = "Test Achievement Name",
+                Description = "Test Achievement Description",
+            };
+
+            //act
+            var response = await _client.PostAsync("/api/Achievement", itemToCreate.ToJsonHttpContent());
+
+            //assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_WithItemToDelete_ReturnsStatusOk()
+        {
+            //arrange
+            var itemToDelete = new Achievement
+            {
+                Id = 1,
+                Name = "Test Achievement Name",
+                Description = "Test Achievement Description",
+            };
+
+            await SeedDb(itemToDelete);
+
+            //act
+            var response = await _client.DeleteAsync($"/api/Achievement/1");
+
+            //assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        private async Task SeedDb(Achievement item)
+        {
+            var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
+            using var scope = scopeFactory?.CreateScope();
+            var dbContext = scope?.ServiceProvider.GetService<WsbLearnDbContext>();
+
+            await dbContext.Achievements.AddAsync(item);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

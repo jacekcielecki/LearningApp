@@ -4,6 +4,7 @@ using LearningApp.Application.Dtos;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.User;
 using LearningApp.Application.Settings;
+using LearningApp.Domain.Common;
 using LearningApp.Domain.Entities;
 using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
@@ -14,7 +15,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using LearningApp.Domain.Common;
 
 namespace LearningApp.Application.Services
 {
