@@ -92,8 +92,11 @@ namespace LearningApp.WebApi.Tests.Controllers
             using var scope = scopeFactory?.CreateScope();
             var dbContext = scope?.ServiceProvider.GetService<WsbLearnDbContext>();
 
-            await dbContext.Users.AddAsync(item);
-            await dbContext.SaveChangesAsync();
+            if (dbContext != null)
+            {
+                await dbContext.Users.AddAsync(item);
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 

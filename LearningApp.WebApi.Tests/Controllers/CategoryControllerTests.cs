@@ -1,4 +1,4 @@
-﻿using LearningApp.Application.Requests.Achievement;
+﻿using LearningApp.Application.Requests.Category;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
@@ -8,12 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LearningApp.WebApi.Tests.Controllers
 {
-    public class AchievementControllerTests
+    public class CategoryControllerTests
     {
-        private readonly HttpClient _client;
         private readonly WebApplicationFactory<Program> _factory;
+        private readonly HttpClient _client;
 
-        public AchievementControllerTests()
+        public CategoryControllerTests()
         {
             _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
@@ -37,7 +37,25 @@ namespace LearningApp.WebApi.Tests.Controllers
         public async Task GetAllAsync_WithExistingItems_ReturnsItems()
         {
             //act
-            var response = await _client.GetAsync("/api/Achievement");
+            var response = await _client.GetAsync("api/Category");
+
+            //assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WithValidId_ReturnsItemById()
+        {
+            //arrange
+            var existingItem = new Category
+            {
+                Id = 1,
+                Name = "TestCategory 1",
+            };
+            await SeedDb(existingItem);
+
+            //act
+            var response = await _client.GetAsync($"api/Category/{existingItem.Id}");
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -47,14 +65,42 @@ namespace LearningApp.WebApi.Tests.Controllers
         public async Task CreateAsync_WithValidItemToCreate_ReturnsStatusOk()
         {
             //arrange
-            var itemToCreate = new CreateAchievementRequest
+            var itemToCreate = new CreateCategoryRequest
             {
-                Name = "Test Achievement Name",
-                Description = "Test Achievement Description",
+                Name = "TestCategory 2",
+                Description = "TestCategory Description 2",
+                LessonsPerLevel = 3,
+                QuestionsPerLesson = 5
             };
 
             //act
-            var response = await _client.PostAsync("/api/Achievement", itemToCreate.ToJsonHttpContent());
+            var response = await _client.PostAsync("api/Category", itemToCreate.ToJsonHttpContent());
+
+            //assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task UpdateAsync_WithValidItemToUpdateReturnsStatusOk()
+        {
+            //arrange
+            var existingItem = new Category
+            {
+                Id = 2,
+                Name = "TestCategory 3",
+            };
+            await SeedDb(existingItem);
+
+            var updatedItem = new UpdateCategoryRequest
+            {
+                Name = "Updated TestCategory 3",
+                Description = "TestCategory Description 3",
+                LessonsPerLevel = 3,
+                QuestionsPerLesson = 5
+            };
+
+            //act
+            var response = await _client.PutAsync($"api/Category/{existingItem.Id}", updatedItem.ToJsonHttpContent());
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -64,44 +110,21 @@ namespace LearningApp.WebApi.Tests.Controllers
         public async Task DeleteAsync_WithItemToDelete_ReturnsStatusOk()
         {
             //arrange
-            var itemToDelete = new Achievement
+            var existingItem = new Category
             {
                 Id = 2,
-                Name = "Test Achievement Name 2",
-                Description = "Test Achievement Description 2",
+                Name = "TestCategory 4",
             };
-            await SeedDb(itemToDelete);
+            await SeedDb(existingItem);
 
             //act
-            var response = await _client.DeleteAsync("/api/Achievement/2");
+            var response = await _client.DeleteAsync($"api/Category/{existingItem.Id}");
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Fact]
-        public async Task UpdateAsync_WithItemToUpdate_ReturnsStatusOk()
-        {
-            //arrange
-            var itemToUpdate = new Achievement
-            {
-                Id = 3,
-                Name = "Test Achievement Name 3",
-                Description = "Test Achievement Description 3",
-            };
-            await SeedDb(itemToUpdate);
-
-            var updatedItem = itemToUpdate;
-            updatedItem.Description = "Updated description";
-
-            //act
-            var response = await _client.PatchAsync($"api/Achievement/{itemToUpdate.Id}", updatedItem.ToJsonHttpContent());
-
-            //assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
-
-        private async Task SeedDb(Achievement item)
+        private async Task SeedDb(Category item)
         {
             var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
             using var scope = scopeFactory?.CreateScope();
@@ -109,7 +132,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             if (dbContext != null)
             {
-                await dbContext.Achievements.AddAsync(item);
+                await dbContext.Categories.AddAsync(item);
                 await dbContext.SaveChangesAsync();
             }
         }
