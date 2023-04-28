@@ -66,14 +66,14 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToDelete = new Achievement
             {
-                Id = 1,
-                Name = "Test Achievement Name",
-                Description = "Test Achievement Description",
+                Id = 2,
+                Name = "Test Achievement Name 2",
+                Description = "Test Achievement Description 2",
             };
             await SeedDb(itemToDelete);
 
             //act
-            var response = await _client.DeleteAsync("/api/Achievement/1");
+            var response = await _client.DeleteAsync("/api/Achievement/2");
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -85,9 +85,9 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToUpdate = new Achievement
             {
-                Id = 1,
-                Name = "Test Achievement Name",
-                Description = "Test Achievement Description",
+                Id = 3,
+                Name = "Test Achievement Name 3",
+                Description = "Test Achievement Description 3",
             };
             await SeedDb(itemToUpdate);
 
