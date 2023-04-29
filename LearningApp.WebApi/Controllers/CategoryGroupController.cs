@@ -1,5 +1,4 @@
-﻿using Azure;
-using LearningApp.Application.Interfaces;
+﻿using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.CategoryGroup;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +24,7 @@ namespace LearningApp.WebApi.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             var response = await _categoryGroupService.GetByIdAsync(id);
             return Ok(response);
