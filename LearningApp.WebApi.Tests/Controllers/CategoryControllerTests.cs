@@ -10,12 +10,12 @@ namespace LearningApp.WebApi.Tests.Controllers
 {
     public class CategoryControllerTests
     {
-        private readonly WebApplicationFactory<Program> _factory;
         private readonly HttpClient _client;
+        private readonly DatabaseSeeder _databaseSeeder;
 
         public CategoryControllerTests()
         {
-            _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
@@ -30,7 +30,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                 });
             });
 
-            _client = _factory.CreateClient();
+            _client = factory.CreateClient();
+            _databaseSeeder = new DatabaseSeeder(factory);
         }
 
         [Fact]
@@ -52,7 +53,7 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Id = 1,
                 Name = "TestCategory 1",
             };
-            await SeedDb(existingItem);
+            await _databaseSeeder.Seed(existingItem);
 
             //act
             var response = await _client.GetAsync($"api/Category/{existingItem.Id}");
@@ -89,7 +90,7 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Id = 2,
                 Name = "TestCategory 3",
             };
-            await SeedDb(existingItem);
+            await _databaseSeeder.Seed(existingItem);
 
             var updatedItem = new UpdateCategoryRequest
             {
@@ -115,26 +116,13 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Id = 2,
                 Name = "TestCategory 4",
             };
-            await SeedDb(existingItem);
+            await _databaseSeeder.Seed(existingItem);
 
             //act
             var response = await _client.DeleteAsync($"api/Category/{existingItem.Id}");
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
-
-        private async Task SeedDb(Category item)
-        {
-            var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
-            using var scope = scopeFactory?.CreateScope();
-            var dbContext = scope?.ServiceProvider.GetService<WsbLearnDbContext>();
-
-            if (dbContext != null)
-            {
-                await dbContext.Categories.AddAsync(item);
-                await dbContext.SaveChangesAsync();
-            }
         }
     }
 }

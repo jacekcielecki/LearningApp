@@ -11,11 +11,11 @@ namespace LearningApp.WebApi.Tests.Controllers
     public class AchievementControllerTests
     {
         private readonly HttpClient _client;
-        private readonly WebApplicationFactory<Program> _factory;
+        private readonly DatabaseSeeder _databaseSeeder;
 
         public AchievementControllerTests()
         {
-            _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
@@ -30,7 +30,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                 });
             });
 
-            _client = _factory.CreateClient();
+            _client = factory.CreateClient();
+            _databaseSeeder = new DatabaseSeeder(factory);
         }
 
         [Fact]
@@ -70,7 +71,7 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Name = "Test Achievement Name 2",
                 Description = "Test Achievement Description 2",
             };
-            await SeedDb(itemToDelete);
+            await _databaseSeeder.Seed(itemToDelete);
 
             //act
             var response = await _client.DeleteAsync("/api/Achievement/2");
@@ -89,7 +90,7 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Name = "Test Achievement Name 3",
                 Description = "Test Achievement Description 3",
             };
-            await SeedDb(itemToUpdate);
+            await _databaseSeeder.Seed(itemToUpdate);
 
             var updatedItem = itemToUpdate;
             updatedItem.Description = "Updated description";
@@ -99,19 +100,6 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
-
-        private async Task SeedDb(Achievement item)
-        {
-            var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
-            using var scope = scopeFactory?.CreateScope();
-            var dbContext = scope?.ServiceProvider.GetService<WsbLearnDbContext>();
-
-            if (dbContext != null)
-            {
-                await dbContext.Achievements.AddAsync(item);
-                await dbContext.SaveChangesAsync();
-            }
         }
     }
 }

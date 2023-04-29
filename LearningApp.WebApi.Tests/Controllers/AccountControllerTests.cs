@@ -14,12 +14,12 @@ namespace LearningApp.WebApi.Tests.Controllers
     public class AccountControllerTests
     {
         private readonly HttpClient _client;
-        private readonly WebApplicationFactory<Program> _factory;
         private readonly Mock<IUserService> _userServiceStub = new Mock<IUserService>();
+        private readonly DatabaseSeeder _databaseSeeder;
 
         public AccountControllerTests()
         {
-            _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
@@ -35,7 +35,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                 });
             });
 
-            _client = _factory.CreateClient();
+            _client = factory.CreateClient();
+            _databaseSeeder = new DatabaseSeeder(factory);
         }
 
         [Fact]
@@ -71,7 +72,7 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Username = "existingUser",
                 Password = "existingUserPassword",
             };
-            await SeedDb(existingUser);
+            await _databaseSeeder.Seed(existingUser);
 
             var loginCredentials = new LoginDto
             {
@@ -85,19 +86,5 @@ namespace LearningApp.WebApi.Tests.Controllers
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
-
-        private async Task SeedDb(User item)
-        {
-            var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
-            using var scope = scopeFactory?.CreateScope();
-            var dbContext = scope?.ServiceProvider.GetService<WsbLearnDbContext>();
-
-            if (dbContext != null)
-            {
-                await dbContext.Users.AddAsync(item);
-                await dbContext.SaveChangesAsync();
-            }
-        }
     }
-
 }

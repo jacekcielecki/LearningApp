@@ -9,6 +9,7 @@
         public const string AuthorizationFailed = "Invalid email or password";
         public const string InvalidPassword = "Invalid Password";
         public const string AccessProtectedResource = "Action forbidden, resource is protected";
+        public static string DatabaseSeederFailure(string entityType) => $"{entityType} is a unknown entity type, data cannot be seeded";
         public static string InvalidId(string entityName) => $"{entityName} with given id not found.";
     }
 

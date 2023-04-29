@@ -10,12 +10,12 @@ namespace LearningApp.WebApi.Tests.Controllers
 {
     public class CategoryGroupControllerTests
     {
-        private readonly WebApplicationFactory<Program> _factory;
         private readonly HttpClient _client;
+        private readonly DatabaseSeeder _databaseSeeder;
 
         public CategoryGroupControllerTests()
         {
-            _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
@@ -30,7 +30,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                 });
             });
 
-            _client = _factory.CreateClient();
+            _client = factory.CreateClient();
+            _databaseSeeder = new DatabaseSeeder(factory);
         }
 
         [Fact]
@@ -52,7 +53,7 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Id = 1,
                 Name = "TestCategoryGroup 1"
             };
-            await CategoryGroupSeedDb(existingItem);
+            await _databaseSeeder.Seed(existingItem);
 
             //act
             var response = await _client.GetAsync($"api/CategoryGroup/{existingItem.Id}");
@@ -86,7 +87,7 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Id = 3,
                 Name = "TestCategoryGroup 3"
             };
-            await CategoryGroupSeedDb(itemToUpdate);
+            await _databaseSeeder.Seed(itemToUpdate);
 
             var updatedItem = new UpdateCategoryGroupRequest
             {
@@ -117,8 +118,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                 LessonsPerLevel = 5,
                 QuestionsPerLesson = 5
             };
-            await CategoryGroupSeedDb(existingCategoryGroup);
-            await CategorySeedDb(existingCategory);
+            await _databaseSeeder.Seed(existingCategoryGroup);
+            await _databaseSeeder.Seed(existingCategory);
 
             //act
             var response =
@@ -144,8 +145,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                 LessonsPerLevel = 5,
                 QuestionsPerLesson = 5
             };
-            await CategoryGroupSeedDb(existingCategoryGroup);
-            await CategorySeedDb(existingCategory);
+            await _databaseSeeder.Seed(existingCategoryGroup);
+            await _databaseSeeder.Seed(existingCategory);
 
             //act
             var response =
@@ -164,39 +165,13 @@ namespace LearningApp.WebApi.Tests.Controllers
                 Id = 6,
                 Name = "Test CategoryGroup 6"
             };
-            await CategoryGroupSeedDb(existingItem);
-
+            await _databaseSeeder.Seed(existingItem);
+            
             //act
             var response = await _client.DeleteAsync($"api/CategoryGroup/{existingItem.Id}");
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
-
-        private async Task CategoryGroupSeedDb(CategoryGroup item)
-        {
-            var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
-            using var scope = scopeFactory?.CreateScope();
-            var dbContext = scope?.ServiceProvider.GetService<WsbLearnDbContext>();
-
-            if (dbContext != null)
-            {
-                await dbContext.CategoryGroups.AddAsync(item);
-                await dbContext.SaveChangesAsync();
-            }
-        }
-
-        private async Task CategorySeedDb(Category item)
-        {
-            var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
-            using var scope = scopeFactory?.CreateScope();
-            var dbContext = scope?.ServiceProvider.GetService<WsbLearnDbContext>();
-
-            if (dbContext != null)
-            {
-                await dbContext.Categories.AddAsync(item);
-                await dbContext.SaveChangesAsync();
-            }
         }
     }
 }
