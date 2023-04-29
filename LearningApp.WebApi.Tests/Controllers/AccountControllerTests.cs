@@ -6,8 +6,6 @@ using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 
 namespace LearningApp.WebApi.Tests.Controllers
 {
