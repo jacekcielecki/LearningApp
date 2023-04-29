@@ -12,5 +12,11 @@ namespace LearningApp.WebApi.Tests.Helpers
 
             return httpContent;
         }
+
+        public static T DeserializeHttpContent<T>(this HttpContent httpContent)
+        {
+            var responseContent = httpContent.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<T>(responseContent) ?? throw new InvalidOperationException();
+        }
     }
 }
