@@ -1,4 +1,5 @@
-﻿using LearningApp.Application.Interfaces;
+﻿using System.Net;
+using LearningApp.Application.Interfaces;
 using LearningApp.Domain.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

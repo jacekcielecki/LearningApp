@@ -84,12 +84,12 @@ namespace LearningApp.WebApi.Tests.Controllers
         public async Task UpdateAsync_WithValidItemToUpdateReturnsStatusOk()
         {
             //arrange
-            var existingItem = new Category
+            var itemToUpdate = new Category
             {
-                Id = 2,
+                Id = 3,
                 Name = "TestCategory 3",
             };
-            await _databaseSeeder.Seed(existingItem);
+            await _databaseSeeder.Seed(itemToUpdate);
 
             var updatedItem = new UpdateCategoryRequest
             {
@@ -100,7 +100,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             };
 
             //act
-            var response = await _client.PutAsync($"api/Category/{existingItem.Id}", updatedItem.ToJsonHttpContent());
+            var response = await _client.PutAsync($"api/Category/{itemToUpdate.Id}", updatedItem.ToJsonHttpContent());
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -110,15 +110,15 @@ namespace LearningApp.WebApi.Tests.Controllers
         public async Task DeleteAsync_WithItemToDelete_ReturnsStatusOk()
         {
             //arrange
-            var existingItem = new Category
+            var itemToDelete = new Category
             {
-                Id = 2,
+                Id = 4,
                 Name = "TestCategory 4",
             };
-            await _databaseSeeder.Seed(existingItem);
+            await _databaseSeeder.Seed(itemToDelete);
 
             //act
-            var response = await _client.DeleteAsync($"api/Category/{existingItem.Id}");
+            var response = await _client.DeleteAsync($"api/Category/{itemToDelete.Id}");
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

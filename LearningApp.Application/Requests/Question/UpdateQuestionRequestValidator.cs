@@ -13,16 +13,13 @@ namespace LearningApp.Application.Requests.Question
                 .NotEmpty()
                 .MaximumLength(1000);
 
-            RuleFor(r => r.ImageUrl)
-                .MaximumLength(1000)
-                .NotEmpty();
-
             RuleFor(r => r.A)
                 .NotNull()
                 .NotEmpty()
                 .MaximumLength(1000);
 
             RuleFor(r => r.B)
+                .NotNull()
                 .NotEmpty()
                 .MaximumLength(1000);
 
@@ -31,14 +28,18 @@ namespace LearningApp.Application.Requests.Question
                 .NotNull()
                 .Unless(r => r.CorrectAnswer.ToString().ToLower() != "c")
                 .WithMessage(ValidationMessages.AnswerRequired('c'))
-                .NotEmpty();
+                .NotEmpty()
+                .Unless(r => r.CorrectAnswer.ToString().ToLower() != "c")
+                .WithMessage(ValidationMessages.AnswerRequired('c'));
 
             RuleFor(r => r.D)
                 .MaximumLength(1000)
                 .NotNull()
                 .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d")
                 .WithMessage(ValidationMessages.AnswerRequired('d'))
-                .NotEmpty();
+                .NotEmpty()
+                .Unless(r => r.CorrectAnswer.ToString().ToLower() != "c")
+                .WithMessage(ValidationMessages.AnswerRequired('d'));
 
             RuleFor(r => r.CorrectAnswer)
                 .NotNull()
@@ -72,7 +73,8 @@ namespace LearningApp.Application.Requests.Question
                     {
                         context.AddFailure("IconUrl", ValidationMessages.InvalidUrl);
                     }
-                });
+                })
+                .MaximumLength(1000);
         }
     }
 }

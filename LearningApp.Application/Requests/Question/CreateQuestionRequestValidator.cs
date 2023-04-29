@@ -13,15 +13,13 @@ namespace LearningApp.Application.Requests.Question
                 .NotEmpty()
                 .MaximumLength(1000);
 
-            RuleFor(r => r.ImageUrl)
-                .MaximumLength(1000);
-
             RuleFor(r => r.A)
                 .NotNull()
                 .NotEmpty()
                 .MaximumLength(1000);
 
             RuleFor(r => r.B)
+                .NotNull()
                 .NotEmpty()
                 .MaximumLength(1000);
 
@@ -69,7 +67,8 @@ namespace LearningApp.Application.Requests.Question
                     {
                         context.AddFailure("IconUrl", ValidationMessages.InvalidUrl);
                     }
-                });
+                })
+                .MaximumLength(1000);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class QuestionDto
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string QuestionContent { get; set; }
         public string ImageUrl { get; set; }
         public string A { get; set; }

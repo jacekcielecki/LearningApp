@@ -1,14 +1,10 @@
-﻿using System.Net.Http.Headers;
-using LearningApp.Application.Dtos;
+﻿using LearningApp.Application.Dtos;
 using LearningApp.Application.Interfaces;
 using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
 using Microsoft.AspNetCore.Authorization.Policy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 namespace LearningApp.WebApi.Tests.Controllers
 {

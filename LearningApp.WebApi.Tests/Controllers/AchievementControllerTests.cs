@@ -73,7 +73,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             await _databaseSeeder.Seed(itemToDelete);
 
             //act
-            var response = await _client.DeleteAsync("/api/Achievement/2");
+            var response = await _client.DeleteAsync($"/api/Achievement/{itemToDelete.Id}");
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

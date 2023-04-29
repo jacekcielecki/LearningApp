@@ -112,8 +112,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             };
             var existingCategory = new Category
             {
-                Id = 5,
-                Name = "Test Category 5",
+                Id = 8,
+                Name = "Test Category 8",
                 LessonsPerLevel = 5,
                 QuestionsPerLesson = 5
             };
@@ -159,15 +159,15 @@ namespace LearningApp.WebApi.Tests.Controllers
         public async Task DeleteAsync_WithItemToDelete_ReturnsStatusOk()
         {
             //arrange
-            var existingItem = new CategoryGroup
+            var itemToDelete = new CategoryGroup
             {
                 Id = 6,
                 Name = "Test CategoryGroup 6"
             };
-            await _databaseSeeder.Seed(existingItem);
+            await _databaseSeeder.Seed(itemToDelete);
             
             //act
-            var response = await _client.DeleteAsync($"api/CategoryGroup/{existingItem.Id}");
+            var response = await _client.DeleteAsync($"api/CategoryGroup/{itemToDelete.Id}");
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
