@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LearningApp.WebApi.Tests.Controllers
 {
-    public class CategoryGroupControllerTests
+    public class CategoryGroupControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
         private readonly DatabaseSeeder _databaseSeeder;

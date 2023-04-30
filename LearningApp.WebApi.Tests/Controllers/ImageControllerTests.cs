@@ -8,16 +8,16 @@ using System.Text;
 
 namespace LearningApp.WebApi.Tests.Controllers
 {
-    public class ImageControllerTests
+    public class ImageControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
         private readonly DatabaseSeeder _databaseSeeder;
         private readonly Mock<IImageService> _imageServiceStub = new Mock<IImageService>();
         private readonly string _validContainerName = "image";
 
-        public ImageControllerTests()
+        public ImageControllerTests(WebApplicationFactory<Program> factory)
         {
-            var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            factory = factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {

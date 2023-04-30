@@ -8,14 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LearningApp.WebApi.Tests.Controllers
 {
-    public class AchievementControllerTests
+    public class AchievementControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
         private readonly DatabaseSeeder _databaseSeeder;
 
-        public AchievementControllerTests()
+        public AchievementControllerTests(WebApplicationFactory<Program> factory)
         {
-            var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            factory = factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
