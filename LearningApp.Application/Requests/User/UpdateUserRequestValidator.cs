@@ -25,15 +25,7 @@ namespace LearningApp.Application.Requests.User
                 });
 
             RuleFor(r => r.EmailAddress)
-                .EmailAddress()
-                .Custom((value, context) =>
-                {
-                    var isEmailAddressNotUnique = _dbContext.Users.Any(u => u.EmailAddress == value);
-                    if (isEmailAddressNotUnique)
-                    {
-                        context.AddFailure("Email Address", ValidationMessages.EmailAddressTaken(value));
-                    }
-                });
+                .EmailAddress();
 
             RuleFor(r => r.ProfilePictureUrl)
                 .MaximumLength(400);
