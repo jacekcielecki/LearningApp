@@ -1,7 +1,7 @@
 ﻿using LearningApp.Domain.Common;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningApp.WebApi.Tests.Helpers
 {
@@ -46,7 +46,13 @@ namespace LearningApp.WebApi.Tests.Helpers
                     await dbContext.Roles.AddAsync(role);
                     break;
                 case User user:
-                    await dbContext.Users.AddAsync(user);
+                    var existingUser = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+                    if (existingUser is null)
+                    {
+                        await dbContext.Users.AddAsync(user);
+                        break;
+                    }
+                    existingUser = user;
                     break;
                 case UserProgress userProgress:
                     await dbContext.UserProgresses.AddAsync(userProgress);

@@ -19,7 +19,7 @@ namespace LearningApp.WebApi.Controllers
 
         [HttpPatch("{categoryId}/{level}/{quizLevelName}/{expGained}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<IActionResult> QuizCompletedAsync(int categoryId, int level, string quizLevelName, int expGained)
+        public async Task<IActionResult> CompleteQuizAsync(int categoryId, int level, string quizLevelName, int expGained)
         {
             var userId = HttpContext.GetUserId();
             var response = await _userProgressService.CompleteQuizAsync(userId, categoryId, quizLevelName, expGained);
@@ -29,7 +29,7 @@ namespace LearningApp.WebApi.Controllers
 
         [HttpPatch("CompleteAchievement/{userId}/{achievementId}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<IActionResult> CompleteAchievement(int userId, int achievementId)
+        public async Task<IActionResult> CompleteAchievementAsync(int userId, int achievementId)
         {
             await _userProgressService.CompleteAchievementAsync(userId, achievementId);
             return Ok();

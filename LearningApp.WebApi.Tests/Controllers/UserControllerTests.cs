@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using LearningApp.Application.Requests.User;
+﻿using LearningApp.Application.Requests.User;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
