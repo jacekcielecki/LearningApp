@@ -49,8 +49,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToCreate = new CreateAchievementRequest
             {
-                Name = "Test Achievement Name",
-                Description = "Test Achievement Description",
+                Name = "TestAchievementName",
+                Description = "TestAchievementDescription",
             };
 
             //act
@@ -66,9 +66,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToDelete = new Achievement
             {
-                Id = 2,
-                Name = "Test Achievement Name 2",
-                Description = "Test Achievement Description 2",
+                Name = "TestAchievementName",
             };
             await _databaseSeeder.Seed(itemToDelete);
 
@@ -85,14 +83,15 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToUpdate = new Achievement
             {
-                Id = 3,
-                Name = "Test Achievement Name 3",
-                Description = "Test Achievement Description 3",
+                Name = "TestAchievementName",
+                Description = "TestAchievementDescription",
+            };
+            var updatedItem = new UpdateAchievementRequest
+            {
+                Name = "UpdatedTestAchievementName",
+                Description = "UpdatedTestAchievementDescription",
             };
             await _databaseSeeder.Seed(itemToUpdate);
-
-            var updatedItem = itemToUpdate;
-            updatedItem.Description = "Updated description";
 
             //act
             var response = await _client.PatchAsync($"api/Achievement/{itemToUpdate.Id}", updatedItem.ToJsonHttpContent());

@@ -49,8 +49,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var existingItem = new Category
             {
-                Id = 1,
-                Name = "TestCategory 1",
+                Name = "TestCategoryName",
             };
             await _databaseSeeder.Seed(existingItem);
 
@@ -67,8 +66,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToCreate = new CreateCategoryRequest
             {
-                Name = "TestCategory 2",
-                Description = "TestCategory Description 2",
+                Name = "TestCategoryName",
+                Description = "TestCategoryDescription",
                 LessonsPerLevel = 3,
                 QuestionsPerLesson = 5
             };
@@ -86,15 +85,14 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToUpdate = new Category
             {
-                Id = 3,
-                Name = "TestCategory 3",
+                Name = "TestCategoryName",
             };
             await _databaseSeeder.Seed(itemToUpdate);
 
             var updatedItem = new UpdateCategoryRequest
             {
-                Name = "Updated TestCategory 3",
-                Description = "TestCategory Description 3",
+                Name = "UpdatedTestCategoryName",
+                Description = "UpdatedTestCategoryDescription",
                 LessonsPerLevel = 3,
                 QuestionsPerLesson = 5
             };
@@ -112,8 +110,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToDelete = new Category
             {
-                Id = 4,
-                Name = "TestCategory 4",
+                Name = "TestCategoryName",
             };
             await _databaseSeeder.Seed(itemToDelete);
 

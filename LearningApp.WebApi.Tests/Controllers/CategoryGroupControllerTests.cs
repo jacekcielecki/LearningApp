@@ -49,8 +49,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var existingItem = new CategoryGroup
             {
-                Id = 1,
-                Name = "TestCategoryGroup 1"
+                Name = "TestCategoryGroupName"
             };
             await _databaseSeeder.Seed(existingItem);
 
@@ -67,7 +66,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToCreate = new CreateCategoryGroupRequest
             {
-                Name = "TestCategoryGroup 2",
+                Name = "TestCategoryGroupName",
             };
 
             //act
@@ -83,14 +82,13 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToUpdate = new CategoryGroup
             {
-                Id = 3,
-                Name = "TestCategoryGroup 3"
+                Name = "TestCategoryGroupName"
             };
             await _databaseSeeder.Seed(itemToUpdate);
 
             var updatedItem = new UpdateCategoryGroupRequest
             {
-                Name = "Updated TestCategoryGroup 3"
+                Name = "UpdatedTestCategoryGroupName"
             };
 
             //act
@@ -107,13 +105,11 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var existingCategoryGroup = new CategoryGroup
             {
-                Id = 4,
-                Name = "Test CategoryGroup 4"
+                Name = "TestCategoryGroupName"
             };
             var existingCategory = new Category
             {
-                Id = 8,
-                Name = "Test Category 8",
+                Name = "TestCategoryName",
                 LessonsPerLevel = 5,
                 QuestionsPerLesson = 5
             };
@@ -134,13 +130,11 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var existingCategoryGroup = new CategoryGroup
             {
-                Id = 5,
-                Name = "Test CategoryGroup 5"
+                Name = "TestCategoryGroupName"
             };
             var existingCategory = new Category
             {
-                Id = 6,
-                Name = "Test Category 6",
+                Name = "TestCategoryName",
                 LessonsPerLevel = 5,
                 QuestionsPerLesson = 5
             };
@@ -161,8 +155,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToDelete = new CategoryGroup
             {
-                Id = 6,
-                Name = "Test CategoryGroup 6"
+                Name = "TestCategoryGroupName"
             };
             await _databaseSeeder.Seed(itemToDelete);
             

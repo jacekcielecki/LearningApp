@@ -27,11 +27,17 @@ namespace LearningApp.Application.Requests.Question
                 .MaximumLength(1000)
                 .NotNull()
                 .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
+                .WithMessage(ValidationMessages.AnswerRequired('c'))
+                .NotEmpty()
+                .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
                 .WithMessage(ValidationMessages.AnswerRequired('c'));
 
             RuleFor(r => r.D)
                 .MaximumLength(1000)
                 .NotNull()
+                .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
+                .WithMessage(ValidationMessages.AnswerRequired('d'))
+                .NotEmpty()
                 .Unless(r => r.CorrectAnswer.ToString().ToLower() != "d" && r.CorrectAnswer.ToString().ToLower() != "c")
                 .WithMessage(ValidationMessages.AnswerRequired('d'));
 

@@ -1,12 +1,9 @@
-﻿using LearningApp.Application.Dtos;
-using LearningApp.Application.Interfaces;
-using LearningApp.Application.Requests.Question;
+﻿using LearningApp.Application.Requests.Question;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LearningApp.WebApi.Tests.Controllers
 {
@@ -14,7 +11,6 @@ namespace LearningApp.WebApi.Tests.Controllers
     {
         private readonly HttpClient _client;
         private readonly DatabaseSeeder _databaseSeeder;
-        private readonly Mock<IQuestionService> _questionServiceStub = new Mock<IQuestionService>();
 
         public QuestionControllerTests()
         {
@@ -30,7 +26,6 @@ namespace LearningApp.WebApi.Tests.Controllers
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                     services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
                     services.AddDbContext<WsbLearnDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
-                    services.AddSingleton<IQuestionService>(_questionServiceStub.Object);
                 });
             });
 
@@ -42,12 +37,16 @@ namespace LearningApp.WebApi.Tests.Controllers
         public async Task GetAllByCategoryAsync_WithValidCategoryId_ReturnsItemsById()
         {
             //arrange
+            var existingCategory = new Category
+            {
+                Name = "TestCategoryName"
+            };
             var existingQuestion = new Question
             {
-                Id = 1,
-                QuestionContent = "Test QuestionContent 1",
-                CategoryId = 1
+                QuestionContent = "TestQuestionContent",
+                CategoryId = existingCategory.Id
             };
+            await _databaseSeeder.Seed(existingCategory);
             await _databaseSeeder.Seed(existingQuestion);
 
             //act
@@ -61,17 +60,21 @@ namespace LearningApp.WebApi.Tests.Controllers
         public async Task GetAllByLevelAsync_WithValidCategoryIdAndLevel_ReturnsItemsByIdAndLevel()
         {
             //arrange
+            var existingCategory = new Category
+            {
+                Name = "TestCategoryName",
+            };
             var existingQuestion = new Question
             {
-                Id = 2,
-                QuestionContent = "Test QuestionContent 2",
-                CategoryId = 2,
-                Level = 2
+                QuestionContent = "TestQuestionContent",
+                CategoryId = existingCategory.Id,
+                Level = 3
             };
+            await _databaseSeeder.Seed(existingCategory);
             await _databaseSeeder.Seed(existingQuestion);
 
             //act
-            var response = await _client.GetAsync($"api/Question/all/{existingQuestion.CategoryId}/{existingQuestion.Level}");
+            var response = await _client.GetAsync($"api/Question/all/{existingCategory.Id}/{existingQuestion.Level}");
 
             //arrange
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -81,30 +84,46 @@ namespace LearningApp.WebApi.Tests.Controllers
         public async Task GetQuizAsync_WithValidCategoryIdAndLevel_ReturnsQuiz()
         {
             //arrange
+            var existingCategory = new Category
+            {
+                Name = "TestCategoryName",
+                LessonsPerLevel = 5,
+                QuestionsPerLesson = 5
+            };
             var existingQuestion = new Question
             {
-                Id = 3,
-                QuestionContent = "Test QuestionContent 3",
-                CategoryId = 3,
-                Level = 3
+                QuestionContent = "TestQuestionContent",
+                CategoryId = existingCategory.Id,
+                Level = 2
             };
-            await _databaseSeeder.Seed(existingQuestion);
+            var existingUser = new User
+            {
+                Id = 999,
+                EmailAddress = "testUser@mail.com",
+                Password = "testUserPassword",
+                Username = "testUserUsername"
+            };
+            var existingUserProgress = new UserProgress
+            {
+                UserId = existingUser.Id,
+            };
+            var existingCategoryProgress = new CategoryProgress
+            {
+                CategoryId = existingCategory.Id,
+                UserProgressId = existingUserProgress.Id,
+                CategoryName = existingCategory.Name
+            };
 
-            _questionServiceStub
-                .Setup(x => x.GetQuizAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(new List<QuestionDto>
-                {
-                    new()
-                    {
-                        Id = 1,
-                        QuestionContent = "Test Question"
-                    }
-                });
+            await _databaseSeeder.Seed(existingCategory);
+            await _databaseSeeder.Seed(existingQuestion);
+            await _databaseSeeder.Seed(existingUser);
+            await _databaseSeeder.Seed(existingUserProgress);
+            await _databaseSeeder.Seed(existingCategoryProgress);
 
             //act
-            var response = await _client.GetAsync($"api/Question/{existingQuestion.CategoryId}/{existingQuestion.Level}");
+            var response = await _client.GetAsync($"api/Question/{existingCategory.Id}/{existingQuestion.Level}");
 
-            //arrange
+            //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
@@ -114,14 +133,15 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var existingCategory = new Category
             {
-                Id = 9,
-                Name = "TestCategory 9"
+                Name = "TestCategoryName",
+                LessonsPerLevel = 5,
+                QuestionsPerLesson = 5
             };
             await _databaseSeeder.Seed(existingCategory);
 
             var itemToCreate = new CreateQuestionRequest
             {
-                QuestionContent = "Test QuestionContent 3",
+                QuestionContent = "Test QuestionContent 1",
                 A = "Test answer a",
                 B = "Test answer b",
                 CorrectAnswer = 'a',
@@ -141,14 +161,12 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var existingCategory = new Category
             {
-                Id = 8,
-                Name = "Test Category 8"
+                Name = "TestCategoryName"
             };
             var itemToUpdate = new Question
             {
-                Id = 44,
-                QuestionContent = "Test QuestionContent 4",
-                CategoryId = 8
+                QuestionContent = "TestQuestionContent",
+                CategoryId = existingCategory.Id
             };
             await _databaseSeeder.Seed(existingCategory);
             await _databaseSeeder.Seed(itemToUpdate);
@@ -160,7 +178,7 @@ namespace LearningApp.WebApi.Tests.Controllers
                 B = "Test answer b",
                 CorrectAnswer = 'a',
                 Level = 1,
-                CategoryId = 8,
+                CategoryId = existingCategory.Id,
             };
 
             //act
@@ -176,8 +194,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var itemToDelete = new Question
             {
-                Id = 5,
-                QuestionContent = "Test QuestionContent 5",
+                QuestionContent = "TestQuestionContent",
             };
             await _databaseSeeder.Seed(itemToDelete);
 

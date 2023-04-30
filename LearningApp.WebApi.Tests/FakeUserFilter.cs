@@ -13,7 +13,7 @@ namespace LearningApp.WebApi.Tests
             claimsPrincipal.AddIdentity(new ClaimsIdentity(
                 new []
                 {
-                    new Claim(JwtRegisteredClaimNames.Jti, "1"),
+                    new Claim(JwtRegisteredClaimNames.Jti, "999"),
                     new Claim(JwtRegisteredClaimNames.GivenName, "Admin"),
                     new Claim(JwtRegisteredClaimNames.Email, "admin@mail.com"),
                     new Claim(ClaimTypes.Role, "Admin")

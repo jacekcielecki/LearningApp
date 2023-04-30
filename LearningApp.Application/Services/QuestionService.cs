@@ -30,7 +30,8 @@ namespace LearningApp.Application.Services
 
         public async Task<List<QuestionDto>> GetAllByCategoryAsync(int categoryId)
         {
-            var entities = await _dbContext.Questions
+            var entities = await _dbContext
+                .Questions
                 .Where(e => e.CategoryId == categoryId)
                 .ToListAsync();
             if (entities is null)
@@ -41,7 +42,8 @@ namespace LearningApp.Application.Services
 
         public async Task<List<QuestionDto>> GetAllByLevelAsync(int categoryId, int level)
         {
-            var entities = await _dbContext.Questions
+            var entities = await _dbContext
+                .Questions
                 .Where(r => r.CategoryId == categoryId)
                 .Where(r => r.Level == level)
                 .ToListAsync();
@@ -90,7 +92,9 @@ namespace LearningApp.Application.Services
 
         public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId)
         {
-            var category = await _dbContext.Categories.FindAsync(categoryId);
+            var category = await _dbContext
+                .Categories
+                .FindAsync(categoryId);
             if (category is null)
                 throw new NotFoundException(nameof(Category));
             var validationResult = await _createQuestionRequestValidator.ValidateAsync(request);
@@ -107,7 +111,9 @@ namespace LearningApp.Application.Services
 
         public async Task<QuestionDto> UpdateAsync(int id, UpdateQuestionRequest request)
         {
-            var entity = await _dbContext.Questions.FindAsync(id);
+            var entity = await _dbContext
+                .Questions
+                .FindAsync(id);
             if (entity is null)
                 throw new NotFoundException(nameof(Question));
             var category = await _dbContext.Categories.FindAsync(request.CategoryId);
