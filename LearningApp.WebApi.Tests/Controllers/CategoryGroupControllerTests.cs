@@ -1,4 +1,5 @@
-﻿using LearningApp.Application.Requests.CategoryGroup;
+﻿using LearningApp.Application.Dtos;
+using LearningApp.Application.Requests.CategoryGroup;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
@@ -41,6 +42,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<List<CategoryGroupDto>>().Should().BeOfType<List<CategoryGroupDto>>();
         }
 
         [Fact]
@@ -58,6 +60,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<CategoryGroupDto>().Should().BeOfType<CategoryGroupDto>();
         }
 
         [Fact]
@@ -74,6 +77,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<CategoryGroupDto>().Should().BeOfType<CategoryGroupDto>();
         }
 
         [Fact]
@@ -97,6 +101,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<CategoryGroupDto>().Should().BeOfType<CategoryGroupDto>();
         }
 
         [Fact]
@@ -122,6 +127,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<CategoryGroupDto>().Should().BeOfType<CategoryGroupDto>();
         }
 
         [Fact]
@@ -147,6 +153,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<CategoryGroupDto>().Should().BeOfType<CategoryGroupDto>();
         }
 
         [Fact]

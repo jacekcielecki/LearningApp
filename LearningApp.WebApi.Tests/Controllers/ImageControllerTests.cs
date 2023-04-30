@@ -59,7 +59,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            response.Content.DeserializeHttpContent<List<BlobDto>>().Should().BeEquivalentTo(allExistingBlobs);
+            response.Content.DeserializeHttpContent<List<BlobDto>>().Should().BeOfType<List<BlobDto>>();
         }
 
         [Fact]

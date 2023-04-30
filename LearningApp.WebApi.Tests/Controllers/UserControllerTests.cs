@@ -1,4 +1,5 @@
-﻿using LearningApp.Application.Requests.User;
+﻿using LearningApp.Application.Dtos;
+using LearningApp.Application.Requests.User;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
@@ -50,6 +51,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             var response = await _client.GetAsync("api/User");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<List<UserDto>>().Should().BeOfType<List<UserDto>>();
         }
 
         [Fact]
@@ -70,6 +72,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             var response = await _client.GetAsync($"api/User/{existingUser.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<UserDto>().Should().BeOfType<UserDto>();
         }
 
         [Fact]
@@ -88,6 +91,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             var response = await _client.GetAsync("api/User/SortByExp");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<List<UserDto>>().Should().BeOfType<List<UserDto>>();
         }
 
         [Fact]
@@ -113,6 +117,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<UserDto>().Should().BeOfType<UserDto>();
         }
 
         [Fact]
@@ -136,6 +141,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<UserDto>().Should().BeOfType<UserDto>();
         }
 
         [Fact]

@@ -1,4 +1,5 @@
-﻿using LearningApp.Domain.Entities;
+﻿using LearningApp.Application.Dtos;
+using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
 using Microsoft.AspNetCore.Authorization.Policy;
@@ -85,6 +86,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             
             //arrange
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<QuizCompletedDto>().Should().BeOfType<QuizCompletedDto>();
         }
 
         [Fact]

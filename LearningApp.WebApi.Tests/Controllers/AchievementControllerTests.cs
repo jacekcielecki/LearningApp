@@ -1,4 +1,5 @@
-﻿using LearningApp.Application.Requests.Achievement;
+﻿using LearningApp.Application.Dtos;
+using LearningApp.Application.Requests.Achievement;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
@@ -41,6 +42,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<List<AchievementDto>>().Should().BeOfType<List<AchievementDto>>();
         }
 
         [Fact]
@@ -58,6 +60,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<AchievementDto>().Should().BeOfType<AchievementDto>();
         }
 
         [Fact]
@@ -98,6 +101,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<AchievementDto>().Should().BeOfType<AchievementDto>();
         }
     }
 }

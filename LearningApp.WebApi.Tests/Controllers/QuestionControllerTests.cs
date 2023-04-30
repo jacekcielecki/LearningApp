@@ -1,4 +1,5 @@
-﻿using LearningApp.Application.Requests.Question;
+﻿using LearningApp.Application.Dtos;
+using LearningApp.Application.Requests.Question;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
@@ -54,6 +55,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //arrange
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<List<QuestionDto>>().Should().BeOfType<List<QuestionDto>>();
         }
 
         [Fact]
@@ -78,6 +80,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //arrange
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<List<QuestionDto>>().Should().BeOfType<List<QuestionDto>>();
         }
 
         [Fact]
@@ -125,6 +128,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<List<QuestionDto>>().Should().BeOfType<List<QuestionDto>>();
         }
 
         [Fact]
@@ -153,6 +157,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<QuestionDto>().Should().BeOfType<QuestionDto>();
         }
 
         [Fact]
@@ -186,6 +191,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.DeserializeHttpContent<QuestionDto>().Should().BeOfType<QuestionDto>();
         }
 
         [Fact]
