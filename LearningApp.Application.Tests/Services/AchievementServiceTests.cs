@@ -80,6 +80,7 @@ namespace LearningApp.Application.Tests.Services
             //assert
             result.Should().NotBeNull();
             result.Should().BeOfType<AchievementDto>();
+            result.Id.Should().Be(existingItem.Id);
             result.Should().BeEquivalentTo(updatedItem,
                 options => options.ComparingByMembers<AchievementDto>().ExcludingMissingMembers());
         }

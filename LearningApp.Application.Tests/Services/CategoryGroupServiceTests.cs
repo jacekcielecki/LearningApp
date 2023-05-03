@@ -26,11 +26,11 @@ namespace LearningApp.Application.Tests.Services
         public async Task GetAllAsync_WithExistingItems_ReturnsAllItems()
         {
             //arrange
-            var existingItems = new List<CategoryGroup>()
+            var existingItems = new List<CategoryGroup>
             {
-                new() {Name = "TestCategoryGroup"},
-                new() {Name = "TestCategoryGroup"},
-                new() {Name = "TestCategoryGroup"}
+                new() { Name = "TestCategoryGroup" },
+                new() { Name = "TestCategoryGroup" },
+                new() { Name = "TestCategoryGroup" }
             };
             await _dbContext.CategoryGroups.AddRangeAsync(existingItems);
             await _dbContext.SaveChangesAsync();
@@ -106,6 +106,7 @@ namespace LearningApp.Application.Tests.Services
             //assert
             result.Should().NotBeNull();
             result.Should().BeOfType<CategoryGroupDto>();
+            result.Id.Should().Be(existingItem.Id);
             result.Should().BeEquivalentTo(updatedItem,
                 options => options.ComparingByMembers<CategoryGroupDto>().ExcludingMissingMembers());
         }
