@@ -22,12 +22,14 @@ namespace LearningApp.Application.Services
         {
             if (expGained is < 0 or > 20)
                 throw new ArgumentException(Messages.InvalidGainedExperience);
+
             var user = await _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
                 .FirstOrDefaultAsync(u => u.Id == userId);
+
             if (user is null)
                 throw new NotFoundException(nameof(User));
             var userCategoryProgress = user.UserProgress.CategoryProgress.FirstOrDefault(e => e.CategoryId == categoryId);
