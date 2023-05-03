@@ -1,5 +1,4 @@
 ﻿using LearningApp.Application.Dtos;
-using LearningApp.Application.Requests.Achievement;
 using LearningApp.Application.Requests.CategoryGroup;
 using LearningApp.Application.Services;
 using LearningApp.Application.Tests.Helpers;
@@ -130,8 +129,32 @@ namespace LearningApp.Application.Tests.Services
             //assert
             result.Should().NotBeNull();
             result.Should().BeOfType<CategoryGroupDto>();
-            result.Name.Should().BeEquivalentTo(existingCategoryGroup.Name);
-            result.Categories.Should().ContainEquivalentOf(existingCategory);
+            result.Id.Should().Be(existingCategoryGroup.Id);
+            result.Categories.FirstOrDefault(x => x.Id == existingCategory.Id).Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task RemoveCategoryAsync_WithValidCategoryGroupIdAndCategoryId_RemovesCategoryFromTheGroup()
+        {
+            //arrange
+            var existingCategory = new Category { Name = "TestCategory" };
+            var existingCategoryGroup = new CategoryGroup { Name = "TestCategoryGroup" };
+            await _dbContext.Categories.AddAsync(existingCategory);
+            await _dbContext.CategoryGroups.AddAsync(existingCategoryGroup);
+            await _dbContext.SaveChangesAsync();
+
+            var service = new CategoryGroupService(_dbContext, AutoMapperSingleton.Mapper,
+                _createCategoryGroupValidator, _updateCategoryGroupValidator);
+            await service.AddCategoryAsync(existingCategoryGroup.Id, existingCategory.Id);
+
+            //act
+            var result = await service.RemoveCategoryAsync(existingCategoryGroup.Id, existingCategory.Id);
+
+            //assert
+            result.Should().NotBeNull();
+            result.Should().BeOfType<CategoryGroupDto>();
+            result.Id.Should().Be(existingCategoryGroup.Id);
+            result.Categories.FirstOrDefault(x => x.Id == existingCategory.Id).Should().BeNull();
         }
 
         [Fact]
