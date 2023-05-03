@@ -3,13 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.Domain", "LearningApp.Domain\LearningApp.Domain.csproj", "{7A88EF57-4CE4-462F-9BB4-EB506F264AA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.Domain", "source\LearningApp.Domain\LearningApp.Domain.csproj", "{7A88EF57-4CE4-462F-9BB4-EB506F264AA3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.Application", "LearningApp.Application\LearningApp.Application.csproj", "{4AF0C11B-A963-4920-8F98-38E04541238B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.Application", "source\LearningApp.Application\LearningApp.Application.csproj", "{4AF0C11B-A963-4920-8F98-38E04541238B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.WebApi", "LearningApp.WebApi\LearningApp.WebApi.csproj", "{7987B226-1EF7-46F0-80A1-FEDE862FB28B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.WebApi", "source\LearningApp.WebApi\LearningApp.WebApi.csproj", "{7987B226-1EF7-46F0-80A1-FEDE862FB28B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.Infrastructure", "LearningApp.Infrastructure\LearningApp.Infrastructure.csproj", "{D25B84E3-051C-417E-A3C2-822A04310726}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.Infrastructure", "source\LearningApp.Infrastructure\LearningApp.Infrastructure.csproj", "{D25B84E3-051C-417E-A3C2-822A04310726}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{BED31E26-9E22-4F73-B240-8F3FC1564CC6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D1FE5C94-647B-402F-A423-41F03566A574}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.Application.Tests", "tests\LearningApp.Application.Tests\LearningApp.Application.Tests.csproj", "{75E93E73-90C7-4E71-BD19-06F7093401F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningApp.WebApi.Tests", "tests\LearningApp.WebApi.Tests\LearningApp.WebApi.Tests.csproj", "{C76996F0-6960-4261-AFF5-F9EB0E82A62B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +41,25 @@ Global
 		{D25B84E3-051C-417E-A3C2-822A04310726}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D25B84E3-051C-417E-A3C2-822A04310726}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D25B84E3-051C-417E-A3C2-822A04310726}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75E93E73-90C7-4E71-BD19-06F7093401F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75E93E73-90C7-4E71-BD19-06F7093401F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75E93E73-90C7-4E71-BD19-06F7093401F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75E93E73-90C7-4E71-BD19-06F7093401F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C76996F0-6960-4261-AFF5-F9EB0E82A62B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C76996F0-6960-4261-AFF5-F9EB0E82A62B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C76996F0-6960-4261-AFF5-F9EB0E82A62B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C76996F0-6960-4261-AFF5-F9EB0E82A62B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7A88EF57-4CE4-462F-9BB4-EB506F264AA3} = {BED31E26-9E22-4F73-B240-8F3FC1564CC6}
+		{4AF0C11B-A963-4920-8F98-38E04541238B} = {BED31E26-9E22-4F73-B240-8F3FC1564CC6}
+		{7987B226-1EF7-46F0-80A1-FEDE862FB28B} = {BED31E26-9E22-4F73-B240-8F3FC1564CC6}
+		{D25B84E3-051C-417E-A3C2-822A04310726} = {BED31E26-9E22-4F73-B240-8F3FC1564CC6}
+		{75E93E73-90C7-4E71-BD19-06F7093401F7} = {D1FE5C94-647B-402F-A423-41F03566A574}
+		{C76996F0-6960-4261-AFF5-F9EB0E82A62B} = {D1FE5C94-647B-402F-A423-41F03566A574}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4DF6F7E-BF96-491F-AFAF-21EF33AF344F}
