@@ -1,7 +1,5 @@
 ﻿using LearningApp.Application.Dtos;
-using LearningApp.Application.Requests.Achievement;
 using LearningApp.Application.Requests.Category;
-using LearningApp.Application.Requests.CategoryGroup;
 using LearningApp.Application.Services;
 using LearningApp.Application.Tests.Helpers;
 using LearningApp.Domain.Entities;

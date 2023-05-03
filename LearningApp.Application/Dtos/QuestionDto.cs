@@ -11,5 +11,6 @@
         public string D { get; set; }
         public char CorrectAnswer { get; set; }
         public int Level { get; set; }
+        public int CategoryId { get; set; }
     }
 }
