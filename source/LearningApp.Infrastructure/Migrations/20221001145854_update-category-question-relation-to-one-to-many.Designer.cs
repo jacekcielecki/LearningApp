@@ -12,7 +12,7 @@ namespace WSBLearn.Dal.Migrations
 {
     [DbContext(typeof(WsbLearnDbContext))]
     [Migration("20221001145854_update-category-question-relation-to-one-to-many")]
-    partial class updatecategoryquestionrelationtoonetomany
+    partial class updateCategoryQuestionRelationToOneToMany
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

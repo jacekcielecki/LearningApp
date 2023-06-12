@@ -12,7 +12,7 @@ namespace WSBLearn.Dal.Migrations
 {
     [DbContext(typeof(WsbLearnDbContext))]
     [Migration("20220922203148_init")]
-    partial class init
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

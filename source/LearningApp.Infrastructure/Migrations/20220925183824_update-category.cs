@@ -4,7 +4,7 @@
 
 namespace WSBLearn.Dal.Migrations
 {
-    public partial class updatecategory : Migration
+    public partial class updateCategory : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -12,7 +12,7 @@ namespace WSBLearn.Dal.Migrations
 {
     [DbContext(typeof(WsbLearnDbContext))]
     [Migration("20220927183347_update-question")]
-    partial class updatequestion
+    partial class updateQuestion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
