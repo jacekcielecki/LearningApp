@@ -3,9 +3,9 @@ using LearningApp.Application.Services;
 
 namespace LearningApp.WebApi.Extensions
 {
-    public static class RegisterServicesExtension
+    public static class ConfigureWebApiServicesExtension
     {
-        public static IServiceCollection RegisterServices(this IServiceCollection services)
+        public static IServiceCollection AddWebApiServices(this IServiceCollection services)
         {
             services.AddTransient<IImageService, ImageService>();
             services.AddScoped<ICategoryService, CategoryService>();

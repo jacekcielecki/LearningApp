@@ -7,7 +7,7 @@ namespace LearningApp.WebApi.Extensions
 {
     public static class ConfigureAuthenticationExtension
     {
-        public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, JwtAuthenticationSettings jwtSettings)
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, JwtAuthenticationSettings jwtSettings)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
             services.AddAuthentication(option =>

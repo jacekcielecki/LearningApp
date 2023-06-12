@@ -10,19 +10,20 @@ var appConfig = builder.Configuration;
 var jwtSettings = appConfig.GetSection("Jwt").Get<JwtAuthenticationSettings>()!;
 var blobSettings = appConfig.GetSection("BlobStorage").Get<AzureBlobStorageSettings>()!;
 var corsOriginName = appConfig["Cors:originName"]!;
+var connectionString = appConfig.GetConnectionString("learningAppDb");
 
-builder.Services.RegisterServices();
+builder.Services.AddInfrastructureServices(connectionString);
+builder.Services.AddApplicationServices(jwtSettings, blobSettings);
+builder.Services.AddWebApiServices();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.ConfigureSwagger();
-builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
-builder.Services.ConfigureAuthentication(jwtSettings);
-builder.Services.ConfigureCors(corsOriginName);
 builder.Services.AddLogging();
 builder.Services.AddMvc();
-builder.Services.AddApplicationServices(jwtSettings, blobSettings);
+builder.Services.AddSwagger();
+builder.Services.AddAuthentication(jwtSettings);
+builder.Services.AddCors(corsOriginName);
+
 
 var app = builder.Build();
 
