@@ -19,15 +19,7 @@ builder.Services.ConfigureSwagger();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.ConfigureAuthentication(jwtSettings);
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: corsOriginName, builder =>
-        builder.AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowAnyOrigin()
-        //.WithOrigins(appConfig["AllowedOrigins"])
-    );
-});
+builder.Services.ConfigureCors(corsOriginName);
 builder.Services.AddLogging();
 builder.Services.AddMvc();
 builder.Services.AddApplicationServices(jwtSettings, blobSettings);
