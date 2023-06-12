@@ -73,21 +73,8 @@ namespace LearningApp.Application.Services
             if (userCategoryProgress?.LevelProgresses is null)
                 await CreateUserCategoryProgress(user, category);
 
-            var questions = category.Questions
-                .Where(r => r.Level == level).ToList();
-            var selectedQuestions = new List<Question>();
-            var random = new Random();
-            while (selectedQuestions.Count() < category.QuestionsPerQuiz)
-            {
-                if (!questions.Any())
-                    break;
-
-                var randomQuestionId = random.Next(0, questions.Count() - 1);
-                selectedQuestions.Add(questions[randomQuestionId]);
-                questions.RemoveAt(randomQuestionId);
-            }
-
-            return _mapper.Map<List<QuestionDto>>(selectedQuestions);
+            var questions = await GetRandomQuestions(categoryId, level);
+            return questions;
         }
 
         public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId)
@@ -145,6 +132,34 @@ namespace LearningApp.Application.Services
 
             _dbContext.Questions.Remove(entity);
             await _dbContext.SaveChangesAsync();
+        }
+
+        private async Task<List<QuestionDto>> GetRandomQuestions(int categoryId, int level)
+        {
+            var category = await _dbContext
+                .Categories
+                .FirstOrDefaultAsync(x => x.Id == categoryId);
+
+            var questions = await _dbContext
+                .Questions
+                .Where(x => x.CategoryId == categoryId 
+                            && x.Level == level)
+                .ToListAsync();
+
+            var selectedQuestions = new List<Question>();
+            var random = new Random();
+
+            while (selectedQuestions.Count < category?.QuestionsPerQuiz)
+            {
+                if (!questions.Any())
+                    break;
+
+                var randomQuestionId = random.Next(0, questions.Count - 1);
+                selectedQuestions.Add(questions[randomQuestionId]);
+                questions.RemoveAt(randomQuestionId);
+            }
+
+            return _mapper.Map<List<QuestionDto>>(selectedQuestions);
         }
 
         private async Task CreateUserCategoryProgress(User user, Category category)
