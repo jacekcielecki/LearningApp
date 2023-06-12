@@ -18,12 +18,12 @@ var blobSettings = new AzureBlobStorageSettings();
 appConfig.GetSection("Jwt").Bind(jwtSettings);
 appConfig.GetSection("BlobStorage").Bind(blobSettings);
 
-AddServicesDependencyInjection();
+builder.Services.RegisterServices();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureSwagger();
-builder.Services.AddDalServices(builder.Configuration);
+builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 builder.Services.AddSingleton(jwtSettings);
@@ -73,16 +73,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-void AddServicesDependencyInjection()
-{
-    builder.Services.AddTransient<IImageService, ImageService>();
-    builder.Services.AddScoped<ICategoryService, CategoryService>();
-    builder.Services.AddScoped<IUserProgressService, UserProgressService>();
-    builder.Services.AddScoped<IQuestionService, QuestionService>();
-    builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<IAchievementService, AchievementService>();
-    builder.Services.AddScoped<ICategoryGroupService, CategoryGroupService>();
-}
 
 public partial class Program {}

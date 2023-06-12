@@ -7,7 +7,7 @@ namespace LearningApp.Infrastructure.Extensions
 {
     public static class ConfigureServicesExtension
     {
-        public static IServiceCollection AddDalServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<WsbLearnDbContext>(
                 options => options.UseSqlServer(configuration.GetConnectionString("azureSqlDb"),
