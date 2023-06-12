@@ -6,10 +6,13 @@ namespace LearningApp.Application.Extensions
     {
         public static int GetUserId(this HttpContext httpContext)
         {
-            //if (httpContext.User is null)
-            //    return string.Empty;
+            var userIdClaim = httpContext.User.Claims.SingleOrDefault(c => c.Type == "jti");
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return userId;
+            }
 
-            return int.Parse(httpContext.User.Claims.Single(c => c.Type == "jti").Value);
+            throw new InvalidOperationException("User ID claim not found or invalid.");
         }
     }
 }
