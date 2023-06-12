@@ -7,11 +7,9 @@ using LearningApp.WebApi.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 var appConfig = builder.Configuration;
-
-var jwtSettings = new JwtAuthenticationSettings();
-var blobSettings = new AzureBlobStorageSettings();
-appConfig.GetSection("Jwt").Bind(jwtSettings);
-appConfig.GetSection("BlobStorage").Bind(blobSettings);
+var jwtSettings = appConfig.GetSection("Jwt").Get<JwtAuthenticationSettings>()!;
+var blobSettings = appConfig.GetSection("BlobStorage").Get<AzureBlobStorageSettings>()!;
+var corsOriginName = appConfig["Cors:originName"]!;
 
 builder.Services.RegisterServices();
 builder.Services.AddControllers();
@@ -20,12 +18,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.ConfigureSwagger();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
-
-builder.Services.AddSingleton(jwtSettings);
 builder.Services.ConfigureAuthentication(jwtSettings);
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: appConfig["Cors:originName"], builder =>
+    options.AddPolicy(name: corsOriginName, builder =>
         builder.AllowAnyMethod()
         .AllowAnyHeader()
         .AllowAnyOrigin()
@@ -38,7 +34,7 @@ builder.Services.AddApplicationServices(jwtSettings, blobSettings);
 
 var app = builder.Build();
 
-app.UseCors(appConfig["Cors:originName"]);
+app.UseCors(corsOriginName);
 app.ApplyMigrations();
 app.UseSwagger();
 app.UseSwaggerUI();
