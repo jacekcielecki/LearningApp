@@ -11,7 +11,7 @@ namespace LearningApp.Application.Tests.Helpers
             get
             {
                 if (_mapper != null) return _mapper;
-                var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new WsbLearnMappingProfile()); });
+                var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new LearningAppMappingProfile()); });
                 var mapper = mappingConfig.CreateMapper();
                 _mapper = mapper;
                 return _mapper;

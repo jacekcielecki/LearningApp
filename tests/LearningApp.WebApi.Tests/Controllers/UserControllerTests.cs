@@ -21,13 +21,13 @@ namespace LearningApp.WebApi.Tests.Controllers
                 builder.ConfigureServices(services =>
                 {
                     var dbContextOptions = services.SingleOrDefault(service =>
-                        service.ServiceType == typeof(DbContextOptions<WsbLearnDbContext>));
+                        service.ServiceType == typeof(DbContextOptions<LearningAppDbContext>));
 
                     if (dbContextOptions is not null) services.Remove(dbContextOptions);
 
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                     services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
-                    services.AddDbContext<WsbLearnDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
+                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
                 });
             });
 

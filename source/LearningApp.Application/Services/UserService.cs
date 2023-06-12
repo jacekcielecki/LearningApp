@@ -20,7 +20,7 @@ namespace LearningApp.Application.Services
 {
     public class UserService : IUserService
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IValidator<CreateUserRequest> _createUserRequestValidator;
         private readonly IValidator<UpdateUserRequest> _updateUserRequestValidator;
@@ -29,7 +29,7 @@ namespace LearningApp.Application.Services
         private readonly AzureBlobStorageSettings _blobStorageSettings;
         private readonly IMapper _mapper;
 
-        public UserService(WsbLearnDbContext dbContext, IPasswordHasher<User> passwordHasher,
+        public UserService(LearningAppDbContext dbContext, IPasswordHasher<User> passwordHasher,
             IValidator<CreateUserRequest> createUserRequestValidator,
             IValidator<UpdateUserRequest> updateUserRequestValidator,
             IValidator<UpdateUserPasswordRequest> updateUserPasswordRequestValidator,

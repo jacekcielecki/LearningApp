@@ -7,15 +7,15 @@ namespace LearningApp.Application.Tests.Services
 {
     public class UserProgressServiceTests
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
 
         public UserProgressServiceTests()
         {
-            var dbContextOptions = new DbContextOptionsBuilder<WsbLearnDbContext>()
+            var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDb")
                 .Options;
 
-            _dbContext = new WsbLearnDbContext(dbContextOptions);
+            _dbContext = new LearningAppDbContext(dbContextOptions);
         }
 
         [Fact]

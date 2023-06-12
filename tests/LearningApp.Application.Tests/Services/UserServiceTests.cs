@@ -12,7 +12,7 @@ namespace LearningApp.Application.Tests.Services
 {
     public class UserServiceTests
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
         private readonly Mock<IPasswordHasher<User>> _passwordHasherMock;
         private readonly IValidator<CreateUserRequest> _createUserValidator;
         private readonly IValidator<UpdateUserRequest> _updateUserValidator;
@@ -22,11 +22,11 @@ namespace LearningApp.Application.Tests.Services
 
         public UserServiceTests()
         {
-            var dbContextOptions = new DbContextOptionsBuilder<WsbLearnDbContext>()
+            var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDb")
                 .Options;
 
-            _dbContext = new WsbLearnDbContext(dbContextOptions);
+            _dbContext = new LearningAppDbContext(dbContextOptions);
             _passwordHasherMock = new Mock<IPasswordHasher<User>>();
             _createUserValidator = new CreateUserRequestValidator(_dbContext);
             _updateUserValidator = new UpdateUserRequestValidator(_dbContext);

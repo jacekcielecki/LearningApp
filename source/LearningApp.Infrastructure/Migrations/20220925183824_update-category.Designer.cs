@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace WSBLearn.Dal.Migrations
 {
-    [DbContext(typeof(WsbLearnDbContext))]
+    [DbContext(typeof(LearningAppDbContext))]
     [Migration("20220925183824_update-category")]
     partial class updateCategory
     {

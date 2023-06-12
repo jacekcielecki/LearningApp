@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LearningApp.Infrastructure.Persistence
 {
-    public class WsbLearnDbContext : DbContext
+    public class LearningAppDbContext : DbContext
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Question> Questions { get; set; }
@@ -15,7 +15,7 @@ namespace LearningApp.Infrastructure.Persistence
         public DbSet<Achievement> Achievements { get; set; }
         public DbSet<CategoryGroup> CategoryGroups { get; set; }
 
-        public WsbLearnDbContext(DbContextOptions<WsbLearnDbContext> options) : base(options)
+        public LearningAppDbContext(DbContextOptions<LearningAppDbContext> options) : base(options)
         {
         }
 

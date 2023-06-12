@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace WSBLearn.Dal.Migrations
 {
-    [DbContext(typeof(WsbLearnDbContext))]
+    [DbContext(typeof(LearningAppDbContext))]
     [Migration("20221119190351_drop-LevelProgress2")]
     partial class dropLevelProgress2
     {

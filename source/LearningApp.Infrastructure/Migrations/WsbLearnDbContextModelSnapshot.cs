@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace WSBLearn.Dal.Migrations
 {
-    [DbContext(typeof(WsbLearnDbContext))]
+    [DbContext(typeof(LearningAppDbContext))]
     partial class WsbLearnDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

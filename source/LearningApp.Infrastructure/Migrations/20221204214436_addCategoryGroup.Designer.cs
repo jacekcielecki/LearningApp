@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace WSBLearn.Dal.Migrations
 {
-    [DbContext(typeof(WsbLearnDbContext))]
+    [DbContext(typeof(LearningAppDbContext))]
     [Migration("20221204214436_addCategoryGroup")]
     partial class addCategoryGroup
     {

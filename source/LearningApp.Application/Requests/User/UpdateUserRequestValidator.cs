@@ -6,9 +6,9 @@ namespace LearningApp.Application.Requests.User
 {
     public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
 
-        public UpdateUserRequestValidator(WsbLearnDbContext dbContext)
+        public UpdateUserRequestValidator(LearningAppDbContext dbContext)
         {
             _dbContext = dbContext;
 

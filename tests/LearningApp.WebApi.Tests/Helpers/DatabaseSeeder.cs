@@ -18,7 +18,7 @@ namespace LearningApp.WebApi.Tests.Helpers
         {
             var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
             using var scope = scopeFactory?.CreateScope();
-            var dbContext = scope?.ServiceProvider.GetService<WsbLearnDbContext>();
+            var dbContext = scope?.ServiceProvider.GetService<LearningAppDbContext>();
 
             if (dbContext is null) return;
 

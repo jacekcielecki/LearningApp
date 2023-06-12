@@ -13,12 +13,12 @@ namespace LearningApp.Application.Services
 {
     public class QuestionService : IQuestionService
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateQuestionRequest> _createQuestionRequestValidator;
         private readonly IValidator<UpdateQuestionRequest> _updateQuestionRequestValidator;
 
-        public QuestionService(WsbLearnDbContext dbContext, IMapper mapper,
+        public QuestionService(LearningAppDbContext dbContext, IMapper mapper,
             IValidator<CreateQuestionRequest> createQuestionRequestValidator,
             IValidator<UpdateQuestionRequest> updateQuestionRequestValidator)
         {

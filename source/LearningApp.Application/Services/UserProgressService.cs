@@ -11,9 +11,9 @@ namespace LearningApp.Application.Services
 {
     public class UserProgressService : IUserProgressService
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
 
-        public UserProgressService(WsbLearnDbContext dbContext)
+        public UserProgressService(LearningAppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

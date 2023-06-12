@@ -8,9 +8,9 @@ namespace LearningApp.Infrastructure.Extensions
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, string sqlServerConnectionString)
         {
-            services.AddDbContext<WsbLearnDbContext>(
+            services.AddDbContext<LearningAppDbContext>(
                 options => options.UseSqlServer(sqlServerConnectionString,
-                    x => x.MigrationsAssembly(typeof(WsbLearnDbContext).Assembly.FullName)));
+                    x => x.MigrationsAssembly(typeof(LearningAppDbContext).Assembly.FullName)));
 
             return services;
         }
