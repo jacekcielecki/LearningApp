@@ -74,7 +74,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             var loginCredentials = new LoginDto
             {
-                Login = existingUser.EmailAddress,
+                Email = existingUser.EmailAddress,
                 Password = existingUser.Password
             };
 

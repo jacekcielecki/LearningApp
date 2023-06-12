@@ -90,8 +90,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             var existingCategory = new Category
             {
                 Name = "TestCategoryName",
-                LessonsPerLevel = 5,
-                QuestionsPerLesson = 5
+                QuizPerLevel = 5,
+                QuestionsPerQuiz = 5
             };
             var existingQuestion = new Question
             {
@@ -138,8 +138,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             var existingCategory = new Category
             {
                 Name = "TestCategoryName",
-                LessonsPerLevel = 5,
-                QuestionsPerLesson = 5
+                QuizPerLevel = 5,
+                QuestionsPerQuiz = 5
             };
             await _databaseSeeder.Seed(existingCategory);
 

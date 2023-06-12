@@ -80,7 +80,7 @@ namespace LearningApp.Application.Services
         {
             var user = await _dbContext.Users
                 .Include(e => e.Role)
-                .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Login || e.Username == loginDto.Login);
+                .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Email || e.Username == loginDto.Email);
             if (user is null)
                 throw new BadHttpRequestException(Messages.AuthorizationFailed);
 

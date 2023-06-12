@@ -93,7 +93,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Users.AddAsync(existingUser);
             await _dbContext.SaveChangesAsync();
 
-            var loginDto = new LoginDto { Login = existingUser.EmailAddress, Password = testPassword };
+            var loginDto = new LoginDto { Email = existingUser.EmailAddress, Password = testPassword };
 
             _passwordHasherMock
                 .Setup(x => x.VerifyHashedPassword(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))

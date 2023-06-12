@@ -89,7 +89,7 @@ namespace LearningApp.Application.Tests.Services
         public async Task GetQuizAsync_WithExistingItems_ReturnsQuiz()
         {
             //arrange
-            var existingCategory = new Category { Name = "TestCategoryName", LessonsPerLevel = 5, QuestionsPerLesson = 5 };
+            var existingCategory = new Category { Name = "TestCategoryName", QuizPerLevel = 5, QuestionsPerQuiz = 5 };
             await _dbContext.Categories.AddAsync(existingCategory);
             await _dbContext.SaveChangesAsync();
 

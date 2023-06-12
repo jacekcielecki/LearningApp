@@ -4,7 +4,6 @@
     {
         public static bool UrlOrEmpty(this string url)
         {
-
             if (string.IsNullOrEmpty(url))
             {
                 return true;

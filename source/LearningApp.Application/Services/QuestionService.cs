@@ -77,7 +77,7 @@ namespace LearningApp.Application.Services
                 .Where(r => r.Level == level).ToList();
             var selectedQuestions = new List<Question>();
             var random = new Random();
-            while (selectedQuestions.Count() < category.QuestionsPerLesson)
+            while (selectedQuestions.Count() < category.QuestionsPerQuiz)
             {
                 if (!questions.Any())
                     break;
@@ -163,8 +163,8 @@ namespace LearningApp.Application.Services
                 new()
                 {
                     LevelName = "Easy",
-                    FinishedQuizzes = 0,
-                    QuizzesToFinish = category.LessonsPerLevel,
+                    FinishedQuiz = 0,
+                    QuizToFinish = category.QuizPerLevel,
                     LevelCompleted = false,
                     CategoryProgressId = categoryProgress.Id,
                     CategoryProgress = categoryProgress
@@ -172,8 +172,8 @@ namespace LearningApp.Application.Services
                 new()
                 {
                     LevelName = "Medium",
-                    FinishedQuizzes = 0,
-                    QuizzesToFinish = category.LessonsPerLevel,
+                    FinishedQuiz = 0,
+                    QuizToFinish = category.QuizPerLevel,
                     LevelCompleted = false,
                     CategoryProgressId = categoryProgress.Id,
                     CategoryProgress = categoryProgress
@@ -181,8 +181,8 @@ namespace LearningApp.Application.Services
                 new()
                 {
                     LevelName = "Hard",
-                    FinishedQuizzes = 0,
-                    QuizzesToFinish = category.LessonsPerLevel,
+                    FinishedQuiz = 0, 
+                    QuizToFinish = category.QuizPerLevel,
                     LevelCompleted = false,
                     CategoryProgressId = categoryProgress.Id,
                     CategoryProgress = categoryProgress

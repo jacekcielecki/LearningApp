@@ -71,8 +71,8 @@ namespace LearningApp.Application.Services
             entity.Name = request.Name;
             entity.Description = request.Description;
             entity.IconUrl = request.IconUrl;
-            entity.QuestionsPerLesson = request.QuestionsPerLesson;
-            entity.LessonsPerLevel = request.LessonsPerLevel;
+            entity.QuestionsPerQuiz = request.QuestionsPerLesson;
+            entity.QuizPerLevel = request.LessonsPerLevel;
             await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<CategoryDto>(entity);

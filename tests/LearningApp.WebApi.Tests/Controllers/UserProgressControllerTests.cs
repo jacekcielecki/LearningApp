@@ -68,8 +68,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                                 new LevelProgress
                                 {
                                     LevelName = quizLevelName,
-                                    QuizzesToFinish = 2,
-                                    FinishedQuizzes = 0,
+                                    QuizToFinish = 2,
+                                    FinishedQuiz = 0,
                                     LevelCompleted = false
                                 }
                             }
