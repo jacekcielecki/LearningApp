@@ -71,8 +71,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             {
                 Name = "TestCategoryName",
                 Description = "TestCategoryDescription",
-                LessonsPerLevel = 3,
-                QuestionsPerLesson = 5
+                QuizPerLevel = 3,
+                QuestionsPerQuiz = 5
             };
 
             //act
@@ -97,8 +97,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             {
                 Name = "UpdatedTestCategoryName",
                 Description = "UpdatedTestCategoryDescription",
-                LessonsPerLevel = 3,
-                QuestionsPerLesson = 5
+                QuizPerLevel = 3,
+                QuestionsPerQuiz = 5
             };
 
             //act
