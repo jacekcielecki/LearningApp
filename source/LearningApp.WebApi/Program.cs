@@ -17,7 +17,6 @@ builder.Services.AddApplicationServices(jwtSettings, blobSettings);
 builder.Services.AddWebApiServices();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddLogging();
 builder.Services.AddMvc();
 builder.Services.AddSwagger();

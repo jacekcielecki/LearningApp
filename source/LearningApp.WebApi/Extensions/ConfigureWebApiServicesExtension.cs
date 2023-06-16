@@ -1,5 +1,8 @@
-﻿using LearningApp.Application.Interfaces;
+﻿using LearningApp.Application.Authorization;
+using LearningApp.Application.Interfaces;
 using LearningApp.Application.Services;
+using LearningApp.WebApi.Middleware;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LearningApp.WebApi.Extensions
 {
@@ -14,6 +17,8 @@ namespace LearningApp.WebApi.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAchievementService, AchievementService>();
             services.AddScoped<ICategoryGroupService, CategoryGroupService>();
+            services.AddScoped<ErrorHandlingMiddleware>();
+            services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
 
             return services;
         }

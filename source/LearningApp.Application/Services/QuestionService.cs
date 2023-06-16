@@ -90,6 +90,7 @@ namespace LearningApp.Application.Services
 
             var entity = _mapper.Map<Question>(request);
             entity.Category = category;
+            entity.DateCreated = DateTime.Now;
             await _dbContext.Questions.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
 

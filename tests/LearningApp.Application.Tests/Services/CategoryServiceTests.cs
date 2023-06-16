@@ -70,6 +70,7 @@ namespace LearningApp.Application.Tests.Services
         public async Task CreateAsync_WithValidItemToCreate_ReturnsCreatedItem()
         {
             //arrange
+            var userId = 999;
             var itemToCreate = new CreateCategoryRequest
             {
                 Name = "TestCategory", 
@@ -81,7 +82,7 @@ namespace LearningApp.Application.Tests.Services
             var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator);
 
             //act
-            var result = await service.CreateAsync(itemToCreate);
+            var result = await service.CreateAsync(itemToCreate, userId);
 
             //assert
             result.Should().NotBeNull();

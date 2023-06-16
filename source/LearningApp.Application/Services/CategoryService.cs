@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using LearningApp.Application.Authorization;
 using LearningApp.Application.Dtos;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Category;
 using LearningApp.Domain.Entities;
+using LearningApp.Domain.Enums;
 using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace LearningApp.Application.Services
 {
@@ -16,14 +20,18 @@ namespace LearningApp.Application.Services
         private readonly IMapper _mapper;
         private readonly IValidator<CreateCategoryRequest> _createCategoryRequestValidator;
         private readonly IValidator<UpdateCategoryRequest> _updateCategoryRequestValidator;
+        private readonly IAuthorizationService _authorizationService;
 
         public CategoryService(LearningAppDbContext dbContext, IMapper mapper,
-            IValidator<CreateCategoryRequest> createCategoryRequestValidator, IValidator<UpdateCategoryRequest> updateCategoryRequestValidator)
+            IValidator<CreateCategoryRequest> createCategoryRequestValidator, 
+            IValidator<UpdateCategoryRequest> updateCategoryRequestValidator, 
+            IAuthorizationService authorizationService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _createCategoryRequestValidator = createCategoryRequestValidator;
             _updateCategoryRequestValidator = updateCategoryRequestValidator;
+            _authorizationService = authorizationService;
         }
 
         public async Task<List<CategoryDto>> GetAllAsync()
@@ -46,33 +54,36 @@ namespace LearningApp.Application.Services
             return _mapper.Map<CategoryDto>(entity);
         }
 
-        public async Task<CategoryDto> CreateAsync(CreateCategoryRequest createCategoryRequest)
+        public async Task<CategoryDto> CreateAsync(CreateCategoryRequest createCategoryRequest, int userId)
         {
             var validationResult = await _createCategoryRequestValidator.ValidateAsync(createCategoryRequest);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors[0].ToString());
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             var entity = _mapper.Map<Category>(createCategoryRequest);
+            entity.DateCreated = DateTime.Now;
+            entity.CreatorId = userId;
             await _dbContext.Categories.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<CategoryDto>(entity);
         }
 
-        public async Task<CategoryDto> UpdateAsync(int id, UpdateCategoryRequest request)
+        public async Task<CategoryDto> UpdateAsync(int id, UpdateCategoryRequest request, ClaimsPrincipal user)
         {
             var entity = await _dbContext.Categories.FindAsync(id);
-            if (entity is null)
-                throw new NotFoundException(nameof(Category));
+            if (entity is null) throw new NotFoundException(nameof(Category));
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(user, entity, new ResourceOperationRequirement(OperationType.Update));
+            if (!authorizationResult.Succeeded) throw new ForbiddenException();
+            
             var validationResult = await _updateCategoryRequestValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors[0].ToString());
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             entity.Name = request.Name;
             entity.Description = request.Description;
             entity.IconUrl = request.IconUrl;
-            entity.QuestionsPerQuiz = request.QuestionsPerLesson;
-            entity.QuizPerLevel = request.LessonsPerLevel;
+            entity.QuestionsPerQuiz = request.QuestionsPerQuiz;
+            entity.QuizPerLevel = request.QuizPerLevel;
             await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<CategoryDto>(entity);
