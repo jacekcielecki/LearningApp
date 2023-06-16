@@ -11,6 +11,7 @@
         public string D { get; set; }
         public char CorrectAnswer { get; set; }
         public int Level { get; set; }
+        public DateTime? DateCreated { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
     }
