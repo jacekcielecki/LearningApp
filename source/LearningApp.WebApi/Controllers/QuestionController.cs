@@ -42,10 +42,10 @@ namespace LearningApp.WebApi.Controllers
         }
 
         [HttpPost("{categoryId}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateQuestionRequest request, int categoryId)
         {
-            var response = await _questionService.CreateAsync(request, categoryId);
+            var user = HttpContext.GetUserContext();
+            var response = await _questionService.CreateAsync(request, categoryId, user);
             return Ok(response);
         }
 

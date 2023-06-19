@@ -60,8 +60,8 @@ namespace LearningApp.Application.Services
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             var entity = _mapper.Map<Category>(createCategoryRequest);
-            entity.DateCreated = DateTime.Now;
             entity.CreatorId = userId;
+            entity.DateCreated = DateTime.Now;
             await _dbContext.Categories.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
 

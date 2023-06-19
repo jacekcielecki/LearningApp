@@ -1,13 +1,18 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using LearningApp.Application.Authorization;
 using LearningApp.Application.Dtos;
+using LearningApp.Application.Extensions;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Question;
 using LearningApp.Domain.Common;
 using LearningApp.Domain.Entities;
+using LearningApp.Domain.Enums;
 using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace LearningApp.Application.Services
 {
@@ -17,15 +22,18 @@ namespace LearningApp.Application.Services
         private readonly IMapper _mapper;
         private readonly IValidator<CreateQuestionRequest> _createQuestionRequestValidator;
         private readonly IValidator<UpdateQuestionRequest> _updateQuestionRequestValidator;
+        private readonly IAuthorizationService _authorizationService;
 
         public QuestionService(LearningAppDbContext dbContext, IMapper mapper,
             IValidator<CreateQuestionRequest> createQuestionRequestValidator,
-            IValidator<UpdateQuestionRequest> updateQuestionRequestValidator)
+            IValidator<UpdateQuestionRequest> updateQuestionRequestValidator, 
+            IAuthorizationService authorizationService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _createQuestionRequestValidator = createQuestionRequestValidator;
             _updateQuestionRequestValidator = updateQuestionRequestValidator;
+            _authorizationService = authorizationService;
         }
 
         public async Task<List<QuestionDto>> GetAllByCategoryAsync(int categoryId)
@@ -34,8 +42,8 @@ namespace LearningApp.Application.Services
                 .Questions
                 .Where(e => e.CategoryId == categoryId)
                 .ToListAsync();
-            if (entities is null)
-                throw new NotFoundException(nameof(Question));
+
+            if (entities is null) throw new NotFoundException(nameof(Question));
 
             return _mapper.Map<List<QuestionDto>>(entities);
         }
@@ -77,19 +85,23 @@ namespace LearningApp.Application.Services
             return questions;
         }
 
-        public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId)
+        public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId, ClaimsPrincipal user)
         {
             var category = await _dbContext
                 .Categories
                 .FindAsync(categoryId);
-            if (category is null)
-                throw new NotFoundException(nameof(Category));
-            var validationResult = await _createQuestionRequestValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors[0].ToString());
 
+            if (category is null) throw new NotFoundException(nameof(Category));
             var entity = _mapper.Map<Question>(request);
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(user, entity, new ResourceOperationRequirement(OperationType.Create));
+            if (!authorizationResult.Succeeded) throw new ForbiddenException();
+
+            var validationResult = await _createQuestionRequestValidator.ValidateAsync(request);
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
+
             entity.Category = category;
+            entity.CreatorId = user.GetUserId();
             entity.DateCreated = DateTime.Now;
             await _dbContext.Questions.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
