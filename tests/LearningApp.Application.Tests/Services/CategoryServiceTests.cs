@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using LearningApp.Application.Dtos;
+﻿using LearningApp.Application.Dtos;
 using LearningApp.Application.Requests.Category;
 using LearningApp.Application.Services;
 using LearningApp.Application.Tests.Helpers;
@@ -7,6 +6,7 @@ using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
+using System.Security.Claims;
 
 namespace LearningApp.Application.Tests.Services
 {
@@ -44,7 +44,7 @@ namespace LearningApp.Application.Tests.Services
             var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
-            var result = await service.GetAllAsync();
+            var result = await service.GetAllAsync(FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             result.Should().NotBeNull();
@@ -63,7 +63,7 @@ namespace LearningApp.Application.Tests.Services
             var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
-            var result = await service.GetByIdAsync(existingItem.Id);
+            var result = await service.GetByIdAsync(existingItem.Id, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             result.Should().NotBeNull();
@@ -76,7 +76,6 @@ namespace LearningApp.Application.Tests.Services
         public async Task CreateAsync_WithValidItemToCreate_ReturnsCreatedItem()
         {
             //arrange
-            var userId = 999;
             var itemToCreate = new CreateCategoryRequest
             {
                 Name = "TestCategory", 
@@ -88,7 +87,7 @@ namespace LearningApp.Application.Tests.Services
             var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
-            var result = await service.CreateAsync(itemToCreate, userId);
+            var result = await service.CreateAsync(itemToCreate, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             result.Should().NotBeNull();
@@ -116,7 +115,7 @@ namespace LearningApp.Application.Tests.Services
             var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
-            var result = await service.UpdateAsync(existingItem.Id, itemToUpdate, new ClaimsPrincipal());
+            var result = await service.UpdateAsync(existingItem.Id, itemToUpdate, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             result.Should().NotBeNull();
@@ -137,7 +136,7 @@ namespace LearningApp.Application.Tests.Services
             var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
-            await service.DeleteAsync(existingItem.Id);
+            await service.DeleteAsync(existingItem.Id, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             var deletedItem = _dbContext.Achievements.FirstOrDefault(x => x.Id == existingItem.Id);
