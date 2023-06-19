@@ -2,6 +2,7 @@
 using LearningApp.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LearningApp.WebApi.Controllers
 {
@@ -11,19 +12,20 @@ namespace LearningApp.WebApi.Controllers
     public class UserProgressController : ControllerBase
     {
         private readonly IUserProgressService _userProgressService;
+        private readonly ClaimsPrincipal _userContext;
+
 
         public UserProgressController(IUserProgressService userProgressService)
         {
             _userProgressService = userProgressService;
+            _userContext = HttpContext.GetUserContext();
         }
 
         [HttpPatch("{categoryId}/{level}/{quizLevelName}/{expGained}")]
         [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> CompleteQuizAsync(int categoryId, int level, string quizLevelName, int expGained)
         {
-            var userId = HttpContext.GetUserId();
-            var response = await _userProgressService.CompleteQuizAsync(userId, categoryId, quizLevelName, expGained);
-
+            var response = await _userProgressService.CompleteQuizAsync(_userContext, categoryId, quizLevelName, expGained);
             return Ok(response);
         }
 

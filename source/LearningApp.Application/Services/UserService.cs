@@ -29,7 +29,8 @@ namespace LearningApp.Application.Services
         private readonly AzureBlobStorageSettings _blobStorageSettings;
         private readonly IMapper _mapper;
 
-        public UserService(LearningAppDbContext dbContext, IPasswordHasher<User> passwordHasher,
+        public UserService(LearningAppDbContext dbContext,
+            IPasswordHasher<User> passwordHasher,
             IValidator<CreateUserRequest> createUserRequestValidator,
             IValidator<UpdateUserRequest> updateUserRequestValidator,
             IValidator<UpdateUserPasswordRequest> updateUserPasswordRequestValidator,
@@ -50,6 +51,7 @@ namespace LearningApp.Application.Services
         {
             var validationResult = await _createUserRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
+
             var user = new User
             {
                 Username = request.Username,
@@ -115,9 +117,7 @@ namespace LearningApp.Application.Services
                 .ThenInclude(e => e.CategoryProgress)
                 .ThenInclude(e => e.LevelProgresses)
                 .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (entity is null)
-                throw new NotFoundException(nameof(User));
+            if (entity is null) throw new NotFoundException(nameof(User));
 
             return _mapper.Map<UserDto>(entity);
         }
@@ -139,7 +139,6 @@ namespace LearningApp.Application.Services
                 .Users
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(User));
-
             if (entity.Id == 1 && entity.EmailAddress == "root") throw new ResourceProtectedException();
 
             var validationResult = await _updateUserRequestValidator.ValidateAsync(request);
@@ -164,6 +163,7 @@ namespace LearningApp.Application.Services
                 .FirstOrDefaultAsync(u => u.Id == id);
             if (entity is null) throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();
+
             var role = _dbContext
                 .Roles
                 .FirstOrDefault(r => r.Id == roleId);

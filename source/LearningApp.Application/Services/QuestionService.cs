@@ -65,7 +65,8 @@ namespace LearningApp.Application.Services
 
         public async Task<List<QuestionDto>> GetQuizAsync(int categoryId, int level, ClaimsPrincipal userContext)
         {
-            var category = await _dbContext.Categories
+            var category = await _dbContext.
+                Categories
                 .Include(r => r.Questions)
                 .FirstOrDefaultAsync(r => r.Id == categoryId);
 
@@ -75,7 +76,9 @@ namespace LearningApp.Application.Services
             var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
-            var user = await _dbContext.Users.Include(u => u.UserProgress)
+            var user = await _dbContext
+                .Users
+                .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
                 .FirstOrDefaultAsync(u => u.Id == userContext.GetUserId());
