@@ -1,17 +1,16 @@
 ## About The Project
 
-LearningApp is .NET web api designed for quiz application. Api follows simple onion type architecture. <br>
-Frontend part of application is also available here: [click](https://github.com/L3monPL/QuizAppAngular14)
-
+LearningApp is .NET web api tailored for a online quiz application. Project architecture designed following Clean Architecture by Jayson Taylor. <br>
+[React UI](https://github.com/jacekcielecki/LearningAppWeb) for application available, as well as it's [alternative](https://github.com/L3monPL/QuizAppAngular14) counterpart.
 
 ## Built with
 
--  ASP.NET Core
--  SQL Server
+- ASP.NET Core
+- SQL Server
 - Entity Framework Core
 - Microsoft Identity
 - FluentValidation
-- Auto Mapper
+- AutoMapper
 - XUnit
 - Moq
 - FluentAssertions
@@ -57,7 +56,7 @@ In order to setup project locally:
   ```
 
 ## Relationship Diagram
-![enter image description here](https://wsblearnstorage.blob.core.windows.net/imagecontainer/drawSQL-export-2022-11-29_13_54-f6334cd5-1acc-4311-9681-9750f54c3a7a.png)
+![enter image description here](https://wsblearnstorage.blob.core.windows.net/imagecontainer/drawSQL-learningapp-export-2023-06-12-488482a8-af98-4e61-ad44-dee25c6f52d5.png)
 
 ## Endpoints
 Swagger Documentation available:
