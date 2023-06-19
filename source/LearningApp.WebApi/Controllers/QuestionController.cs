@@ -35,7 +35,6 @@ namespace LearningApp.WebApi.Controllers
 
 
         [HttpGet("{categoryId}/{level}")]
-        //[Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> GetQuizAsync(int categoryId, [FromRoute] int level)
         {
             var response = await _questionService.GetQuizAsync(categoryId, level, _userContext);
@@ -50,7 +49,6 @@ namespace LearningApp.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateQuestionRequest request)
         {
             var response = await _questionService.UpdateAsync(id, request, _userContext);
@@ -58,7 +56,6 @@ namespace LearningApp.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             await _questionService.DeleteAsync(id, _userContext);
