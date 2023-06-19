@@ -4,7 +4,7 @@ namespace LearningApp.WebApi.Extensions
 {
     public static class ConfigureSwaggerExtension
     {
-        public static IServiceCollection ConfigureSwagger(this IServiceCollection services)
+        public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
             services.AddSwaggerGen(option =>
             {

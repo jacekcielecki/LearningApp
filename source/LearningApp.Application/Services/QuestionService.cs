@@ -1,31 +1,39 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using LearningApp.Application.Authorization;
 using LearningApp.Application.Dtos;
+using LearningApp.Application.Extensions;
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Question;
 using LearningApp.Domain.Common;
 using LearningApp.Domain.Entities;
+using LearningApp.Domain.Enums;
 using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace LearningApp.Application.Services
 {
     public class QuestionService : IQuestionService
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateQuestionRequest> _createQuestionRequestValidator;
         private readonly IValidator<UpdateQuestionRequest> _updateQuestionRequestValidator;
+        private readonly IAuthorizationService _authorizationService;
 
-        public QuestionService(WsbLearnDbContext dbContext, IMapper mapper,
+        public QuestionService(LearningAppDbContext dbContext, IMapper mapper,
             IValidator<CreateQuestionRequest> createQuestionRequestValidator,
-            IValidator<UpdateQuestionRequest> updateQuestionRequestValidator)
+            IValidator<UpdateQuestionRequest> updateQuestionRequestValidator, 
+            IAuthorizationService authorizationService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _createQuestionRequestValidator = createQuestionRequestValidator;
             _updateQuestionRequestValidator = updateQuestionRequestValidator;
+            _authorizationService = authorizationService;
         }
 
         public async Task<List<QuestionDto>> GetAllByCategoryAsync(int categoryId)
@@ -34,8 +42,8 @@ namespace LearningApp.Application.Services
                 .Questions
                 .Where(e => e.CategoryId == categoryId)
                 .ToListAsync();
-            if (entities is null)
-                throw new NotFoundException(nameof(Question));
+
+            if (entities is null) throw new NotFoundException(nameof(Question));
 
             return _mapper.Map<List<QuestionDto>>(entities);
         }
@@ -73,36 +81,28 @@ namespace LearningApp.Application.Services
             if (userCategoryProgress?.LevelProgresses is null)
                 await CreateUserCategoryProgress(user, category);
 
-            var questions = category.Questions
-                .Where(r => r.Level == level).ToList();
-            var selectedQuestions = new List<Question>();
-            var random = new Random();
-            while (selectedQuestions.Count() < category.QuestionsPerLesson)
-            {
-                if (!questions.Any())
-                    break;
-
-                var randomQuestionId = random.Next(0, questions.Count() - 1);
-                selectedQuestions.Add(questions[randomQuestionId]);
-                questions.RemoveAt(randomQuestionId);
-            }
-
-            return _mapper.Map<List<QuestionDto>>(selectedQuestions);
+            var questions = await GetRandomQuestions(categoryId, level);
+            return questions;
         }
 
-        public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId)
+        public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId, ClaimsPrincipal user)
         {
             var category = await _dbContext
                 .Categories
                 .FindAsync(categoryId);
-            if (category is null)
-                throw new NotFoundException(nameof(Category));
-            var validationResult = await _createQuestionRequestValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors[0].ToString());
 
+            if (category is null) throw new NotFoundException(nameof(Category));
             var entity = _mapper.Map<Question>(request);
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(user, entity, new ResourceOperationRequirement(OperationType.Create));
+            if (!authorizationResult.Succeeded) throw new ForbiddenException();
+
+            var validationResult = await _createQuestionRequestValidator.ValidateAsync(request);
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
+
             entity.Category = category;
+            entity.CreatorId = user.GetUserId();
+            entity.DateCreated = DateTime.Now;
             await _dbContext.Questions.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
 
@@ -147,6 +147,34 @@ namespace LearningApp.Application.Services
             await _dbContext.SaveChangesAsync();
         }
 
+        private async Task<List<QuestionDto>> GetRandomQuestions(int categoryId, int level)
+        {
+            var category = await _dbContext
+                .Categories
+                .FirstOrDefaultAsync(x => x.Id == categoryId);
+
+            var questions = await _dbContext
+                .Questions
+                .Where(x => x.CategoryId == categoryId 
+                            && x.Level == level)
+                .ToListAsync();
+
+            var selectedQuestions = new List<Question>();
+            var random = new Random();
+
+            while (selectedQuestions.Count < category?.QuestionsPerQuiz)
+            {
+                if (!questions.Any())
+                    break;
+
+                var randomQuestionId = random.Next(0, questions.Count - 1);
+                selectedQuestions.Add(questions[randomQuestionId]);
+                questions.RemoveAt(randomQuestionId);
+            }
+
+            return _mapper.Map<List<QuestionDto>>(selectedQuestions);
+        }
+
         private async Task CreateUserCategoryProgress(User user, Category category)
         {
             var categoryProgress = new CategoryProgress
@@ -163,8 +191,8 @@ namespace LearningApp.Application.Services
                 new()
                 {
                     LevelName = "Easy",
-                    FinishedQuizzes = 0,
-                    QuizzesToFinish = category.LessonsPerLevel,
+                    FinishedQuiz = 0,
+                    QuizToFinish = category.QuizPerLevel,
                     LevelCompleted = false,
                     CategoryProgressId = categoryProgress.Id,
                     CategoryProgress = categoryProgress
@@ -172,8 +200,8 @@ namespace LearningApp.Application.Services
                 new()
                 {
                     LevelName = "Medium",
-                    FinishedQuizzes = 0,
-                    QuizzesToFinish = category.LessonsPerLevel,
+                    FinishedQuiz = 0,
+                    QuizToFinish = category.QuizPerLevel,
                     LevelCompleted = false,
                     CategoryProgressId = categoryProgress.Id,
                     CategoryProgress = categoryProgress
@@ -181,8 +209,8 @@ namespace LearningApp.Application.Services
                 new()
                 {
                     LevelName = "Hard",
-                    FinishedQuizzes = 0,
-                    QuizzesToFinish = category.LessonsPerLevel,
+                    FinishedQuiz = 0, 
+                    QuizToFinish = category.QuizPerLevel,
                     LevelCompleted = false,
                     CategoryProgressId = categoryProgress.Id,
                     CategoryProgress = categoryProgress

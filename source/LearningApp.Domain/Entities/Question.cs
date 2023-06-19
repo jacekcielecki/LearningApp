@@ -1,6 +1,6 @@
 ﻿namespace LearningApp.Domain.Entities
 {
-    public class Question
+    public class Question : UserContent
     {
         public int Id { get; set; }
         public string QuestionContent { get; set; }

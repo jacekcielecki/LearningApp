@@ -8,9 +8,9 @@ using LearningApp.Domain.Entities;
 
 namespace LearningApp.Application.Common
 {
-    public class WsbLearnMappingProfile : Profile
+    public class LearningAppMappingProfile : Profile
     {
-        public WsbLearnMappingProfile()
+        public LearningAppMappingProfile()
         {
             //Achievement
             CreateMap<Achievement, AchievementDto>().ReverseMap();

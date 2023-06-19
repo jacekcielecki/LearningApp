@@ -1,25 +1,31 @@
-﻿using LearningApp.Application.Dtos;
+﻿using System.Security.Claims;
+using LearningApp.Application.Dtos;
 using LearningApp.Application.Requests.Category;
 using LearningApp.Application.Services;
 using LearningApp.Application.Tests.Helpers;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
+using Moq;
 
 namespace LearningApp.Application.Tests.Services
 {
     public class CategoryServiceTests
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
         private readonly IValidator<CreateCategoryRequest> _createCategoryValidator = new CreateCategoryRequestValidator();
         private readonly IValidator<UpdateCategoryRequest> _updateCategoryValidator = new UpdateCategoryRequestValidator();
+        private readonly Mock<IAuthorizationService> _authorizationService = new Mock<IAuthorizationService>();
 
         public CategoryServiceTests()
         {
-            var dbContextOptions = new DbContextOptionsBuilder<WsbLearnDbContext>()
+            var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDb")
                 .Options;
 
-            _dbContext = new WsbLearnDbContext(dbContextOptions);
+            _dbContext = new LearningAppDbContext(dbContextOptions);
+            _authorizationService.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Success());
         }
 
         [Fact]
@@ -35,7 +41,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Categories.AddRangeAsync(existingItems);
             await _dbContext.SaveChangesAsync();
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
             var result = await service.GetAllAsync();
@@ -54,7 +60,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Categories.AddAsync(existingItem);
             await _dbContext.SaveChangesAsync();
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
             var result = await service.GetByIdAsync(existingItem.Id);
@@ -70,18 +76,19 @@ namespace LearningApp.Application.Tests.Services
         public async Task CreateAsync_WithValidItemToCreate_ReturnsCreatedItem()
         {
             //arrange
+            var userId = 999;
             var itemToCreate = new CreateCategoryRequest
             {
                 Name = "TestCategory", 
                 Description = "TestCategoryDescription", 
-                LessonsPerLevel = 5,
-                QuestionsPerLesson = 6
+                QuizPerLevel = 5,
+                QuestionsPerQuiz = 6
             };
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
-            var result = await service.CreateAsync(itemToCreate);
+            var result = await service.CreateAsync(itemToCreate, userId);
 
             //assert
             result.Should().NotBeNull();
@@ -102,14 +109,14 @@ namespace LearningApp.Application.Tests.Services
             {
                 Name = "UpdatedTestCategory",
                 Description = "UpdatedTestCategoryDescription",
-                LessonsPerLevel = 5,
-                QuestionsPerLesson = 6
+                QuizPerLevel = 5,
+                QuestionsPerQuiz = 6
             };
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
-            var result = await service.UpdateAsync(existingItem.Id, itemToUpdate);
+            var result = await service.UpdateAsync(existingItem.Id, itemToUpdate, new ClaimsPrincipal());
 
             //assert
             result.Should().NotBeNull();
@@ -127,7 +134,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Categories.AddAsync(existingItem);
             await _dbContext.SaveChangesAsync();
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
 
             //act
             await service.DeleteAsync(existingItem.Id);

@@ -13,12 +13,12 @@ namespace LearningApp.Application.Services
 
     public class AchievementService : IAchievementService
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateAchievementRequest> _createAchievementRequest;
         private readonly IValidator<UpdateAchievementRequest> _updateAchievementRequest;
 
-        public AchievementService(WsbLearnDbContext dbContext, IMapper mapper, IValidator<CreateAchievementRequest> createAchievementRequest, IValidator<UpdateAchievementRequest> updateAchievementRequest)
+        public AchievementService(LearningAppDbContext dbContext, IMapper mapper, IValidator<CreateAchievementRequest> createAchievementRequest, IValidator<UpdateAchievementRequest> updateAchievementRequest)
         {
             _dbContext = dbContext;
             _mapper = mapper;

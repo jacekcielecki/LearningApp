@@ -9,17 +9,17 @@ namespace LearningApp.Application.Tests.Services
 {
     public class AchievementServiceTests
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
         private readonly IValidator<CreateAchievementRequest> _createAchievementRequestValidator = new CreateAchievementRequestValidator();
         private readonly IValidator<UpdateAchievementRequest> _updateAchievementRequestValidator = new UpdateAchievementRequestValidator();
 
         public AchievementServiceTests()
         {
-            var dbContextOptions = new DbContextOptionsBuilder<WsbLearnDbContext>()
+            var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDb")
                 .Options;
 
-            _dbContext = new WsbLearnDbContext(dbContextOptions);
+            _dbContext = new LearningAppDbContext(dbContextOptions);
         }
 
         [Fact]

@@ -20,13 +20,13 @@ namespace LearningApp.WebApi.Tests.Controllers
                 builder.ConfigureServices(services =>
                 {
                     var dbContextOptions = services.SingleOrDefault(service =>
-                        service.ServiceType == typeof(DbContextOptions<WsbLearnDbContext>));
+                        service.ServiceType == typeof(DbContextOptions<LearningAppDbContext>));
 
                     if (dbContextOptions is not null) services.Remove(dbContextOptions);
 
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                     services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
-                    services.AddDbContext<WsbLearnDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
+                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
                 });
             });
 
@@ -115,8 +115,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             var existingCategory = new Category
             {
                 Name = "TestCategoryName",
-                LessonsPerLevel = 5,
-                QuestionsPerLesson = 5
+                QuizPerLevel = 5,
+                QuestionsPerQuiz = 5
             };
             await _databaseSeeder.Seed(existingCategoryGroup);
             await _databaseSeeder.Seed(existingCategory);
@@ -141,8 +141,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             var existingCategory = new Category
             {
                 Name = "TestCategoryName",
-                LessonsPerLevel = 5,
-                QuestionsPerLesson = 5
+                QuizPerLevel = 5,
+                QuestionsPerQuiz = 5
             };
             await _databaseSeeder.Seed(existingCategoryGroup);
             await _databaseSeeder.Seed(existingCategory);

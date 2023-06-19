@@ -10,9 +10,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace WSBLearn.Dal.Migrations
 {
-    [DbContext(typeof(WsbLearnDbContext))]
+    [DbContext(typeof(LearningAppDbContext))]
     [Migration("20221001154335_update-db-context")]
-    partial class updatedbcontext
+    partial class updateDBcontext
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

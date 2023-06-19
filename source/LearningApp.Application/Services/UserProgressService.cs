@@ -11,9 +11,9 @@ namespace LearningApp.Application.Services
 {
     public class UserProgressService : IUserProgressService
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
 
-        public UserProgressService(WsbLearnDbContext dbContext)
+        public UserProgressService(LearningAppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -43,8 +43,8 @@ namespace LearningApp.Application.Services
             user.UserProgress.ExperiencePoints += expGained;
             user.UserProgress.TotalCompletedQuiz++;
             user.UserProgress.Level = DetermineUserLevel(user.UserProgress.ExperiencePoints);
-            userLevelProgress.FinishedQuizzes++;
-            if (userLevelProgress.FinishedQuizzes >= userLevelProgress.QuizzesToFinish)
+            userLevelProgress.FinishedQuiz++;
+            if (userLevelProgress.FinishedQuiz >= userLevelProgress.QuizToFinish)
                 userLevelProgress.LevelCompleted = true;
             if (!userCategoryProgress.CategoryCompleted)
             {

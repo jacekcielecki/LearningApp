@@ -9,17 +9,17 @@ namespace LearningApp.Application.Tests.Services
 {
     public class CategoryGroupServiceTests
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
         private readonly IValidator<CreateCategoryGroupRequest> _createCategoryGroupValidator = new CreateCategoryGroupValidator();
         private readonly IValidator<UpdateCategoryGroupRequest> _updateCategoryGroupValidator = new UpdateCategoryGroupValidator();
 
         public CategoryGroupServiceTests()
         {
-            var dbContextOptions = new DbContextOptionsBuilder<WsbLearnDbContext>()
+            var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDb")
                 .Options;
 
-            _dbContext = new WsbLearnDbContext(dbContextOptions);
+            _dbContext = new LearningAppDbContext(dbContextOptions);
         }
 
         [Fact]

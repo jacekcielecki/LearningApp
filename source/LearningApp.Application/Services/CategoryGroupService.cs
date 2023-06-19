@@ -12,12 +12,12 @@ namespace LearningApp.Application.Services
 {
     public class CategoryGroupService : ICategoryGroupService
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateCategoryGroupRequest> _createCategoryGroupRequestValidator;
         private readonly IValidator<UpdateCategoryGroupRequest> _updateCategoryGroupRequestValidator;
 
-        public CategoryGroupService(WsbLearnDbContext dbContext, IMapper mapper,
+        public CategoryGroupService(LearningAppDbContext dbContext, IMapper mapper,
             IValidator<CreateCategoryGroupRequest> createCategoryGroupRequestValidator, IValidator<UpdateCategoryGroupRequest> updateCategoryGroupRequestValidator)
         {
             _dbContext = dbContext;

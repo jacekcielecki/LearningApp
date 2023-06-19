@@ -4,7 +4,7 @@
 
 namespace WSBLearn.Dal.Migrations
 {
-    public partial class updatedbcontext : Migration
+    public partial class updateDBcontext : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -1,4 +1,5 @@
-﻿using LearningApp.Application.Interfaces;
+﻿using LearningApp.Application.Extensions;
+using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Category;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,15 +35,17 @@ namespace LearningApp.WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCategoryRequest createCategoryRequest)
         {
-            var response = await _categoryService.CreateAsync(createCategoryRequest);
+            var userId = HttpContext.GetUserId();
+            var response = await _categoryService.CreateAsync(createCategoryRequest, userId);
             return Ok(response);
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
         {
-            var response = await _categoryService.UpdateAsync(id, updateCategoryRequest);
+            var user = HttpContext.GetUserContext();
+            var response = await _categoryService.UpdateAsync(id, updateCategoryRequest, user);
             return Ok(response);
         }
 

@@ -7,9 +7,9 @@ namespace LearningApp.Application.Requests.User
 {
     public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
 
-        public CreateUserRequestValidator(WsbLearnDbContext dbContext)
+        public CreateUserRequestValidator(LearningAppDbContext dbContext)
         {
             _dbContext = dbContext;
 

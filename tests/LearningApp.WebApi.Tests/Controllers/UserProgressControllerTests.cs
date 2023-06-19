@@ -19,13 +19,13 @@ namespace LearningApp.WebApi.Tests.Controllers
                 builder.ConfigureServices(services =>
                 {
                     var dbContextOptions = services.SingleOrDefault(service =>
-                        service.ServiceType == typeof(DbContextOptions<WsbLearnDbContext>));
+                        service.ServiceType == typeof(DbContextOptions<LearningAppDbContext>));
 
                     if (dbContextOptions is not null) services.Remove(dbContextOptions);
 
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                     services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
-                    services.AddDbContext<WsbLearnDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
+                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
                 });
             });
 
@@ -68,8 +68,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                                 new LevelProgress
                                 {
                                     LevelName = quizLevelName,
-                                    QuizzesToFinish = 2,
-                                    FinishedQuizzes = 0,
+                                    QuizToFinish = 2,
+                                    FinishedQuiz = 0,
                                     LevelCompleted = false
                                 }
                             }

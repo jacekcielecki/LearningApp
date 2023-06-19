@@ -4,7 +4,7 @@
 
 namespace WSBLearn.Dal.Migrations
 {
-    public partial class updatecategoryquestionrelationtoonetomany : Migration
+    public partial class updateCategoryQuestionRelationToOneToMany : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

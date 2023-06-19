@@ -10,9 +10,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace WSBLearn.Dal.Migrations
 {
-    [DbContext(typeof(WsbLearnDbContext))]
+    [DbContext(typeof(LearningAppDbContext))]
     [Migration("20221001145854_update-category-question-relation-to-one-to-many")]
-    partial class updatecategoryquestionrelationtoonetomany
+    partial class updateCategoryQuestionRelationToOneToMany
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

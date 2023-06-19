@@ -10,18 +10,18 @@ namespace LearningApp.Application.Tests.Services
 {
     public class QuestionServiceTests
     {
-        private readonly WsbLearnDbContext _dbContext;
+        private readonly LearningAppDbContext _dbContext;
 
         private readonly IValidator<CreateQuestionRequest> _createQuestionValidator = new CreateQuestionRequestValidator();
         private readonly IValidator<UpdateQuestionRequest> _updateQuestionValidator = new UpdateQuestionRequestValidator();
 
         public QuestionServiceTests()
         {
-            var dbContextOptions = new DbContextOptionsBuilder<WsbLearnDbContext>()
+            var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDb")
                 .Options;
 
-            _dbContext = new WsbLearnDbContext(dbContextOptions);
+            _dbContext = new LearningAppDbContext(dbContextOptions);
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace LearningApp.Application.Tests.Services
         public async Task GetQuizAsync_WithExistingItems_ReturnsQuiz()
         {
             //arrange
-            var existingCategory = new Category { Name = "TestCategoryName", LessonsPerLevel = 5, QuestionsPerLesson = 5 };
+            var existingCategory = new Category { Name = "TestCategoryName", QuizPerLevel = 5, QuestionsPerQuiz = 5 };
             await _dbContext.Categories.AddAsync(existingCategory);
             await _dbContext.SaveChangesAsync();
 

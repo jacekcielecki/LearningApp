@@ -18,11 +18,11 @@ namespace LearningApp.Application.Requests.Category
                 .NotEmpty()
                 .MaximumLength(140);
 
-            RuleFor(r => r.QuestionsPerLesson)
+            RuleFor(r => r.QuestionsPerQuiz)
                 .NotNull()
                 .NotEmpty();
 
-            RuleFor(r => r.LessonsPerLevel)
+            RuleFor(r => r.QuizPerLevel)
                 .NotNull()
                 .NotEmpty();
 
