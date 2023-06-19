@@ -16,7 +16,7 @@ namespace LearningApp.Application.Extensions
             throw new InvalidOperationException("User ID claim not found or invalid.");
         }
 
-        public static ClaimsPrincipal GetUserContext(this HttpContext httpContext) => httpContext.User;
+        public static ClaimsPrincipal GetUserContext(this HttpContext httpContext) => httpContext?.User;
 
         public static int GetUserId(this ClaimsPrincipal userClaim)
         {

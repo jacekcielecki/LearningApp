@@ -36,19 +36,20 @@ namespace LearningApp.Application.Services
             _authorizationService = authorizationService;
         }
 
-        public async Task<List<QuestionDto>> GetAllByCategoryAsync(int categoryId)
+        public async Task<List<QuestionDto>> GetAllByCategoryAsync(int categoryId, ClaimsPrincipal userContext)
         {
             var entities = await _dbContext
                 .Questions
                 .Where(e => e.CategoryId == categoryId)
                 .ToListAsync();
 
-            if (entities is null) throw new NotFoundException(nameof(Question));
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
+            if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             return _mapper.Map<List<QuestionDto>>(entities);
         }
 
-        public async Task<List<QuestionDto>> GetAllByLevelAsync(int categoryId, int level)
+        public async Task<List<QuestionDto>> GetAllByLevelAsync(int categoryId, int level, ClaimsPrincipal userContext)
         {
             var entities = await _dbContext
                 .Questions
@@ -56,36 +57,43 @@ namespace LearningApp.Application.Services
                 .Where(r => r.Level == level)
                 .ToListAsync();
 
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
+            if (!authorizationResult.Succeeded) throw new ForbiddenException();
+
             return _mapper.Map<List<QuestionDto>>(entities);
         }
 
-        public async Task<List<QuestionDto>> GetQuizAsync(int categoryId, int level, int userId)
+        public async Task<List<QuestionDto>> GetQuizAsync(int categoryId, int level, ClaimsPrincipal userContext)
         {
             var category = await _dbContext.Categories
                 .Include(r => r.Questions)
                 .FirstOrDefaultAsync(r => r.Id == categoryId);
-            if (category is null)
-                throw new NotFoundException(nameof(Category));
-            if (level is < 0 or > 3)
-                throw new ArgumentException(Messages.InvalidLevel);
+
+            if (category is null) throw new NotFoundException(nameof(Category));
+            if (level is < 0 or > 3) throw new ArgumentException(Messages.InvalidLevel);
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
+            if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             var user = await _dbContext.Users.Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-            if (user is null)
-                throw new NotFoundException(nameof(User));
+                .FirstOrDefaultAsync(u => u.Id == userContext.GetUserId());
+            if (user is null) throw new NotFoundException(nameof(User));
 
             var userCategoryProgress = user.UserProgress.CategoryProgress
                 .FirstOrDefault(u => u.CategoryId == categoryId);
+
             if (userCategoryProgress?.LevelProgresses is null)
+            {
                 await CreateUserCategoryProgress(user, category);
+            }
 
             var questions = await GetRandomQuestions(categoryId, level);
             return questions;
         }
 
-        public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId, ClaimsPrincipal user)
+        public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId, ClaimsPrincipal userContext)
         {
             var category = await _dbContext
                 .Categories
@@ -94,14 +102,14 @@ namespace LearningApp.Application.Services
             if (category is null) throw new NotFoundException(nameof(Category));
             var entity = _mapper.Map<Question>(request);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(user, entity, new ResourceOperationRequirement(OperationType.Create));
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Create));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             var validationResult = await _createQuestionRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             entity.Category = category;
-            entity.CreatorId = user.GetUserId();
+            entity.CreatorId = userContext.GetUserId();
             entity.DateCreated = DateTime.Now;
             await _dbContext.Questions.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
@@ -109,19 +117,23 @@ namespace LearningApp.Application.Services
             return _mapper.Map<QuestionDto>(entity);
         }
 
-        public async Task<QuestionDto> UpdateAsync(int id, UpdateQuestionRequest request)
+        public async Task<QuestionDto> UpdateAsync(int id, UpdateQuestionRequest request, ClaimsPrincipal userContext)
         {
             var entity = await _dbContext
                 .Questions
                 .FindAsync(id);
-            if (entity is null)
-                throw new NotFoundException(nameof(Question));
-            var category = await _dbContext.Categories.FindAsync(request.CategoryId);
-            if (category is null)
-                throw new NotFoundException(nameof(Category));
+            if (entity is null) throw new NotFoundException(nameof(Question));
+
+            var category = await _dbContext
+                .Categories
+                .FindAsync(request.CategoryId);
+            if (category is null) throw new NotFoundException(nameof(Category));
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Update));
+            if (!authorizationResult.Succeeded) throw new ForbiddenException();
+
             var validationResult = await _updateQuestionRequestValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors[0].ToString());
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             entity.QuestionContent = request.QuestionContent;
             entity.ImageUrl = request.ImageUrl;
@@ -137,13 +149,19 @@ namespace LearningApp.Application.Services
             return _mapper.Map<QuestionDto>(entity); ;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, ClaimsPrincipal userContext)
         {
-            var entity = await _dbContext.Questions.FindAsync(id);
-            if (entity is null)
-                throw new NotFoundException(nameof(Question));
+            var entity = await _dbContext
+                .Questions
+                .FindAsync(id);
+            if (entity is null) throw new NotFoundException(nameof(Question));
 
-            _dbContext.Questions.Remove(entity);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Delete));
+            if (!authorizationResult.Succeeded) throw new ForbiddenException();
+
+            _dbContext
+                .Questions
+                .Remove(entity);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -152,6 +170,7 @@ namespace LearningApp.Application.Services
             var category = await _dbContext
                 .Categories
                 .FirstOrDefaultAsync(x => x.Id == categoryId);
+            if (category is null) throw new NotFoundException(nameof(Category));
 
             var questions = await _dbContext
                 .Questions

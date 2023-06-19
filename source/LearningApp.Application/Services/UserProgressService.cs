@@ -23,29 +23,36 @@ namespace LearningApp.Application.Services
             if (expGained is < 0 or > 20)
                 throw new ArgumentException(Messages.InvalidGainedExperience);
 
-            var user = await _dbContext.Users
+            var user = await _dbContext
+                .Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (user is null)
-                throw new NotFoundException(nameof(User));
-            var userCategoryProgress = user.UserProgress.CategoryProgress.FirstOrDefault(e => e.CategoryId == categoryId);
-            if (userCategoryProgress is null)
-                throw new NotFoundException(Messages.QuizNotStarted);
-            var userLevelProgress =
-                userCategoryProgress.LevelProgresses.FirstOrDefault(e => e.LevelName == quizLevelName);
-            if (userLevelProgress is null)
-                throw new ValidationException(Messages.GenericErrorMessage);
+            if (user is null) throw new NotFoundException(nameof(User));
+
+            var userCategoryProgress = user
+                .UserProgress
+                .CategoryProgress
+                .FirstOrDefault(e => e.CategoryId == categoryId);
+            if (userCategoryProgress is null) throw new NotFoundException(Messages.QuizNotStarted);
+
+            var userLevelProgress = userCategoryProgress
+                .LevelProgresses.
+                FirstOrDefault(e => e.LevelName == quizLevelName);
+            if (userLevelProgress is null) throw new ValidationException(Messages.GenericErrorMessage);
 
             user.UserProgress.ExperiencePoints += expGained;
             user.UserProgress.TotalCompletedQuiz++;
             user.UserProgress.Level = DetermineUserLevel(user.UserProgress.ExperiencePoints);
             userLevelProgress.FinishedQuiz++;
             if (userLevelProgress.FinishedQuiz >= userLevelProgress.QuizToFinish)
+            {
                 userLevelProgress.LevelCompleted = true;
+            }
+
             if (!userCategoryProgress.CategoryCompleted)
             {
                 var allLevelsCompleted = true;
@@ -75,18 +82,21 @@ namespace LearningApp.Application.Services
 
         public async Task CompleteAchievementAsync(int userId, int achievementId)
         {
-            var user = await _dbContext.Users
+            var user = await _dbContext
+                .Users
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.Achievements)
                 .FirstOrDefaultAsync(u => u.Id == userId);
-            if (user is null)
-                throw new NotFoundException(nameof(User));
-            var achievement = _dbContext.Achievements.FirstOrDefault(a => a.Id == achievementId);
-            if (achievement is null)
-                throw new NotFoundException(nameof(Achievement));
+            if (user is null) throw new NotFoundException(nameof(User));
 
-            user.UserProgress.Achievements.Add(achievement);
+            var achievement = _dbContext
+                .Achievements
+                .FirstOrDefault(a => a.Id == achievementId);
+            if (achievement is null) throw new NotFoundException(nameof(Achievement));
 
+            user.UserProgress
+                .Achievements
+                .Add(achievement);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -97,7 +107,7 @@ namespace LearningApp.Application.Services
             while (experiencePoints > levelThreshold)
             {
                 userLevel++;
-                levelThreshold = levelThreshold * 2;
+                levelThreshold *= 2;
             }
 
             return userLevel;

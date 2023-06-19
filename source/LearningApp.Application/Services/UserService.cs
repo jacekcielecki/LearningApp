@@ -49,9 +49,8 @@ namespace LearningApp.Application.Services
         public async Task RegisterAsync(CreateUserRequest request)
         {
             var validationResult = await _createUserRequestValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors[0].ToString());
-            var user = new User()
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
+            var user = new User
             {
                 Username = request.Username,
                 EmailAddress = request.EmailAddress,
@@ -78,22 +77,22 @@ namespace LearningApp.Application.Services
 
         public async Task<string> LoginAsync(LoginDto loginDto)
         {
-            var user = await _dbContext.Users
+            var user = await _dbContext
+                .Users
                 .Include(e => e.Role)
                 .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Email || e.Username == loginDto.Email);
-            if (user is null)
-                throw new BadHttpRequestException(Messages.AuthorizationFailed);
+            if (user is null) throw new BadHttpRequestException(Messages.AuthorizationFailed);
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, loginDto.Password);
-            if (result == PasswordVerificationResult.Failed)
-                throw new BadHttpRequestException(Messages.AuthorizationFailed);
+            if (result == PasswordVerificationResult.Failed) throw new BadHttpRequestException(Messages.AuthorizationFailed);
 
             return GenerateToken(user);
         }
 
         public async Task<List<UserDto>> GetAllAsync()
         {
-            var entities = await _dbContext.Users
+            var entities = await _dbContext
+                .Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.Achievements)
@@ -107,7 +106,8 @@ namespace LearningApp.Application.Services
 
         public async Task<UserDto> GetByIdAsync(int id)
         {
-            var entity = await _dbContext.Users
+            var entity = await _dbContext
+                .Users
                 .Include(e => e.Role)
                 .Include(e => e.UserProgress)
                 .ThenInclude(e => e.Achievements)
@@ -124,7 +124,8 @@ namespace LearningApp.Application.Services
 
         public async Task<List<UserRankingDto>> GetSortByExpAsync()
         {
-            var entities = await _dbContext.Users
+            var entities = await _dbContext
+                .Users
                 .Include(u => u.UserProgress).Skip(1)
                 .OrderByDescending(r => r.UserProgress.ExperiencePoints)
                 .ToListAsync();
@@ -134,14 +135,15 @@ namespace LearningApp.Application.Services
 
         public async Task<UserDto> UpdateAsync(int id, UpdateUserRequest request)
         {
-            var entity = await _dbContext.Users.FindAsync(id);
-            if (entity is null)
-                throw new NotFoundException(nameof(User));
-            if (entity.Id == 1 && entity.EmailAddress == "root")
-                throw new ResourceProtectedException();
+            var entity = await _dbContext
+                .Users
+                .FindAsync(id);
+            if (entity is null) throw new NotFoundException(nameof(User));
+
+            if (entity.Id == 1 && entity.EmailAddress == "root") throw new ResourceProtectedException();
+
             var validationResult = await _updateUserRequestValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors[0].ToString());
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             if (!string.IsNullOrEmpty(request.Username))
                 entity.Username = request.Username;
@@ -156,16 +158,16 @@ namespace LearningApp.Application.Services
 
         public async Task<UserDto> UpdateUserRoleAsync(int id, int roleId)
         {
-            var entity = await _dbContext.Users
+            var entity = await _dbContext
+                .Users
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Id == id);
-            if (entity is null)
-                throw new NotFoundException(nameof(User));
-            if (entity.Id == 1 && entity.Username == "root")
-                throw new ResourceProtectedException();
-            var role = _dbContext.Roles.FirstOrDefault(r => r.Id == roleId);
-            if (role is null)
-                throw new NotFoundException(nameof(Role));
+            if (entity is null) throw new NotFoundException(nameof(User));
+            if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();
+            var role = _dbContext
+                .Roles
+                .FirstOrDefault(r => r.Id == roleId);
+            if (role is null) throw new NotFoundException(nameof(Role));
 
             entity.RoleId = roleId;
             await _dbContext.SaveChangesAsync();
@@ -175,17 +177,17 @@ namespace LearningApp.Application.Services
 
         public async Task UpdateUserPasswordAsync(int id, UpdateUserPasswordRequest request)
         {
-            var entity = await _dbContext.Users.FindAsync(id);
-            if (entity is null)
-                throw new NotFoundException(nameof(User));
-            if (entity.Id == 1 && entity.Username == "root")
-                throw new ResourceProtectedException();
+            var entity = await _dbContext
+                .Users
+                .FindAsync(id);
+            if (entity is null) throw new NotFoundException(nameof(User));
+            if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();
+
             var passwordVerification = _passwordHasher.VerifyHashedPassword(entity, entity.Password, request.OldPassword);
-            if (passwordVerification == PasswordVerificationResult.Failed)
-                throw new BadHttpRequestException(Messages.InvalidPassword);
+            if (passwordVerification == PasswordVerificationResult.Failed) throw new BadHttpRequestException(Messages.InvalidPassword);
+
             var validationResult = await _updateUserPasswordRequestValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors[0].ToString());
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             entity.Password = _passwordHasher.HashPassword(entity, request.NewPassword);
             await _dbContext.SaveChangesAsync();
@@ -193,11 +195,11 @@ namespace LearningApp.Application.Services
 
         public async Task DeleteAsync(int id)
         {
-            var entity = await _dbContext.Users.FindAsync(id);
-            if (entity is null)
-                throw new NotFoundException(nameof(User));
-            if (entity.Id == 1 && entity.Username == "root")
-                throw new ResourceProtectedException();
+            var entity = await _dbContext
+                .Users
+                .FindAsync(id);
+            if (entity is null) throw new NotFoundException(nameof(User));
+            if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();
 
             _dbContext.Users.Remove(entity);
             await _dbContext.SaveChangesAsync();

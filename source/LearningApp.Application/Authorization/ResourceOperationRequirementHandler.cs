@@ -1,10 +1,9 @@
 ﻿using LearningApp.Domain.Entities;
 using LearningApp.Domain.Enums;
+using LearningApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using LearningApp.Infrastructure.Persistence;
 
 namespace LearningApp.Application.Authorization
 {
@@ -22,6 +21,10 @@ namespace LearningApp.Application.Authorization
             if (requirement.ResourceOperation == OperationType.Read)
             {
                 context.Succeed(requirement);
+                return Task.CompletedTask;
+            }
+            if (context is null)
+            {
                 return Task.CompletedTask;
             }
 

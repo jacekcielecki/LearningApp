@@ -4,7 +4,9 @@ using LearningApp.Application.Services;
 using LearningApp.Application.Tests.Helpers;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
-using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Moq;
+using System.Security.Claims;
 
 namespace LearningApp.Application.Tests.Services
 {
@@ -14,6 +16,7 @@ namespace LearningApp.Application.Tests.Services
 
         private readonly IValidator<CreateQuestionRequest> _createQuestionValidator = new CreateQuestionRequestValidator();
         private readonly IValidator<UpdateQuestionRequest> _updateQuestionValidator = new UpdateQuestionRequestValidator();
+        private readonly Mock<IAuthorizationService> _authorizationService = new Mock<IAuthorizationService>();
 
         public QuestionServiceTests()
         {
@@ -22,6 +25,8 @@ namespace LearningApp.Application.Tests.Services
                 .Options;
 
             _dbContext = new LearningAppDbContext(dbContextOptions);
+            _authorizationService.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Success());
         }
 
         [Fact]
@@ -40,10 +45,10 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Questions.AddRangeAsync(existingQuestions);
             await _dbContext.SaveChangesAsync();
 
-            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator);
+            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator, _authorizationService.Object);
 
             //act
-            var result = await service.GetAllByCategoryAsync(existingCategory.Id);
+            var result = await service.GetAllByCategoryAsync(existingCategory.Id, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             result.Should().NotBeNull();
@@ -71,10 +76,10 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Questions.AddRangeAsync(existingQuestions);
             await _dbContext.SaveChangesAsync();
 
-            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator);
+            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator, _authorizationService.Object);
 
             //act
-            var result = await service.GetAllByLevelAsync(existingCategory.Id, testLevel);
+            var result = await service.GetAllByLevelAsync(existingCategory.Id, testLevel, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             result.Should().NotBeNull();
@@ -109,10 +114,10 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.CategoryProgresses.AddAsync(existingCategoryProgress);
             await _dbContext.SaveChangesAsync();
 
-            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator);
+            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator, _authorizationService.Object);
 
             //act
-            var result = await service.GetQuizAsync(existingCategory.Id, existingQuestion.Level, existingUser.Id);
+            var result = await service.GetQuizAsync(existingCategory.Id, existingQuestion.Level, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             result.Should().NotBeNull();
@@ -137,10 +142,10 @@ namespace LearningApp.Application.Tests.Services
                 CorrectAnswer = 'a',
                 Level = 1
             };
-            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator);
+            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator, _authorizationService.Object);
 
             //act
-            var result = await service.CreateAsync(itemToCreate, existingCategory.Id);
+            var result = await service.CreateAsync(itemToCreate, existingCategory.Id, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             result.Should().NotBeNull();
@@ -177,10 +182,10 @@ namespace LearningApp.Application.Tests.Services
                 CategoryId = existingCategory.Id
             };
 
-            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator);
+            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator, _authorizationService.Object);
 
             //act
-            var result = await service.UpdateAsync(existingQuestion.Id, itemToUpdate);
+            var result = await service.UpdateAsync(existingQuestion.Id, itemToUpdate, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             result.Should().NotBeNull();
@@ -198,10 +203,10 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Questions.AddAsync(existingQuestion);
             await _dbContext.SaveChangesAsync();
 
-            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator);
+            var service = new QuestionService(_dbContext, AutoMapperSingleton.Mapper, _createQuestionValidator, _updateQuestionValidator, _authorizationService.Object);
 
             //act
-            await service.DeleteAsync(existingQuestion.Id);
+            await service.DeleteAsync(existingQuestion.Id, FakeHttpContextSingleton.ClaimsPrincipal);
 
             //assert
             var deletedItem = _dbContext.Questions.FirstOrDefault(x => x.Id == existingQuestion.Id);
