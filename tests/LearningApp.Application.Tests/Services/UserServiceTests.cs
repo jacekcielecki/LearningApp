@@ -23,7 +23,7 @@ namespace LearningApp.Application.Tests.Services
         public UserServiceTests()
         {
             var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
+                .UseInMemoryDatabase(databaseName: "UserServiceTests")
                 .Options;
 
             _dbContext = new LearningAppDbContext(dbContextOptions);

@@ -20,7 +20,7 @@ namespace LearningApp.Application.Tests.Services
         public CategoryServiceTests()
         {
             var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
+                .UseInMemoryDatabase(databaseName: "CategoryServiceTests")
                 .Options;
 
             _dbContext = new LearningAppDbContext(dbContextOptions);

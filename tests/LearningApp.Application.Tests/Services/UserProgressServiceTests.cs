@@ -1,21 +1,28 @@
 ﻿using LearningApp.Application.Dtos;
 using LearningApp.Application.Services;
+using LearningApp.Application.Tests.Helpers;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
+using Moq;
+using System.Security.Claims;
 
 namespace LearningApp.Application.Tests.Services
 {
     public class UserProgressServiceTests
     {
         private readonly LearningAppDbContext _dbContext;
+        private readonly Mock<IAuthorizationService> _authorizationServiceStub = new Mock<IAuthorizationService>();
 
         public UserProgressServiceTests()
         {
             var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
+                .UseInMemoryDatabase(databaseName: "UserProgressServiceTests")
                 .Options;
 
             _dbContext = new LearningAppDbContext(dbContextOptions);
+            _authorizationServiceStub.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Success());
         }
 
         [Fact]
@@ -35,7 +42,7 @@ namespace LearningApp.Application.Tests.Services
                 Username = "TestUserUsername",
                 EmailAddress = "TestUser@mail.com",
                 Password = "TestUserPassword",
-                Role = new Role { Name = "TestUserRoleName" },
+                Role = new Role { Name = "Admin", Id = 2 },
                 UserProgress = new UserProgress
                 {
                     ExperiencePoints = 0,
@@ -68,7 +75,7 @@ namespace LearningApp.Application.Tests.Services
             var service = new UserProgressService(_dbContext);
 
             //act
-            var result = await service.CompleteQuizAsync(existingUser.Id, existingCategory.Id, quizLevelName, expGained);
+            var result = await service.CompleteQuizAsync(FakeHttpContextSingleton.ClaimsPrincipal, existingCategory.Id, quizLevelName, expGained);
 
             //assert
             result.Should().NotBeNull();
@@ -92,8 +99,10 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var existingUserProgress = new UserProgress { UserId = existingUser.Id };
-            var existingAchievement = new Achievement { Name = "TestAchievementName" };
             await _dbContext.UserProgresses.AddAsync(existingUserProgress);
+            await _dbContext.SaveChangesAsync();
+
+            var existingAchievement = new Achievement { Name = "TestAchievementName" };
             await _dbContext.Achievements.AddAsync(existingAchievement);
             await _dbContext.SaveChangesAsync();
 

@@ -16,7 +16,7 @@ namespace LearningApp.Application.Tests.Services
         public AchievementServiceTests()
         {
             var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
+                .UseInMemoryDatabase(databaseName: "AchievementServiceTests")
                 .Options;
 
             _dbContext = new LearningAppDbContext(dbContextOptions);

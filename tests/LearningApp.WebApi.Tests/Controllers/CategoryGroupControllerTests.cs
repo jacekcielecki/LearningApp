@@ -26,7 +26,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                     services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
-                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
+                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("CategoryGroupControllerTests"));
                 });
             });
 

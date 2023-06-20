@@ -26,7 +26,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                     services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
-                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
+                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("QuestionControllerTests"));
                 });
             });
 
@@ -93,34 +93,36 @@ namespace LearningApp.WebApi.Tests.Controllers
                 QuizPerLevel = 5,
                 QuestionsPerQuiz = 5
             };
+            await _databaseSeeder.Seed(existingCategory);
+
             var existingQuestion = new Question
             {
                 QuestionContent = "TestQuestionContent",
                 CategoryId = existingCategory.Id,
                 Level = 2
             };
+            await _databaseSeeder.Seed(existingQuestion);
+
             var existingUser = new User
             {
-                Id = 999,
                 EmailAddress = "testUser@mail.com",
                 Password = "testUserPassword",
                 Username = "testUserUsername"
             };
+            await _databaseSeeder.Seed(existingUser);
+
             var existingUserProgress = new UserProgress
             {
                 UserId = existingUser.Id,
             };
+            await _databaseSeeder.Seed(existingUserProgress);
+
             var existingCategoryProgress = new CategoryProgress
             {
                 CategoryId = existingCategory.Id,
                 UserProgressId = existingUserProgress.Id,
                 CategoryName = existingCategory.Name
             };
-
-            await _databaseSeeder.Seed(existingCategory);
-            await _databaseSeeder.Seed(existingQuestion);
-            await _databaseSeeder.Seed(existingUser);
-            await _databaseSeeder.Seed(existingUserProgress);
             await _databaseSeeder.Seed(existingCategoryProgress);
 
             //act
