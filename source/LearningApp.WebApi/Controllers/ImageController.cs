@@ -18,17 +18,17 @@ namespace LearningApp.WebApi.Controllers
 
         [HttpGet("{containerName}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<IActionResult> GetAllAsync(string containerName = "image")
+        public async Task<IActionResult> ListAsync(string containerName = "image")
         {
-            var files = await _imageService.GetAllAsync(containerName);
+            var files = await _imageService.ListAsync(containerName);
             return Ok(files);
         }
 
         [HttpGet("{containerName}/{filename}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<IActionResult> GetByNameAsync(string filename, string containerName = "image")
+        public async Task<IActionResult> DownloadAsync(string filename, string containerName = "image")
         {
-            var file = await _imageService.GetByNameAsync(containerName, filename);
+            var file = await _imageService.DownloadAsync(containerName, filename);
             if (file is null) return StatusCode(StatusCodes.Status500InternalServerError, BlobStorageMessages.FileNotFound(filename));
 
             return File(file.Content, file.ContentType, file.Name);

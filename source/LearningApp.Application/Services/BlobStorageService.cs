@@ -60,7 +60,7 @@ namespace LearningApp.Application.Services
             return response;
         }
 
-        public async Task<BlobDto> GetByNameAsync(string containerName, string blobFilename)
+        public async Task<BlobDto> DownloadAsync(string containerName, string blobFilename)
         {
             var container = GetBlobContainerClient(containerName);
 
@@ -106,7 +106,7 @@ namespace LearningApp.Application.Services
             return new BlobResponseDto { Error = false, Status = BlobStorageMessages.FileDeletedSuccessfully(blobFilename) };
         }
 
-        public async Task<List<BlobDto>> GetAllAsync(string containerName)
+        public async Task<List<BlobDto>> ListAsync(string containerName)
         {
             var container = GetBlobContainerClient(containerName);
             var files = new List<BlobDto>();

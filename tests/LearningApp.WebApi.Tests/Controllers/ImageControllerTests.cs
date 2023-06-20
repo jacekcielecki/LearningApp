@@ -1,44 +1,36 @@
 ﻿using LearningApp.Application.Dtos;
 using LearningApp.Application.Interfaces;
-using LearningApp.Infrastructure.Persistence;
 using LearningApp.WebApi.Tests.Helpers;
 using Microsoft.AspNetCore.Authorization.Policy;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.SqlServer.Server;
 
 namespace LearningApp.WebApi.Tests.Controllers
 {
     public class ImageControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
-        private readonly DatabaseSeeder _databaseSeeder;
-        private readonly Mock<IImageService> _imageServiceStub = new Mock<IImageService>();
+        private readonly Mock<IBlobStorageService> _blobStorageServiceStub = new Mock<IBlobStorageService>();
         private readonly string _validContainerName = "image";
 
         public ImageControllerTests(WebApplicationFactory<Program> factory)
         {
-            factory = factory.WithWebHostBuilder(builder =>
+           factory = factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
-                    var dbContextOptions = services.SingleOrDefault(service =>
-                        service.ServiceType == typeof(DbContextOptions<LearningAppDbContext>));
-
-                    if (dbContextOptions is not null) services.Remove(dbContextOptions);
-
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                     services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
-                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
-                    services.AddSingleton<IImageService>(_imageServiceStub.Object);
+                    services.AddSingleton<IBlobStorageService>(_blobStorageServiceStub.Object);
                 });
             });
 
             _client = factory.CreateClient();
-            _databaseSeeder = new DatabaseSeeder(factory);
         }
 
         [Fact]
-        public async Task GetAllAsync_WithValidContainerName_ReturnsStatusOk()
+        public async Task ListAsync_WithValidContainerName_ReturnsStatusOk()
         {
             //arrange
             var allExistingBlobs = new List<BlobDto>
@@ -50,8 +42,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                 }
             };
 
-            _imageServiceStub
-                .Setup(x => x.GetAllAsync(It.IsAny<string>()))
+            _blobStorageServiceStub
+                .Setup(x => x.ListAsync(It.IsAny<string>()))
                 .ReturnsAsync(allExistingBlobs);
 
             //act
@@ -63,8 +55,9 @@ namespace LearningApp.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetByNameAsync_WithValidContainerNameAndFileName_ReturnsStatusOk()
+        public async Task DownloadAsync_WithValidContainerNameAndFileName_ReturnsStatusOk()
         {
+            //arrange
             var existingBlob = new BlobDto()
             {
                 Name = "testFileName.jpg",
@@ -72,8 +65,8 @@ namespace LearningApp.WebApi.Tests.Controllers
                 ContentType = "image/jpeg"
             };
 
-            _imageServiceStub
-                .Setup(x => x.GetByNameAsync(It.IsAny<string>(), It.IsAny<string>()))
+            _blobStorageServiceStub
+                .Setup(x => x.DownloadAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(existingBlob);
 
             // Act
@@ -84,11 +77,42 @@ namespace LearningApp.WebApi.Tests.Controllers
         }
 
         [Fact]
+        public async Task UploadAsync_WithValidContainerNameAndImageFile_ReturnsStatusOk()
+        {
+            // Arrange
+            var filename = "testFile.jpg";
+
+            _blobStorageServiceStub.Setup(x => x.UploadAsync(
+                    It.IsAny<string>(), It.IsAny<IFormFile>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new BlobResponseDto
+                {
+                    Error = false,
+                    Status = "File successfully uploaded",
+                    Blob = new BlobDto
+                    {
+                        Uri = "https://www.google.pl",
+                        Name = filename,
+                    }
+                });
+
+            await using var testFile = File.OpenRead(@"TestFiles\test-image.png");
+            using var content = new StreamContent(testFile);
+            using var formData = new MultipartFormDataContent();
+            formData.Add(content, "file", filename);
+
+            // Act
+            var response = await _client.PostAsync($"api/Image/{_validContainerName}", formData);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
         public async Task DeleteAsync_WithValidFileAndContainerName_ReturnsOk()
         {
             //arrange
             var filename = "TestFileName3";
-            _imageServiceStub.Setup(x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<string>()))
+            _blobStorageServiceStub.Setup(x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new BlobResponseDto
                 {
                     Error = false,

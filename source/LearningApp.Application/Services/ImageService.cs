@@ -14,14 +14,14 @@ namespace LearningApp.Application.Services
             _blobStorageService = blobStorageService;
         }
 
-        public Task<List<BlobDto>> GetAllAsync(string containerName)
+        public Task<List<BlobDto>> ListAsync(string containerName)
         {
-            return _blobStorageService.GetAllAsync(containerName);
+            return _blobStorageService.ListAsync(containerName);
         }
 
-        public Task<BlobDto> GetByNameAsync(string containerName, string blobFilename)
+        public Task<BlobDto> DownloadAsync(string containerName, string blobFilename)
         {
-            return _blobStorageService.GetByNameAsync(containerName, blobFilename);
+            return _blobStorageService.DownloadAsync(containerName, blobFilename);
         }
 
         public Task<BlobResponseDto> UploadAsync(string containerName, IFormFile file)

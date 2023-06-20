@@ -107,23 +107,21 @@ namespace LearningApp.WebApi.Tests.Controllers
             {
                 EmailAddress = "testUser@mail.com",
                 Password = "testUserPassword",
-                Username = "testUserUsername"
+                Username = "testUserUsername",
+                UserProgress = new UserProgress
+                {
+                    Level = 2,
+                    CategoryProgress = new List<CategoryProgress>
+                    {
+                        new CategoryProgress
+                        {
+                            CategoryId = existingCategory.Id,
+                            CategoryName = existingCategory.Name
+                        }
+                    }
+                }
             };
             await _databaseSeeder.Seed(existingUser);
-
-            var existingUserProgress = new UserProgress
-            {
-                UserId = existingUser.Id,
-            };
-            await _databaseSeeder.Seed(existingUserProgress);
-
-            var existingCategoryProgress = new CategoryProgress
-            {
-                CategoryId = existingCategory.Id,
-                UserProgressId = existingUserProgress.Id,
-                CategoryName = existingCategory.Name
-            };
-            await _databaseSeeder.Seed(existingCategoryProgress);
 
             //act
             var response = await _client.GetAsync($"api/Question/{existingCategory.Id}/{existingQuestion.Level}");
