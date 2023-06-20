@@ -84,7 +84,9 @@ namespace LearningApp.Application.Services
                 .FirstOrDefaultAsync(u => u.Id == userContext.GetUserId());
             if (user is null) throw new NotFoundException(nameof(User));
 
-            var userCategoryProgress = user.UserProgress.CategoryProgress
+            var userCategoryProgress = user
+                .UserProgress
+                .CategoryProgress
                 .FirstOrDefault(u => u.CategoryId == categoryId);
 
             if (userCategoryProgress?.LevelProgresses is null)

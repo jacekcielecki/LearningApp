@@ -5,28 +5,18 @@ namespace LearningApp.Application.Extensions
 {
     public static class GetUserContextExtension
     {
-        public static int GetUserId(this HttpContext httpContext)
-        {
-            var userIdClaim = httpContext.User.Claims.SingleOrDefault(c => c.Type == "jti");
-            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return userId;
-            }
-
-            throw new InvalidOperationException("User ID claim not found or invalid.");
-        }
-
         public static ClaimsPrincipal GetUserContext(this HttpContext httpContext) => httpContext?.User;
 
         public static int GetUserId(this ClaimsPrincipal userClaim)
         {
             var userIdClaim = userClaim.Claims.SingleOrDefault(c => c.Type == "jti");
-            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return userId;
-            }
+            return Convert.ToInt32(userIdClaim?.Value);
+        }
 
-            throw new InvalidOperationException("User ID claim not found or invalid.");
+        public static string GetUserRole(this ClaimsPrincipal userClaim)
+        {
+            var userRoleClaim = userClaim.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Role);
+            return userRoleClaim?.Value;
         }
     }
 }
