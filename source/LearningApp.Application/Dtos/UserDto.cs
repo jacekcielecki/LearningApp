@@ -6,7 +6,9 @@
         public string Username { get; set; }
         public string EmailAddress { get; set; }
         public string ProfilePictureUrl { get; set; }
-        public RoleDto Role { get; set; }
-        public UserProgressDto UserProgress { get; set; }
+        public virtual RoleDto Role { get; set; }
+        public virtual UserProgressDto UserProgress { get; set; }
+        public virtual ICollection<QuestionDto> Questions { get; set; }
+        public virtual ICollection<CategoryDto> Categories { get; set; }
     }
 }

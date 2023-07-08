@@ -12,5 +12,6 @@
         public int UserProgressId { get; set; }
         public virtual UserProgress UserProgress { get; set; }
         public virtual ICollection<Question> Questions { get; set; }
+        public virtual ICollection<Category> Categories { get; set; }
     }
 }

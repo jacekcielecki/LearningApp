@@ -22,8 +22,12 @@ namespace LearningApp.Infrastructure.Configurations
                 .HasForeignKey(u => u.RoleId);
 
             builder.HasMany(u => u.Questions)
-                .WithOne(q => q.Author)
-                .HasForeignKey(q => q.AuthorId);
+                .WithOne(q => q.Creator)
+                .HasForeignKey(q => q.CreatorId);
+
+            builder.HasMany(u => u.Categories)
+                .WithOne(c => c.Creator)
+                .HasForeignKey(c => c.CreatorId);
         }
     }
 }
