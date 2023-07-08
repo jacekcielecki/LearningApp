@@ -34,7 +34,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasIndex("UserProgressesId");
 
-                    b.ToTable("AchievementUserProgress");
+                    b.ToTable("AchievementUserProgress", (string)null);
                 });
 
             modelBuilder.Entity("CategoryCategoryGroup", b =>
@@ -49,7 +49,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasIndex("CategoryGroupsId");
 
-                    b.ToTable("CategoryCategoryGroup");
+                    b.ToTable("CategoryCategoryGroup", (string)null);
                 });
 
             modelBuilder.Entity("LearningApp.Domain.Entities.Achievement", b =>
@@ -70,7 +70,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Achievements");
+                    b.ToTable("Achievements", (string)null);
                 });
 
             modelBuilder.Entity("LearningApp.Domain.Entities.Category", b =>
@@ -106,7 +106,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("LearningApp.Domain.Entities.CategoryGroup", b =>
@@ -127,7 +127,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CategoryGroups");
+                    b.ToTable("CategoryGroups", (string)null);
                 });
 
             modelBuilder.Entity("LearningApp.Domain.Entities.CategoryProgress", b =>
@@ -155,7 +155,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasIndex("UserProgressId");
 
-                    b.ToTable("CategoryProgresses");
+                    b.ToTable("CategoryProgresses", (string)null);
                 });
 
             modelBuilder.Entity("LearningApp.Domain.Entities.LevelProgress", b =>
@@ -186,7 +186,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasIndex("CategoryProgressId");
 
-                    b.ToTable("LevelProgresses");
+                    b.ToTable("LevelProgresses", (string)null);
                 });
 
             modelBuilder.Entity("LearningApp.Domain.Entities.Question", b =>
@@ -237,7 +237,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
                 });
 
             modelBuilder.Entity("LearningApp.Domain.Entities.Role", b =>
@@ -254,7 +254,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -302,7 +302,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("LearningApp.Domain.Entities.UserProgress", b =>
@@ -333,7 +333,7 @@ namespace WSBLearn.Dal.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserProgresses");
+                    b.ToTable("UserProgresses", (string)null);
                 });
 
             modelBuilder.Entity("AchievementUserProgress", b =>
