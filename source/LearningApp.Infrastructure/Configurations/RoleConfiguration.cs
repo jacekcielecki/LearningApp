@@ -8,8 +8,7 @@ namespace LearningApp.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.Property(x => x.Name).IsRequired();
-
+            builder.Property(x => x.Name).HasColumnType("varchar(2000)").IsRequired();
             builder.HasData(
                     new Role { Id = 1, Name = "Admin" },
                     new Role { Id = 2, Name = "User" });

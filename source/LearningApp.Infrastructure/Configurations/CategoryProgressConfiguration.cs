@@ -8,7 +8,7 @@ namespace LearningApp.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<CategoryProgress> builder)
         {
-            builder.Property(x => x.CategoryName).IsRequired();
+            builder.Property(x => x.CategoryName).HasColumnType("varchar(2000)").IsRequired();
 
             builder.HasMany(cp => cp.LevelProgresses)
                 .WithOne(lp => lp.CategoryProgress)

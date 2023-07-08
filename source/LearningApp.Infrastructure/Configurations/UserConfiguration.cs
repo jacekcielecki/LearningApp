@@ -8,9 +8,10 @@ namespace LearningApp.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.Property(x => x.Username).IsRequired();
-            builder.Property(x => x.Password).IsRequired();
-            builder.Property(x => x.EmailAddress).IsRequired();
+            builder.Property(x => x.Username).HasColumnType("varchar(2000)").IsRequired();
+            builder.Property(x => x.Password).HasColumnType("varchar(2000)").IsRequired();
+            builder.Property(x => x.EmailAddress).HasColumnType("varchar(2000)").IsRequired();
+            builder.Property(x => x.ProfilePictureUrl).HasColumnType("varchar(2000)").IsRequired();
 
             builder.HasOne(u => u.UserProgress)
                 .WithOne(up => up.User)

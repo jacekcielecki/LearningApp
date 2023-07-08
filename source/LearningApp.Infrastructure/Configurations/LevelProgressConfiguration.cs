@@ -8,7 +8,7 @@ namespace LearningApp.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<LevelProgress> builder)
         {
-            builder.Property(x => x.LevelName).IsRequired();
+            builder.Property(x => x.LevelName).HasColumnType("varchar(2000)").IsRequired();
         }
     }
 }

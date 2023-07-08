@@ -8,7 +8,8 @@ namespace LearningApp.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<CategoryGroup> builder)
         {
-            builder.Property(x => x.Name).HasMaxLength(400).IsRequired();
+            builder.Property(x => x.Name).HasColumnType("varchar(2000)").IsRequired();
+            builder.Property(x => x.IconUrl).HasColumnType("varchar(2000)");
 
             builder.HasMany(c => c.Categories)
                 .WithMany(e => e.CategoryGroups);

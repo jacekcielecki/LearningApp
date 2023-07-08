@@ -8,7 +8,8 @@ namespace LearningApp.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Achievement> builder)
         {
-            builder.Property(x => x.Name).HasMaxLength(20).IsRequired();
+            builder.Property(x => x.Name).HasColumnType("varchar(2000)").IsRequired();
+            builder.Property(x => x.Description).HasColumnType("varchar(2000)");
         }
     }
 }
