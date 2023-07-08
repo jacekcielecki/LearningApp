@@ -11,7 +11,7 @@ namespace LearningApp.Infrastructure.Configurations
             builder.Property(x => x.Name).HasMaxLength(400).IsRequired();
 
             builder.HasMany(c => c.Questions)
-                .WithOne(e => e.Category)
+                .WithOne(q => q.Category)
                 .IsRequired();
         }
     }

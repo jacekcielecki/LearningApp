@@ -9,6 +9,10 @@ namespace LearningApp.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<CategoryProgress> builder)
         {
             builder.Property(x => x.CategoryName).IsRequired();
+
+            builder.HasMany(cp => cp.LevelProgresses)
+                .WithOne(lp => lp.CategoryProgress)
+                .HasForeignKey(lp => lp.CategoryProgressId);
         }
     }
 }
