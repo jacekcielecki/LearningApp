@@ -11,5 +11,6 @@
         public virtual Role Role { get; set; }
         public int UserProgressId { get; set; }
         public virtual UserProgress UserProgress { get; set; }
+        public virtual ICollection<Question> Questions { get; set; }
     }
 }
