@@ -25,6 +25,7 @@ namespace LearningApp.WebApi.Middleware
                 NotFoundException _ => HttpStatusCode.NotFound,
                 UnauthorizedAccessException _ => HttpStatusCode.Unauthorized,
                 ForbiddenException _ => HttpStatusCode.Forbidden,
+                InvalidVerificationTokenException _ => HttpStatusCode.BadRequest,
                 _ => HttpStatusCode.InternalServerError
             };
 

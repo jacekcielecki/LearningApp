@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LearningApp.Application.Services
@@ -47,6 +48,16 @@ namespace LearningApp.Application.Services
             _mapper = mapper;
         }
 
+        public async Task VerifyAccount(string verificationToken)
+        {
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(x => x.VerificationToken == verificationToken);
+            if (user is null) throw new InvalidVerificationTokenException();
+
+            user.IsVerified = true;
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<string> RegisterAsync(CreateUserRequest request)
         {
             var validationResult = await _createUserRequestValidator.ValidateAsync(request);
@@ -58,6 +69,8 @@ namespace LearningApp.Application.Services
                 EmailAddress = request.EmailAddress,
                 RoleId = 2,
                 ProfilePictureUrl = string.IsNullOrEmpty(request.ProfilePictureUrl) ? _blobStorageSettings.DefaultProfilePictureUrl : request.ProfilePictureUrl,
+                IsVerified = false,
+                VerificationToken = GenerateVerificationToken()
             };
             user.Password = _passwordHasher.HashPassword(user, request.Password);
             await _dbContext.Users.AddAsync(user);
@@ -90,7 +103,7 @@ namespace LearningApp.Application.Services
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, loginDto.Password);
             if (result == PasswordVerificationResult.Failed) throw new BadHttpRequestException(Messages.AuthorizationFailed);
 
-            return GenerateToken(user);
+            return GenerateJwtToken(user);
         }
 
         public async Task<List<UserDto>> GetAllAsync()
@@ -207,7 +220,7 @@ namespace LearningApp.Application.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        private string GenerateToken(User user)
+        private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.Key));
@@ -229,6 +242,11 @@ namespace LearningApp.Application.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        private string GenerateVerificationToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
         }
     }
 }

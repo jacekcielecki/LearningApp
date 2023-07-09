@@ -5,6 +5,7 @@ namespace LearningApp.Application.Interfaces
 {
     public interface IUserService
     {
+        Task VerifyAccount(string verificationToken);
         Task<string> LoginAsync(LoginDto loginDto);
         Task<string> RegisterAsync(CreateUserRequest request);
         Task<List<UserDto>> GetAllAsync();

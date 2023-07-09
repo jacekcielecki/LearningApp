@@ -33,6 +33,13 @@ namespace LearningApp.WebApi.Controllers
             return Ok();
         }
 
+        [HttpGet("verify")]
+        public async Task<IActionResult> VerifyAccount(string verificationToken)
+        {
+            await _userService.VerifyAccount(verificationToken);
+            return Ok();
+        }
+
         [HttpPost("sendVerificationEmail")]
         public async Task<IActionResult> SendAccountVerificationEmail(string userEmail)
         {

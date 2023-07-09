@@ -12,6 +12,7 @@ namespace LearningApp.Infrastructure.Configurations
             builder.Property(x => x.Password).HasColumnType("varchar(2000)").IsRequired();
             builder.Property(x => x.EmailAddress).HasColumnType("varchar(2000)").IsRequired();
             builder.Property(x => x.ProfilePictureUrl).HasColumnType("varchar(2000)").IsRequired();
+            builder.Property(x => x.VerificationToken).HasColumnType("varchar(2000)");
 
             builder.HasOne(u => u.UserProgress)
                 .WithOne(up => up.User)
