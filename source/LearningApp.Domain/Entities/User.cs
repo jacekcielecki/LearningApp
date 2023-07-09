@@ -10,6 +10,8 @@
         public string VerificationToken { get; set; }
         public DateTime VerificationTokenExpireDate { get; set; }
         public bool IsVerified { get; set; }
+        public string ResetPasswordToken { get; set; }
+        public DateTime? ResetPasswordTokenExpireDate { get; set; }
         public int RoleId { get; set; }
         public virtual Role Role { get; set; }
         public int UserProgressId { get; set; }

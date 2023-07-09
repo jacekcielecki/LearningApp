@@ -17,6 +17,7 @@ namespace LearningApp.Application.Tests.Services
         private readonly IValidator<CreateUserRequest> _createUserValidator;
         private readonly IValidator<UpdateUserRequest> _updateUserValidator;
         private readonly IValidator<UpdateUserPasswordRequest> _updateUserPasswordValidator;
+        private readonly IValidator<ResetPasswordRequest> _resetUserPasswordValidator;
         private readonly JwtAuthenticationSettings _jwtAuthenticationSettings;
         private readonly AzureBlobStorageSettings _azureBlobStorageSettings;
 
@@ -31,6 +32,7 @@ namespace LearningApp.Application.Tests.Services
             _createUserValidator = new CreateUserRequestValidator(_dbContext);
             _updateUserValidator = new UpdateUserRequestValidator(_dbContext);
             _updateUserPasswordValidator = new UpdateUserPasswordRequestValidator();
+            _resetUserPasswordValidator = new ResetPasswordRequestValidator();
             _jwtAuthenticationSettings = new JwtAuthenticationSettings
             {
                 ExpireDays = 2,
@@ -66,7 +68,7 @@ namespace LearningApp.Application.Tests.Services
                 .Returns("HashedPasswordMock");
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -100,7 +102,7 @@ namespace LearningApp.Application.Tests.Services
                 .Returns(PasswordVerificationResult.Success);
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -135,7 +137,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -163,7 +165,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -199,7 +201,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -228,7 +230,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             var updatedItem = new UpdateUserRequest
@@ -269,7 +271,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -299,7 +301,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             _passwordHasherMock
@@ -341,7 +343,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act

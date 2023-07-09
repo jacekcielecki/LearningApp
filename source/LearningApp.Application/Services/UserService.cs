@@ -26,6 +26,7 @@ namespace LearningApp.Application.Services
         private readonly IValidator<CreateUserRequest> _createUserRequestValidator;
         private readonly IValidator<UpdateUserRequest> _updateUserRequestValidator;
         private readonly IValidator<UpdateUserPasswordRequest> _updateUserPasswordRequestValidator;
+        private readonly IValidator<ResetPasswordRequest> _resetPasswordRequestValidator;
         private readonly JwtAuthenticationSettings _authenticationSettings;
         private readonly AzureBlobStorageSettings _blobStorageSettings;
         private readonly IMapper _mapper;
@@ -35,6 +36,7 @@ namespace LearningApp.Application.Services
             IValidator<CreateUserRequest> createUserRequestValidator,
             IValidator<UpdateUserRequest> updateUserRequestValidator,
             IValidator<UpdateUserPasswordRequest> updateUserPasswordRequestValidator,
+            IValidator<ResetPasswordRequest> resetPasswordRequestValidator,
         JwtAuthenticationSettings authenticationSettings,
             AzureBlobStorageSettings blobStorageSettings, IMapper mapper)
         {
@@ -43,6 +45,7 @@ namespace LearningApp.Application.Services
             _createUserRequestValidator = createUserRequestValidator;
             _updateUserRequestValidator = updateUserRequestValidator;
             _updateUserPasswordRequestValidator = updateUserPasswordRequestValidator;
+            _resetPasswordRequestValidator = resetPasswordRequestValidator;
             _authenticationSettings = authenticationSettings;
             _blobStorageSettings = blobStorageSettings;
             _mapper = mapper;
@@ -241,6 +244,39 @@ namespace LearningApp.Application.Services
             }
 
             return user.VerificationToken;
+        }
+
+        public async Task<string> GetPasswordResetToken(string userEmail)
+        {
+            var user = await _dbContext.Users
+                .Where(x => x.EmailAddress == userEmail)
+                .FirstOrDefaultAsync();
+
+            if (user is null) throw new NotFoundException(nameof(User));
+
+            user.ResetPasswordToken = GenerateVerificationToken();
+            user.ResetPasswordTokenExpireDate = DateTime.Now.AddDays(1);
+            await _dbContext.SaveChangesAsync();
+
+            return user.ResetPasswordToken;
+        }
+
+        public async Task ResetPassword(ResetPasswordRequest request)
+        {
+            var validationResult = await _resetPasswordRequestValidator.ValidateAsync(request);
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
+
+            var user = await _dbContext.Users
+                .Where(x => x.ResetPasswordToken == request.Token)
+                .FirstOrDefaultAsync();
+
+            if (user is null) throw new NotFoundException(nameof(User));
+
+            var isTokenExpired = user.ResetPasswordTokenExpireDate < DateTime.Now;
+            if (isTokenExpired) throw new InvalidVerificationTokenException("Reset password token has expired");
+
+            user.Password = _passwordHasher.HashPassword(user, request.Password);
+            await _dbContext.SaveChangesAsync();
         }
 
         private string GenerateJwtToken(User user)

@@ -46,5 +46,19 @@ namespace LearningApp.WebApi.Controllers
              await _emailService.SendAccountVerificationEmail(userEmail);
             return Ok();
         }
+
+        [HttpPatch("forget-password")]
+        public async Task<IActionResult> GetPasswordResetToken(string userEmail)
+        {
+            var token = await _userService.GetPasswordResetToken(userEmail);
+            return Ok(token);
+        }
+
+        [HttpPatch("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
+        {
+            await _userService.ResetPassword(request);
+            return Ok();
+        }
     }
 }

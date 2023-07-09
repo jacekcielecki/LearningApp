@@ -16,5 +16,7 @@ namespace LearningApp.Application.Interfaces
         Task UpdateUserPasswordAsync(int id, UpdateUserPasswordRequest request);
         Task DeleteAsync(int id);
         Task<string> GetUserVerificationToken(string userEmail);
+        Task<string> GetPasswordResetToken(string userEmail);
+        Task ResetPassword(ResetPasswordRequest request);
     }
 }
