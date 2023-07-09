@@ -52,7 +52,10 @@ namespace LearningApp.Application.Services
         {
             var user = await _dbContext.Users
                 .FirstOrDefaultAsync(x => x.VerificationToken == verificationToken);
-            if (user is null) throw new InvalidVerificationTokenException();
+            if (user is null) throw new InvalidVerificationTokenException("Invalid verification token");
+
+            var isTokenExpired = user.VerificationTokenExpireDate < DateTime.Now;
+            if (isTokenExpired) throw new InvalidVerificationTokenException("Verification token has expired");
 
             user.IsVerified = true;
             await _dbContext.SaveChangesAsync();
@@ -70,7 +73,8 @@ namespace LearningApp.Application.Services
                 RoleId = 2,
                 ProfilePictureUrl = string.IsNullOrEmpty(request.ProfilePictureUrl) ? _blobStorageSettings.DefaultProfilePictureUrl : request.ProfilePictureUrl,
                 IsVerified = false,
-                VerificationToken = GenerateVerificationToken()
+                VerificationToken = GenerateVerificationToken(),
+                VerificationTokenExpireDate = DateTime.Now.AddDays(1)
             };
             user.Password = _passwordHasher.HashPassword(user, request.Password);
             await _dbContext.Users.AddAsync(user);
@@ -218,6 +222,25 @@ namespace LearningApp.Application.Services
 
             _dbContext.Users.Remove(entity);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<string> GetUserVerificationToken(string userEmail)
+        {
+            var user = await _dbContext.Users
+                .Where(x => x.EmailAddress == userEmail)
+                .FirstOrDefaultAsync();
+
+            if (user is null) throw new NotFoundException(nameof(User));
+
+            var isTokenExpired = user.VerificationTokenExpireDate < DateTime.Now;
+            if (isTokenExpired)
+            {
+                user.VerificationToken = GenerateVerificationToken();
+                user.VerificationTokenExpireDate = DateTime.Now.AddDays(1);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return user.VerificationToken;
         }
 
         private string GenerateJwtToken(User user)

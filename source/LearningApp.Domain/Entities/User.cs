@@ -8,6 +8,7 @@
         public string EmailAddress { get; set; }
         public string ProfilePictureUrl { get; set; }
         public string VerificationToken { get; set; }
+        public DateTime VerificationTokenExpireDate { get; set; }
         public bool IsVerified { get; set; }
         public int RoleId { get; set; }
         public virtual Role Role { get; set; }

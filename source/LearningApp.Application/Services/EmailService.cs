@@ -1,11 +1,8 @@
 ﻿using LearningApp.Application.Interfaces;
 using LearningApp.Application.Settings;
-using LearningApp.Domain.Entities;
-using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
 using MailKit.Net.Smtp;
 using MailKit.Security;
-using Microsoft.EntityFrameworkCore;
 using MimeKit;
 using MimeKit.Text;
 
@@ -15,24 +12,20 @@ namespace LearningApp.Application.Services
     {
         private readonly SmtpSettings _smtpSettings;
         private readonly LearningAppDbContext _dbContext;
+        private readonly IUserService _userService;
 
-        public EmailService(SmtpSettings smtpSettings, LearningAppDbContext dbContext)
+        public EmailService(SmtpSettings smtpSettings, LearningAppDbContext dbContext, IUserService userService)
         {
             _smtpSettings = smtpSettings;
             _dbContext = dbContext;
+            _userService = userService;
         }
 
         public async Task SendAccountVerificationEmail(string userEmail)
         {
-            var verificationToken = await _dbContext.Users
-                .Where(x => x.EmailAddress == userEmail)
-                .Select(x => x.VerificationToken)
-                .FirstOrDefaultAsync();
-
-            if (verificationToken is null) throw new NotFoundException(nameof(User));
-
-            var email = new MimeMessage();
+            var verificationToken = await _userService.GetUserVerificationToken(userEmail);
             var link = $"{_smtpSettings.ApplicationUrl}api/Account/verify?verificationToken={verificationToken}";
+            var email = new MimeMessage();
 
             email.From.Add(MailboxAddress.Parse(_smtpSettings.EmailUsername));
             email.To.Add(MailboxAddress.Parse(userEmail));

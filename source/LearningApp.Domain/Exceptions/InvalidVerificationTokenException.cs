@@ -1,10 +1,8 @@
-﻿using LearningApp.Domain.Common;
-
-namespace LearningApp.Domain.Exceptions
+﻿namespace LearningApp.Domain.Exceptions
 {
     public class InvalidVerificationTokenException : Exception
     {
-        public InvalidVerificationTokenException() : base(Messages.InvalidVerificationToken)
+        public InvalidVerificationTokenException(string message) : base(message)
         {
             
         }
