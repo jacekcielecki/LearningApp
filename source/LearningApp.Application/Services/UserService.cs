@@ -47,7 +47,7 @@ namespace LearningApp.Application.Services
             _mapper = mapper;
         }
 
-        public async Task RegisterAsync(CreateUserRequest request)
+        public async Task<string> RegisterAsync(CreateUserRequest request)
         {
             var validationResult = await _createUserRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
@@ -75,6 +75,8 @@ namespace LearningApp.Application.Services
 
             user.UserProgressId = userProgress.Id;
             await _dbContext.SaveChangesAsync();
+
+            return user.EmailAddress;
         }
 
         public async Task<string> LoginAsync(LoginDto loginDto)

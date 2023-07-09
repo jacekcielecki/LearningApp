@@ -9,11 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 var appConfig = builder.Configuration;
 var jwtSettings = appConfig.GetSection("Jwt").Get<JwtAuthenticationSettings>()!;
 var blobSettings = appConfig.GetSection("BlobStorage").Get<AzureBlobStorageSettings>()!;
+var smtpSettings = appConfig.GetSection("Smtp").Get<SmtpSettings>()!;
 var corsOriginName = appConfig["Cors:originName"]!;
 var connectionString = appConfig.GetConnectionString("learningAppDb");
 
 builder.Services.AddInfrastructureServices(connectionString);
-builder.Services.AddApplicationServices(jwtSettings, blobSettings);
+builder.Services.AddApplicationServices(jwtSettings, blobSettings, smtpSettings);
 builder.Services.AddWebApiServices();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

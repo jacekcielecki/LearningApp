@@ -10,10 +10,12 @@ namespace LearningApp.WebApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
-        public AccountController(IUserService userService)
+        public AccountController(IUserService userService, IEmailService emailService)
         {
             _userService = userService;
+            _emailService = emailService;
         }
 
         [HttpPost("login")]
@@ -24,9 +26,17 @@ namespace LearningApp.WebApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] CreateUserRequest createUserRequest)
+        public async Task<IActionResult> Register([FromBody] CreateUserRequest createUserRequest)
         {
-            await _userService.RegisterAsync(createUserRequest);
+            var userEmail = await _userService.RegisterAsync(createUserRequest);
+            await _emailService.SendAccountVerificationEmail(userEmail);
+            return Ok();
+        }
+
+        [HttpPost("sendVerificationEmail")]
+        public async Task<IActionResult> SendAccountVerificationEmail(string userEmail)
+        {
+             await _emailService.SendAccountVerificationEmail(userEmail);
             return Ok();
         }
     }

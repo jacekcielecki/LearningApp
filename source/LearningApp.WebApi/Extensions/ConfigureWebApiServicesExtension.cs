@@ -20,6 +20,7 @@ namespace LearningApp.WebApi.Extensions
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<ErrorHandlingMiddleware>();
             services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }
