@@ -221,8 +221,7 @@ namespace LearningApp.Application.Services
         public async Task<string> GetUserVerificationToken(string userEmail)
         {
             var user = await _dbContext.Users
-                .Where(x => x.EmailAddress == userEmail)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x => x.EmailAddress == userEmail);
 
             if (user is null) throw new NotFoundException(nameof(User));
 

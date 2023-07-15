@@ -305,6 +305,37 @@ namespace LearningApp.Application.Tests.Services
         }
 
         [Fact]
+        public async Task VerifyAccount_WithValidVerificationToken_UpdatesUserIsVerified()
+        {
+            //arrange
+            var existingUser = new User
+            {
+                Username = "TestUserUsername",
+                EmailAddress = "TestUser@mail.com",
+                Password = "TestUserPassword",
+                Role = new Role { Name = "TestRole" },
+            };
+            await _dbContext.Users.AddAsync(existingUser);
+            await _dbContext.SaveChangesAsync();
+
+            var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
+                _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
+
+            //act
+            var verificationToken = await service.GetUserVerificationToken(existingUser.EmailAddress);
+            await service.VerifyAccount(verificationToken);
+
+            //assert
+            verificationToken.Should().NotBeNull();
+            var check = _dbContext.Users
+                .First(x => x.EmailAddress == existingUser.EmailAddress);
+            check.Should().NotBeNull();
+            check.VerificationToken.Should().NotBeNull();
+            check.IsVerified.Should().BeTrue();
+        }
+
+        [Fact]
         public async Task UpdateUserPasswordAsync_WithValidNewPassword_UpdatesExistingUserPassword()
         {
             //arrange
@@ -346,6 +377,111 @@ namespace LearningApp.Application.Tests.Services
             check.Should().NotBeNull();
             check?.EmailAddress.Should().Be(existingUser.EmailAddress);
             check?.Password.Should().NotBe(oldUserPassword);
+        }
+
+        [Fact]
+        public async Task GetUserVerificationToken_WithExistingUserEmail_Update_VerificationToken()
+        {
+            //arrange
+            var existingUser = new User
+            {
+                Username = "TestUserUsername",
+                EmailAddress = "TestUser@mail.com",
+                Password = "TestUserPassword",
+                Role = new Role { Name = "TestRole" },
+            };
+            await _dbContext.Users.AddAsync(existingUser);
+            await _dbContext.SaveChangesAsync();
+
+            var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
+                _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
+
+            //act
+            var result = await service.GetUserVerificationToken(existingUser.EmailAddress);
+
+            //assert
+            result.Should().NotBeNull();
+            var check = _dbContext.Users
+                .First(x => x.EmailAddress == existingUser.EmailAddress);
+            check.Should().NotBeNull();
+            check.VerificationToken.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task GetPasswordResetToken_UpdatedUser_PasswordResetToken()
+        {
+            //arrange
+            var existingUser = new User
+            {
+                Username = "TestUserUsername",
+                EmailAddress = "TestUser@mail.com",
+                Password = "TestUserPassword",
+                Role = new Role { Name = "TestRole" },
+            };
+            await _dbContext.Users.AddAsync(existingUser);
+            await _dbContext.SaveChangesAsync();
+
+            var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
+                _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
+
+            //act
+            var result = await service.GetPasswordResetToken(existingUser.EmailAddress);
+
+            //assert
+            result.Should().NotBeNull();
+            var check = _dbContext.Users
+                .First(x => x.EmailAddress == existingUser.EmailAddress);
+            check.Should().NotBeNull();
+            check.ResetPasswordToken.Should().NotBeNull();
+            check.ResetPasswordTokenExpireDate.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task ResetPassword_WithValidResetPasswordRequest_UpdatesUserPassword()
+        {
+            //arrange
+            var existingUser = new User
+            {
+                Username = "TestUserUsername",
+                EmailAddress = "TestUser@mail.com",
+                Password = "TestUserPassword",
+                Role = new Role { Name = "TestRole" },
+                ResetPasswordToken = "testToken",
+                ResetPasswordTokenExpireDate = DateTime.Now.AddDays(1)
+            };
+            await _dbContext.Users.AddAsync(existingUser);
+            await _dbContext.SaveChangesAsync();
+
+            var request = new ResetPasswordRequest()
+            {
+                Password = "newTestPassword",
+                ConfirmPassword = "newTestPassword",
+                Token = existingUser.ResetPasswordToken
+            };
+            var oldPasswordHash = await _dbContext.Users
+                .Where(x => x.EmailAddress == existingUser.EmailAddress)
+                .Select(x => x.Password)
+                .FirstOrDefaultAsync();
+
+            _passwordHasherMock.Setup(x => x.HashPassword(existingUser, request.Password))
+                .Returns(Guid.NewGuid().ToString);
+
+            var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
+                _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
+
+            //act
+            await service.ResetPassword(request);
+
+            //assert
+            var check = _dbContext.Users
+                .First(x => x.Id == existingUser.Id);
+            
+            check.Should().NotBeNull();
+            check.Password.Should().NotBeNull();
+            check.Password.Should().NotBe(oldPasswordHash);
         }
 
         [Fact]
