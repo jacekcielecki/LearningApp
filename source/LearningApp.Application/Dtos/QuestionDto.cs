@@ -14,7 +14,6 @@
         public int? CreatorId { get; set; }
         public DateTime? DateCreated { get; set; }
         public int CategoryId { get; set; }
-        public virtual CategoryDto Category { get; set; }
         public virtual UserDto Creator { get; set; }
     }
 }

@@ -2,7 +2,6 @@
 using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Question;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace LearningApp.WebApi.Controllers
 {

@@ -9,7 +9,5 @@
         public bool IsVerified { get; set; }
         public virtual RoleDto Role { get; set; }
         public virtual UserProgressDto UserProgress { get; set; }
-        public virtual ICollection<QuestionDto> Questions { get; set; }
-        public virtual ICollection<CategoryDto> Categories { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace LearningApp.WebApi.Tests.Controllers
     {
         private readonly HttpClient _client;
         private readonly Mock<IUserService> _userServiceStub = new Mock<IUserService>();
+        private readonly Mock<IEmailService> _emailServiceStub = new Mock<IEmailService>();
         private readonly DatabaseSeeder _databaseSeeder;
 
         public AccountControllerTests(WebApplicationFactory<Program> factory)
@@ -30,6 +31,7 @@ namespace LearningApp.WebApi.Tests.Controllers
                     services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
                     services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("AccountControllerTests"));
                     services.AddSingleton<IUserService>(_userServiceStub.Object);
+                    services.AddSingleton<IEmailService>(_emailServiceStub.Object);
                 });
             });
 
