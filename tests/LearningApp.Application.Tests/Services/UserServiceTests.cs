@@ -187,7 +187,7 @@ namespace LearningApp.Application.Tests.Services
         }
 
         [Fact]
-        public async Task GetSortByExpAsync_WithExistingItems_ReturnsItemsOrderedByTotalExp()
+        public async Task GetSortByExpAsync_WithExistingItems_ReturnsItemsOrderedByExperiencePoints()
         {
             //arrange
             var existingItems = new List<User>
@@ -197,12 +197,21 @@ namespace LearningApp.Application.Tests.Services
                     EmailAddress = "TestUser1@mail.com",
                     Password = "TestUserPassword1",
                     Role = new Role { Name = "TestRole" },
+                    UserProgress = new UserProgress { Level = 1, ExperiencePoints = 50 }
                 },
                 new() {
                     Username = "TestUserUsername2",
                     EmailAddress = "TestUser2@mail.com",
                     Password = "TestUserPassword2",
-                    Role = new Role { Name = "TestRole" }
+                    Role = new Role { Name = "TestRole" },
+                    UserProgress = new UserProgress { Level = 1, ExperiencePoints = 40 }
+                },
+                new() {
+                    Username = "TestUserUsername2",
+                    EmailAddress = "TestUser2@mail.com",
+                    Password = "TestUserPassword2",
+                    Role = new Role { Name = "TestRole" },
+                    UserProgress = new UserProgress {Level = 1,  ExperiencePoints = 60 }
                 }
             };
             await _dbContext.Users.AddRangeAsync(existingItems);
@@ -222,8 +231,7 @@ namespace LearningApp.Application.Tests.Services
                 options => options.ComparingByMembers<UserDto>()
                     .ExcludingMissingMembers()
                     .Excluding(x => x!.Questions)
-                    .Excluding(x => x!.Categories)
-                    .Excluding(x => x!.UserProgress));
+                    .Excluding(x => x!.Categories));
         }
 
         [Fact]

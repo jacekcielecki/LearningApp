@@ -101,8 +101,7 @@ namespace LearningApp.Application.Services
 
         public async Task<string> LoginAsync(LoginDto loginDto)
         {
-            var user = await _dbContext
-                .Users
+            var user = await _dbContext.Users
                 .Include(e => e.Role)
                 .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Email || e.Username == loginDto.Email);
             if (user is null) throw new BadHttpRequestException(Messages.AuthorizationFailed);
@@ -115,8 +114,7 @@ namespace LearningApp.Application.Services
 
         public async Task<List<UserDto>> GetAllAsync()
         {
-            var entities = await _dbContext
-                .Users
+            var entities = await _dbContext .Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.Achievements)
@@ -130,8 +128,7 @@ namespace LearningApp.Application.Services
 
         public async Task<UserDto> GetByIdAsync(int id)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .Include(e => e.Role)
                 .Include(e => e.UserProgress)
                 .ThenInclude(e => e.Achievements)
@@ -146,9 +143,8 @@ namespace LearningApp.Application.Services
 
         public async Task<List<UserRankingDto>> GetSortByExpAsync()
         {
-            var entities = await _dbContext
-                .Users
-                .Include(u => u.UserProgress).Skip(1)
+            var entities = await _dbContext.Users
+                .Include(u => u.UserProgress)
                 .OrderByDescending(r => r.UserProgress.ExperiencePoints)
                 .ToListAsync();
 
@@ -157,8 +153,7 @@ namespace LearningApp.Application.Services
 
         public async Task<UserDto> UpdateAsync(int id, UpdateUserRequest request)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.EmailAddress == "root") throw new ResourceProtectedException();
@@ -179,15 +174,13 @@ namespace LearningApp.Application.Services
 
         public async Task<UserDto> UpdateUserRoleAsync(int id, int roleId)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Id == id);
             if (entity is null) throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();
 
-            var role = _dbContext
-                .Roles
+            var role = _dbContext.Roles
                 .FirstOrDefault(r => r.Id == roleId);
             if (role is null) throw new NotFoundException(nameof(Role));
 
@@ -199,8 +192,7 @@ namespace LearningApp.Application.Services
 
         public async Task UpdateUserPasswordAsync(int id, UpdateUserPasswordRequest request)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();
@@ -217,8 +209,7 @@ namespace LearningApp.Application.Services
 
         public async Task DeleteAsync(int id)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();

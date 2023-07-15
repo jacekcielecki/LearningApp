@@ -1,4 +1,5 @@
-﻿using LearningApp.Application.Interfaces;
+﻿using System.Diagnostics.CodeAnalysis;
+using LearningApp.Application.Interfaces;
 using LearningApp.Application.Settings;
 using LearningApp.Infrastructure.Persistence;
 using MailKit.Net.Smtp;
@@ -8,6 +9,7 @@ using MimeKit.Text;
 
 namespace LearningApp.Application.Services
 {
+    [ExcludeFromCodeCoverage]
     public class EmailService : IEmailService
     {
         private readonly SmtpSettings _smtpSettings;

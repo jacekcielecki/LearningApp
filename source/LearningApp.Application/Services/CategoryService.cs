@@ -50,8 +50,7 @@ namespace LearningApp.Application.Services
 
         public async Task<CategoryDto> GetByIdAsync(int id, ClaimsPrincipal userContext)
         {
-            var entity = await _dbContext
-                .Categories
+            var entity = await _dbContext.Categories
                 .Include(r => r.Questions)
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (entity is null) throw new NotFoundException(nameof(Category));
@@ -105,8 +104,7 @@ namespace LearningApp.Application.Services
 
         public async Task DeleteAsync(int id, ClaimsPrincipal userContext)
         {
-            var entity = _dbContext
-                .Categories
+            var entity = _dbContext.Categories
                 .Include(r => r.Questions)
                 .FirstOrDefault(c => c.Id == id);
             if (entity is null) throw new NotFoundException(nameof(Category));
@@ -114,8 +112,7 @@ namespace LearningApp.Application.Services
             var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Delete));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
-            _dbContext
-                .Categories
+            _dbContext.Categories
                 .Remove(entity);
             await _dbContext.SaveChangesAsync();
         }

@@ -24,8 +24,7 @@ namespace LearningApp.Application.Services
         {
             if (expGained is < 0 or > 20) throw new ArgumentException(Messages.InvalidGainedExperience);
 
-            var user = await _dbContext
-                .Users
+            var user = await _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
@@ -34,14 +33,11 @@ namespace LearningApp.Application.Services
 
             if (user is null) throw new NotFoundException(nameof(User));
 
-            var userCategoryProgress = user
-                .UserProgress
-                .CategoryProgress
+            var userCategoryProgress = user.UserProgress.CategoryProgress
                 .FirstOrDefault(e => e.CategoryId == categoryId);
             if (userCategoryProgress is null) throw new NotFoundException(Messages.QuizNotStarted);
 
-            var userLevelProgress = userCategoryProgress
-                .LevelProgresses.
+            var userLevelProgress = userCategoryProgress.LevelProgresses.
                 FirstOrDefault(e => e.LevelName == quizLevelName);
             if (userLevelProgress is null) throw new ValidationException(Messages.GenericErrorMessage);
 
@@ -83,20 +79,17 @@ namespace LearningApp.Application.Services
 
         public async Task CompleteAchievementAsync(int userId, int achievementId)
         {
-            var user = await _dbContext
-                .Users
+            var user = await _dbContext.Users
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.Achievements)
                 .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null) throw new NotFoundException(nameof(User));
 
-            var achievement = _dbContext
-                .Achievements
+            var achievement = _dbContext.Achievements
                 .FirstOrDefault(a => a.Id == achievementId);
             if (achievement is null) throw new NotFoundException(nameof(Achievement));
 
-            user.UserProgress
-                .Achievements
+            user.UserProgress.Achievements
                 .Add(achievement);
             await _dbContext.SaveChangesAsync();
         }
