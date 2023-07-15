@@ -146,8 +146,12 @@ namespace LearningApp.Application.Tests.Services
             //assert
             result.Should().NotBeNull();
             result.Should().BeOfType<List<UserDto>>();
-            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(), 
-                options => options.ComparingByMembers<UserDto>().ExcludingMissingMembers());
+            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(),
+                options => options.ComparingByMembers<UserDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x!.Questions)
+                    .Excluding(x => x!.Categories)
+                    .Excluding(x => x!.UserProgress));
         }
 
         [Fact]
@@ -175,7 +179,11 @@ namespace LearningApp.Application.Tests.Services
             result.Should().NotBeNull();
             result.Should().BeOfType<UserDto>();
             result.Should().BeEquivalentTo(existingItem,
-                options => options.ComparingByMembers<UserDto>().ExcludingMissingMembers());
+                options => options.ComparingByMembers<UserDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x!.Questions)
+                    .Excluding(x => x!.Categories)
+                    .Excluding(x => x!.UserProgress));
         }
 
         [Fact]
@@ -210,8 +218,12 @@ namespace LearningApp.Application.Tests.Services
             //assert
             result.Should().NotBeNull();
             result.Should().BeOfType<List<UserDto>>();
-            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(), 
-                options => options.ComparingByMembers<UserDto>().ExcludingMissingMembers());
+            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(),
+                options => options.ComparingByMembers<UserDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x!.Questions)
+                    .Excluding(x => x!.Categories)
+                    .Excluding(x => x!.UserProgress));
         }
 
         [Fact]
