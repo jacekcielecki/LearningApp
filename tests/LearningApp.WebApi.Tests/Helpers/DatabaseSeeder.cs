@@ -1,5 +1,4 @@
-﻿using LearningApp.Domain.Common;
-using LearningApp.Domain.Entities;
+﻿using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,53 +13,21 @@ namespace LearningApp.WebApi.Tests.Helpers
             _factory = factory;
         }
 
-        public async Task Seed(object item)
+        public async Task Seed<T>(T item) where T : class
         {
             var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
             using var scope = scopeFactory?.CreateScope();
             var dbContext = scope?.ServiceProvider.GetService<LearningAppDbContext>();
-
             if (dbContext is null) return;
 
-            switch (item)
+            if (item is User)
             {
-                case Achievement achievement:
-                    await dbContext.Achievements.AddAsync(achievement);
-                    break;
-                case Category category:
-                    await dbContext.Categories.AddAsync(category);
-                    break;
-                case CategoryGroup categoryGroup:
-                    await dbContext.CategoryGroups.AddAsync(categoryGroup);
-                    break;
-                case CategoryProgress categoryProgress:
-                    await dbContext.CategoryProgresses.AddAsync(categoryProgress);
-                    break;
-                case LevelProgress levelProgress:
-                    await dbContext.LevelProgresses.AddAsync(levelProgress);
-                    break;
-                case Question question:
-                    await dbContext.Questions.AddAsync(question);
-                    break;
-                case Role role:
-                    await dbContext.Roles.AddAsync(role);
-                    break;
-                case User user:
-                    var existingUser = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-                    if (existingUser is null)
-                    {
-                        await dbContext.Users.AddAsync(user);
-                        break;
-                    }
-                    existingUser = user;
-                    break;
-                case UserProgress userProgress:
-                    await dbContext.UserProgresses.AddAsync(userProgress);
-                    break;
-                default:
-                    throw new InvalidOperationException(Messages.DatabaseSeederFailure(item.GetType().ToString()));
+                User user = (User) Convert.ChangeType(item, typeof(User));
+                var existingUser = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+                if (existingUser != null) return;
             }
 
+            await dbContext.Set<T>().AddAsync(item);
             await dbContext.SaveChangesAsync();
         }
     }
