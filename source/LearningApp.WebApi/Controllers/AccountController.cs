@@ -40,7 +40,7 @@ namespace LearningApp.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPost("sendVerificationEmail")]
+        [HttpPatch("sendVerificationEmail")]
         public async Task<IActionResult> SendAccountVerificationEmail(string userEmail)
         {
              await _emailService.SendAccountVerificationEmail(userEmail);
