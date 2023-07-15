@@ -24,7 +24,8 @@ namespace LearningApp.Application.Tests.Services
                 .Options;
 
             _dbContext = new LearningAppDbContext(dbContextOptions);
-            _authorizationServiceStub.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            _authorizationServiceStub.Setup(x => x.AuthorizeAsync(
+                    It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Success());
         }
 
@@ -53,8 +54,9 @@ namespace LearningApp.Application.Tests.Services
             result.Should().NotBeNull();
             result.Should().BeOfType<List<QuestionDto>>();
             result.Should().ContainEquivalentOf(existingQuestions
-                .FirstOrDefault(x => x.CategoryId == existingCategory.Id), options => 
-                options.ComparingByMembers<QuestionDto>().ExcludingMissingMembers());
+                .FirstOrDefault(x => x.CategoryId == existingCategory.Id), options =>
+                options.ComparingByMembers<QuestionDto>()
+                    .Excluding(x => x!.Category));
             result.Where(x => x.CategoryId != existingCategory.Id).Should().BeEmpty();
         }
 
@@ -85,7 +87,9 @@ namespace LearningApp.Application.Tests.Services
             result.Should().BeOfType<List<QuestionDto>>();
             result.Should().ContainEquivalentOf(existingQuestions
                 .FirstOrDefault(x => x.CategoryId == existingCategory.Id && x.Level == testLevel), options =>
-                options.ComparingByMembers<QuestionDto>().ExcludingMissingMembers()); 
+                options.ComparingByMembers<QuestionDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x!.Category)); 
             result.Where(x => x.CategoryId != existingCategory.Id && x.Level != testLevel).Should().BeEmpty();
         }
 
@@ -122,7 +126,9 @@ namespace LearningApp.Application.Tests.Services
             result.Should().NotBeNull();
             result.Should().BeOfType<List<QuestionDto>>();
             result.Should().ContainEquivalentOf(existingQuestion, options =>
-                options.ComparingByMembers<QuestionDto>().ExcludingMissingMembers());
+                options.ComparingByMembers<QuestionDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x.Category));
             result.Where(x => x.CategoryId != existingCategory.Id && x.Level != existingQuestion.Level).Should().BeEmpty();
         }
 
@@ -150,7 +156,8 @@ namespace LearningApp.Application.Tests.Services
             result.Should().NotBeNull();
             result.Should().BeOfType<QuestionDto>();
             result.Should().BeEquivalentTo(itemToCreate,
-                options => options.ComparingByMembers<QuestionDto>().ExcludingMissingMembers());
+                options => options.ComparingByMembers<QuestionDto>()
+                    .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -191,7 +198,8 @@ namespace LearningApp.Application.Tests.Services
             result.Should().BeOfType<QuestionDto>();
             result.Id.Should().Be(existingQuestion.Id);
             result.Should().BeEquivalentTo(itemToUpdate,
-                options => options.ComparingByMembers<QuestionDto>().ExcludingMissingMembers());
+                options => options.ComparingByMembers<QuestionDto>()
+                    .ExcludingMissingMembers());
         }
 
         [Fact]

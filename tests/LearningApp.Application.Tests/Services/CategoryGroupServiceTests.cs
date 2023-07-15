@@ -35,7 +35,6 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.CategoryGroups.AddRangeAsync(existingItems);
             await _dbContext.SaveChangesAsync();
 
-
             var service = new CategoryGroupService(_dbContext, AutoMapperSingleton.Mapper,
                 _createCategoryGroupValidator, _updateCategoryGroupValidator);
 

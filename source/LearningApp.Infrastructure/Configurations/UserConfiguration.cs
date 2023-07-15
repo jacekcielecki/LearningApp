@@ -11,7 +11,7 @@ namespace LearningApp.Infrastructure.Configurations
             builder.Property(x => x.Username).HasColumnType("varchar(2000)").IsRequired();
             builder.Property(x => x.Password).HasColumnType("varchar(2000)").IsRequired();
             builder.Property(x => x.EmailAddress).HasColumnType("varchar(2000)").IsRequired();
-            builder.Property(x => x.ProfilePictureUrl).HasColumnType("varchar(2000)").IsRequired();
+            builder.Property(x => x.ProfilePictureUrl).HasColumnType("varchar(2000)");
             builder.Property(x => x.VerificationToken).HasColumnType("varchar(2000)");
             builder.Property(x => x.ResetPasswordToken).HasColumnType("varchar(2000)");
 
