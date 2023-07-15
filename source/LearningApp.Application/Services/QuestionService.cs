@@ -38,8 +38,7 @@ namespace LearningApp.Application.Services
 
         public async Task<List<QuestionDto>> GetAllByCategoryAsync(int categoryId, ClaimsPrincipal userContext)
         {
-            var entities = await _dbContext
-                .Questions
+            var entities = await _dbContext.Questions
                 .Where(e => e.CategoryId == categoryId)
                 .ToListAsync();
 
@@ -51,8 +50,7 @@ namespace LearningApp.Application.Services
 
         public async Task<List<QuestionDto>> GetAllByLevelAsync(int categoryId, int level, ClaimsPrincipal userContext)
         {
-            var entities = await _dbContext
-                .Questions
+            var entities = await _dbContext.Questions
                 .Where(r => r.CategoryId == categoryId)
                 .Where(r => r.Level == level)
                 .ToListAsync();
@@ -75,7 +73,8 @@ namespace LearningApp.Application.Services
             var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
-            var user = await _dbContext.Users.Include(u => u.UserProgress)
+            var user = await _dbContext.Users
+                .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
                 .FirstOrDefaultAsync(u => u.Id == userContext.GetUserId());
@@ -95,8 +94,7 @@ namespace LearningApp.Application.Services
 
         public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId, ClaimsPrincipal userContext)
         {
-            var category = await _dbContext
-                .Categories
+            var category = await _dbContext.Categories
                 .FindAsync(categoryId);
 
             if (category is null) throw new NotFoundException(nameof(Category));
@@ -119,13 +117,11 @@ namespace LearningApp.Application.Services
 
         public async Task<QuestionDto> UpdateAsync(int id, UpdateQuestionRequest request, ClaimsPrincipal userContext)
         {
-            var entity = await _dbContext
-                .Questions
+            var entity = await _dbContext.Questions
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(Question));
 
-            var category = await _dbContext
-                .Categories
+            var category = await _dbContext.Categories
                 .FindAsync(request.CategoryId);
             if (category is null) throw new NotFoundException(nameof(Category));
 
@@ -151,29 +147,25 @@ namespace LearningApp.Application.Services
 
         public async Task DeleteAsync(int id, ClaimsPrincipal userContext)
         {
-            var entity = await _dbContext
-                .Questions
+            var entity = await _dbContext.Questions
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(Question));
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Delete));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
-            _dbContext
-                .Questions
+            _dbContext.Questions
                 .Remove(entity);
             await _dbContext.SaveChangesAsync();
         }
 
         private async Task<List<QuestionDto>> GetRandomQuestions(int categoryId, int level)
         {
-            var category = await _dbContext
-                .Categories
+            var category = await _dbContext.Categories
                 .FirstOrDefaultAsync(x => x.Id == categoryId);
             if (category is null) throw new NotFoundException(nameof(Category));
 
-            var questions = await _dbContext
-                .Questions
+            var questions = await _dbContext.Questions
                 .Where(x => x.CategoryId == categoryId 
                             && x.Level == level)
                 .ToListAsync();

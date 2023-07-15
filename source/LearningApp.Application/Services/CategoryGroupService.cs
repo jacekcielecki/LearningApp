@@ -30,8 +30,7 @@ namespace LearningApp.Application.Services
 
         public async Task<List<CategoryGroupDto>> GetAllAsync()
         {
-            var entities = await _dbContext
-                .CategoryGroups
+            var entities = await _dbContext.CategoryGroups
                 .Include(e => e.Categories)
                 .ToListAsync();
 
@@ -40,8 +39,7 @@ namespace LearningApp.Application.Services
 
         public async Task<CategoryGroupDto> GetByIdAsync(int id)
         {
-            var entity = await _dbContext
-                .CategoryGroups
+            var entity = await _dbContext.CategoryGroups
                 .Include(e => e.Categories)
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null) throw new NotFoundException(nameof(CategoryGroup));
@@ -55,8 +53,7 @@ namespace LearningApp.Application.Services
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             var entity = _mapper.Map<CategoryGroup>(request);
-            await _dbContext
-                .CategoryGroups
+            await _dbContext.CategoryGroups
                 .AddAsync(entity);
             await _dbContext.SaveChangesAsync();
 
@@ -65,8 +62,7 @@ namespace LearningApp.Application.Services
 
         public async Task<CategoryGroupDto> UpdateAsync(int id, UpdateCategoryGroupRequest request)
         {
-            var entity = await _dbContext
-                .CategoryGroups
+            var entity = await _dbContext.CategoryGroups
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(CategoryGroup));
 
@@ -82,14 +78,12 @@ namespace LearningApp.Application.Services
 
         public async Task<CategoryGroupDto> AddCategoryAsync(int id, int categoryId)
         {
-            var entity = await _dbContext
-                .CategoryGroups
+            var entity = await _dbContext.CategoryGroups
                 .Include(e => e.Categories)
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null) throw new NotFoundException(nameof(CategoryGroup));
 
-            var category = _dbContext
-                .Categories
+            var category = _dbContext.Categories
                 .FirstOrDefault(e => e.Id == categoryId);
             if (category is null) throw new NotFoundException(nameof(Category));
 
@@ -101,14 +95,12 @@ namespace LearningApp.Application.Services
 
         public async Task<CategoryGroupDto> RemoveCategoryAsync(int id, int categoryId)
         {
-            var entity = await _dbContext
-                .CategoryGroups
+            var entity = await _dbContext.CategoryGroups
                 .Include(e => e.Categories)
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null) throw new NotFoundException(nameof(CategoryGroup));
 
-            var category = await _dbContext
-                .Categories
+            var category = await _dbContext.Categories
                 .FindAsync(categoryId);
             if (category is null) throw new NotFoundException(nameof(Category));
 
@@ -120,8 +112,7 @@ namespace LearningApp.Application.Services
 
         public async Task DeleteAsync(int id)
         {
-            var entity = await _dbContext
-                .CategoryGroups
+            var entity = await _dbContext.CategoryGroups
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(CategoryGroup));
 

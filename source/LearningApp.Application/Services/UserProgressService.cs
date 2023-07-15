@@ -1,5 +1,7 @@
-﻿using FluentValidation;
+﻿using System.Security.Claims;
+using FluentValidation;
 using LearningApp.Application.Dtos;
+using LearningApp.Application.Extensions;
 using LearningApp.Application.Interfaces;
 using LearningApp.Domain.Common;
 using LearningApp.Domain.Entities;
@@ -18,29 +20,24 @@ namespace LearningApp.Application.Services
             _dbContext = dbContext;
         }
 
-        public async Task<QuizCompletedDto> CompleteQuizAsync(int userId, int categoryId, string quizLevelName, int expGained)
+        public async Task<QuizCompletedDto> CompleteQuizAsync(ClaimsPrincipal userContext, int categoryId, string quizLevelName, int expGained)
         {
-            if (expGained is < 0 or > 20)
-                throw new ArgumentException(Messages.InvalidGainedExperience);
+            if (expGained is < 0 or > 20) throw new ArgumentException(Messages.InvalidGainedExperience);
 
-            var user = await _dbContext
-                .Users
+            var user = await _dbContext.Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+                .FirstOrDefaultAsync(u => u.Id == userContext.GetUserId());
 
             if (user is null) throw new NotFoundException(nameof(User));
 
-            var userCategoryProgress = user
-                .UserProgress
-                .CategoryProgress
+            var userCategoryProgress = user.UserProgress.CategoryProgress
                 .FirstOrDefault(e => e.CategoryId == categoryId);
             if (userCategoryProgress is null) throw new NotFoundException(Messages.QuizNotStarted);
 
-            var userLevelProgress = userCategoryProgress
-                .LevelProgresses.
+            var userLevelProgress = userCategoryProgress.LevelProgresses.
                 FirstOrDefault(e => e.LevelName == quizLevelName);
             if (userLevelProgress is null) throw new ValidationException(Messages.GenericErrorMessage);
 
@@ -82,20 +79,17 @@ namespace LearningApp.Application.Services
 
         public async Task CompleteAchievementAsync(int userId, int achievementId)
         {
-            var user = await _dbContext
-                .Users
+            var user = await _dbContext.Users
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.Achievements)
                 .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null) throw new NotFoundException(nameof(User));
 
-            var achievement = _dbContext
-                .Achievements
+            var achievement = _dbContext.Achievements
                 .FirstOrDefault(a => a.Id == achievementId);
             if (achievement is null) throw new NotFoundException(nameof(Achievement));
 
-            user.UserProgress
-                .Achievements
+            user.UserProgress.Achievements
                 .Add(achievement);
             await _dbContext.SaveChangesAsync();
         }

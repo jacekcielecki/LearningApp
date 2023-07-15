@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LearningApp.Application.Services
@@ -25,14 +26,17 @@ namespace LearningApp.Application.Services
         private readonly IValidator<CreateUserRequest> _createUserRequestValidator;
         private readonly IValidator<UpdateUserRequest> _updateUserRequestValidator;
         private readonly IValidator<UpdateUserPasswordRequest> _updateUserPasswordRequestValidator;
+        private readonly IValidator<ResetPasswordRequest> _resetPasswordRequestValidator;
         private readonly JwtAuthenticationSettings _authenticationSettings;
         private readonly AzureBlobStorageSettings _blobStorageSettings;
         private readonly IMapper _mapper;
 
-        public UserService(LearningAppDbContext dbContext, IPasswordHasher<User> passwordHasher,
+        public UserService(LearningAppDbContext dbContext,
+            IPasswordHasher<User> passwordHasher,
             IValidator<CreateUserRequest> createUserRequestValidator,
             IValidator<UpdateUserRequest> updateUserRequestValidator,
             IValidator<UpdateUserPasswordRequest> updateUserPasswordRequestValidator,
+            IValidator<ResetPasswordRequest> resetPasswordRequestValidator,
         JwtAuthenticationSettings authenticationSettings,
             AzureBlobStorageSettings blobStorageSettings, IMapper mapper)
         {
@@ -41,21 +45,39 @@ namespace LearningApp.Application.Services
             _createUserRequestValidator = createUserRequestValidator;
             _updateUserRequestValidator = updateUserRequestValidator;
             _updateUserPasswordRequestValidator = updateUserPasswordRequestValidator;
+            _resetPasswordRequestValidator = resetPasswordRequestValidator;
             _authenticationSettings = authenticationSettings;
             _blobStorageSettings = blobStorageSettings;
             _mapper = mapper;
         }
 
-        public async Task RegisterAsync(CreateUserRequest request)
+        public async Task VerifyAccount(string verificationToken)
+        {
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(x => x.VerificationToken == verificationToken);
+            if (user is null) throw new InvalidVerificationTokenException("Invalid verification token");
+
+            var isTokenExpired = user.VerificationTokenExpireDate < DateTime.Now;
+            if (isTokenExpired) throw new InvalidVerificationTokenException("Verification token has expired");
+
+            user.IsVerified = true;
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<string> RegisterAsync(CreateUserRequest request)
         {
             var validationResult = await _createUserRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
+
             var user = new User
             {
                 Username = request.Username,
                 EmailAddress = request.EmailAddress,
                 RoleId = 2,
                 ProfilePictureUrl = string.IsNullOrEmpty(request.ProfilePictureUrl) ? _blobStorageSettings.DefaultProfilePictureUrl : request.ProfilePictureUrl,
+                IsVerified = false,
+                VerificationToken = GenerateVerificationToken(),
+                VerificationTokenExpireDate = DateTime.Now.AddDays(1)
             };
             user.Password = _passwordHasher.HashPassword(user, request.Password);
             await _dbContext.Users.AddAsync(user);
@@ -73,12 +95,13 @@ namespace LearningApp.Application.Services
 
             user.UserProgressId = userProgress.Id;
             await _dbContext.SaveChangesAsync();
+
+            return user.EmailAddress;
         }
 
         public async Task<string> LoginAsync(LoginDto loginDto)
         {
-            var user = await _dbContext
-                .Users
+            var user = await _dbContext.Users
                 .Include(e => e.Role)
                 .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Email || e.Username == loginDto.Email);
             if (user is null) throw new BadHttpRequestException(Messages.AuthorizationFailed);
@@ -86,13 +109,12 @@ namespace LearningApp.Application.Services
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, loginDto.Password);
             if (result == PasswordVerificationResult.Failed) throw new BadHttpRequestException(Messages.AuthorizationFailed);
 
-            return GenerateToken(user);
+            return GenerateJwtToken(user);
         }
 
         public async Task<List<UserDto>> GetAllAsync()
         {
-            var entities = await _dbContext
-                .Users
+            var entities = await _dbContext .Users
                 .Include(u => u.Role)
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.Achievements)
@@ -106,8 +128,7 @@ namespace LearningApp.Application.Services
 
         public async Task<UserDto> GetByIdAsync(int id)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .Include(e => e.Role)
                 .Include(e => e.UserProgress)
                 .ThenInclude(e => e.Achievements)
@@ -115,18 +136,15 @@ namespace LearningApp.Application.Services
                 .ThenInclude(e => e.CategoryProgress)
                 .ThenInclude(e => e.LevelProgresses)
                 .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (entity is null)
-                throw new NotFoundException(nameof(User));
+            if (entity is null) throw new NotFoundException(nameof(User));
 
             return _mapper.Map<UserDto>(entity);
         }
 
         public async Task<List<UserRankingDto>> GetSortByExpAsync()
         {
-            var entities = await _dbContext
-                .Users
-                .Include(u => u.UserProgress).Skip(1)
+            var entities = await _dbContext.Users
+                .Include(u => u.UserProgress)
                 .OrderByDescending(r => r.UserProgress.ExperiencePoints)
                 .ToListAsync();
 
@@ -135,11 +153,9 @@ namespace LearningApp.Application.Services
 
         public async Task<UserDto> UpdateAsync(int id, UpdateUserRequest request)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(User));
-
             if (entity.Id == 1 && entity.EmailAddress == "root") throw new ResourceProtectedException();
 
             var validationResult = await _updateUserRequestValidator.ValidateAsync(request);
@@ -158,14 +174,13 @@ namespace LearningApp.Application.Services
 
         public async Task<UserDto> UpdateUserRoleAsync(int id, int roleId)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Id == id);
             if (entity is null) throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();
-            var role = _dbContext
-                .Roles
+
+            var role = _dbContext.Roles
                 .FirstOrDefault(r => r.Id == roleId);
             if (role is null) throw new NotFoundException(nameof(Role));
 
@@ -177,8 +192,7 @@ namespace LearningApp.Application.Services
 
         public async Task UpdateUserPasswordAsync(int id, UpdateUserPasswordRequest request)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();
@@ -195,8 +209,7 @@ namespace LearningApp.Application.Services
 
         public async Task DeleteAsync(int id)
         {
-            var entity = await _dbContext
-                .Users
+            var entity = await _dbContext.Users
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(User));
             if (entity.Id == 1 && entity.Username == "root") throw new ResourceProtectedException();
@@ -205,7 +218,58 @@ namespace LearningApp.Application.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        private string GenerateToken(User user)
+        public async Task<string> GetUserVerificationToken(string userEmail)
+        {
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(x => x.EmailAddress == userEmail);
+
+            if (user is null) throw new NotFoundException(nameof(User));
+
+            var isTokenExpired = user.VerificationTokenExpireDate < DateTime.Now;
+            if (isTokenExpired)
+            {
+                user.VerificationToken = GenerateVerificationToken();
+                user.VerificationTokenExpireDate = DateTime.Now.AddDays(1);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return user.VerificationToken;
+        }
+
+        public async Task<string> GetPasswordResetToken(string userEmail)
+        {
+            var user = await _dbContext.Users
+                .Where(x => x.EmailAddress == userEmail)
+                .FirstOrDefaultAsync();
+
+            if (user is null) throw new NotFoundException(nameof(User));
+
+            user.ResetPasswordToken = GenerateVerificationToken();
+            user.ResetPasswordTokenExpireDate = DateTime.Now.AddDays(1);
+            await _dbContext.SaveChangesAsync();
+
+            return user.ResetPasswordToken;
+        }
+
+        public async Task ResetPassword(ResetPasswordRequest request)
+        {
+            var validationResult = await _resetPasswordRequestValidator.ValidateAsync(request);
+            if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
+
+            var user = await _dbContext.Users
+                .Where(x => x.ResetPasswordToken == request.Token)
+                .FirstOrDefaultAsync();
+
+            if (user is null) throw new NotFoundException(nameof(User));
+
+            var isTokenExpired = user.ResetPasswordTokenExpireDate < DateTime.Now;
+            if (isTokenExpired) throw new InvalidVerificationTokenException("Reset password token has expired");
+
+            user.Password = _passwordHasher.HashPassword(user, request.Password);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.Key));
@@ -227,6 +291,11 @@ namespace LearningApp.Application.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        private string GenerateVerificationToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
         }
     }
 }

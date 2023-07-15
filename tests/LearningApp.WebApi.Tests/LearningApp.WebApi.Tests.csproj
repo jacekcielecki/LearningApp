@@ -30,5 +30,15 @@
     <ProjectReference Include="..\..\source\LearningApp.WebApi\LearningApp.WebApi.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TestFiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestFiles\test-image.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 	
 </Project>

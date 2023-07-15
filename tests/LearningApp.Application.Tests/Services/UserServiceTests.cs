@@ -17,13 +17,14 @@ namespace LearningApp.Application.Tests.Services
         private readonly IValidator<CreateUserRequest> _createUserValidator;
         private readonly IValidator<UpdateUserRequest> _updateUserValidator;
         private readonly IValidator<UpdateUserPasswordRequest> _updateUserPasswordValidator;
+        private readonly IValidator<ResetPasswordRequest> _resetUserPasswordValidator;
         private readonly JwtAuthenticationSettings _jwtAuthenticationSettings;
         private readonly AzureBlobStorageSettings _azureBlobStorageSettings;
 
         public UserServiceTests()
         {
             var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
+                .UseInMemoryDatabase(databaseName: "UserServiceTests")
                 .Options;
 
             _dbContext = new LearningAppDbContext(dbContextOptions);
@@ -31,6 +32,7 @@ namespace LearningApp.Application.Tests.Services
             _createUserValidator = new CreateUserRequestValidator(_dbContext);
             _updateUserValidator = new UpdateUserRequestValidator(_dbContext);
             _updateUserPasswordValidator = new UpdateUserPasswordRequestValidator();
+            _resetUserPasswordValidator = new ResetPasswordRequestValidator();
             _jwtAuthenticationSettings = new JwtAuthenticationSettings
             {
                 ExpireDays = 2,
@@ -66,7 +68,7 @@ namespace LearningApp.Application.Tests.Services
                 .Returns("HashedPasswordMock");
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -100,7 +102,7 @@ namespace LearningApp.Application.Tests.Services
                 .Returns(PasswordVerificationResult.Success);
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -135,7 +137,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -144,8 +146,12 @@ namespace LearningApp.Application.Tests.Services
             //assert
             result.Should().NotBeNull();
             result.Should().BeOfType<List<UserDto>>();
-            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(), 
-                options => options.ComparingByMembers<UserDto>().ExcludingMissingMembers());
+            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(),
+                options => options.ComparingByMembers<UserDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x!.Questions)
+                    .Excluding(x => x!.Categories)
+                    .Excluding(x => x!.UserProgress));
         }
 
         [Fact]
@@ -163,7 +169,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -173,11 +179,15 @@ namespace LearningApp.Application.Tests.Services
             result.Should().NotBeNull();
             result.Should().BeOfType<UserDto>();
             result.Should().BeEquivalentTo(existingItem,
-                options => options.ComparingByMembers<UserDto>().ExcludingMissingMembers());
+                options => options.ComparingByMembers<UserDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x!.Questions)
+                    .Excluding(x => x!.Categories)
+                    .Excluding(x => x!.UserProgress));
         }
 
         [Fact]
-        public async Task GetSortByExpAsync_WithExistingItems_ReturnsItemsOrderedByTotalExp()
+        public async Task GetSortByExpAsync_WithExistingItems_ReturnsItemsOrderedByExperiencePoints()
         {
             //arrange
             var existingItems = new List<User>
@@ -187,19 +197,28 @@ namespace LearningApp.Application.Tests.Services
                     EmailAddress = "TestUser1@mail.com",
                     Password = "TestUserPassword1",
                     Role = new Role { Name = "TestRole" },
+                    UserProgress = new UserProgress { Level = 1, ExperiencePoints = 50 }
                 },
                 new() {
                     Username = "TestUserUsername2",
                     EmailAddress = "TestUser2@mail.com",
                     Password = "TestUserPassword2",
-                    Role = new Role { Name = "TestRole" }
+                    Role = new Role { Name = "TestRole" },
+                    UserProgress = new UserProgress { Level = 1, ExperiencePoints = 40 }
+                },
+                new() {
+                    Username = "TestUserUsername2",
+                    EmailAddress = "TestUser2@mail.com",
+                    Password = "TestUserPassword2",
+                    Role = new Role { Name = "TestRole" },
+                    UserProgress = new UserProgress {Level = 1,  ExperiencePoints = 60 }
                 }
             };
             await _dbContext.Users.AddRangeAsync(existingItems);
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -208,8 +227,11 @@ namespace LearningApp.Application.Tests.Services
             //assert
             result.Should().NotBeNull();
             result.Should().BeOfType<List<UserDto>>();
-            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(), 
-                options => options.ComparingByMembers<UserDto>().ExcludingMissingMembers());
+            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(),
+                options => options.ComparingByMembers<UserDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x!.Questions)
+                    .Excluding(x => x!.Categories));
         }
 
         [Fact]
@@ -228,7 +250,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             var updatedItem = new UpdateUserRequest
@@ -269,7 +291,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act
@@ -280,6 +302,37 @@ namespace LearningApp.Application.Tests.Services
             response.Should().BeOfType<UserDto>();
             response.Id.Should().Be(existingUser.Id);
             response.Role.Id.Should().Be(newUserRole.Id);
+        }
+
+        [Fact]
+        public async Task VerifyAccount_WithValidVerificationToken_UpdatesUserIsVerified()
+        {
+            //arrange
+            var existingUser = new User
+            {
+                Username = "TestUserUsername",
+                EmailAddress = "TestUser@mail.com",
+                Password = "TestUserPassword",
+                Role = new Role { Name = "TestRole" },
+            };
+            await _dbContext.Users.AddAsync(existingUser);
+            await _dbContext.SaveChangesAsync();
+
+            var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
+                _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
+
+            //act
+            var verificationToken = await service.GetUserVerificationToken(existingUser.EmailAddress);
+            await service.VerifyAccount(verificationToken);
+
+            //assert
+            verificationToken.Should().NotBeNull();
+            var check = _dbContext.Users
+                .First(x => x.EmailAddress == existingUser.EmailAddress);
+            check.Should().NotBeNull();
+            check.VerificationToken.Should().NotBeNull();
+            check.IsVerified.Should().BeTrue();
         }
 
         [Fact]
@@ -299,7 +352,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             _passwordHasherMock
@@ -327,6 +380,111 @@ namespace LearningApp.Application.Tests.Services
         }
 
         [Fact]
+        public async Task GetUserVerificationToken_WithExistingUserEmail_Update_VerificationToken()
+        {
+            //arrange
+            var existingUser = new User
+            {
+                Username = "TestUserUsername",
+                EmailAddress = "TestUser@mail.com",
+                Password = "TestUserPassword",
+                Role = new Role { Name = "TestRole" },
+            };
+            await _dbContext.Users.AddAsync(existingUser);
+            await _dbContext.SaveChangesAsync();
+
+            var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
+                _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
+
+            //act
+            var result = await service.GetUserVerificationToken(existingUser.EmailAddress);
+
+            //assert
+            result.Should().NotBeNull();
+            var check = _dbContext.Users
+                .First(x => x.EmailAddress == existingUser.EmailAddress);
+            check.Should().NotBeNull();
+            check.VerificationToken.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task GetPasswordResetToken_UpdatedUser_PasswordResetToken()
+        {
+            //arrange
+            var existingUser = new User
+            {
+                Username = "TestUserUsername",
+                EmailAddress = "TestUser@mail.com",
+                Password = "TestUserPassword",
+                Role = new Role { Name = "TestRole" },
+            };
+            await _dbContext.Users.AddAsync(existingUser);
+            await _dbContext.SaveChangesAsync();
+
+            var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
+                _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
+
+            //act
+            var result = await service.GetPasswordResetToken(existingUser.EmailAddress);
+
+            //assert
+            result.Should().NotBeNull();
+            var check = _dbContext.Users
+                .First(x => x.EmailAddress == existingUser.EmailAddress);
+            check.Should().NotBeNull();
+            check.ResetPasswordToken.Should().NotBeNull();
+            check.ResetPasswordTokenExpireDate.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task ResetPassword_WithValidResetPasswordRequest_UpdatesUserPassword()
+        {
+            //arrange
+            var existingUser = new User
+            {
+                Username = "TestUserUsername",
+                EmailAddress = "TestUser@mail.com",
+                Password = "TestUserPassword",
+                Role = new Role { Name = "TestRole" },
+                ResetPasswordToken = "testToken",
+                ResetPasswordTokenExpireDate = DateTime.Now.AddDays(1)
+            };
+            await _dbContext.Users.AddAsync(existingUser);
+            await _dbContext.SaveChangesAsync();
+
+            var request = new ResetPasswordRequest()
+            {
+                Password = "newTestPassword",
+                ConfirmPassword = "newTestPassword",
+                Token = existingUser.ResetPasswordToken
+            };
+            var oldPasswordHash = await _dbContext.Users
+                .Where(x => x.EmailAddress == existingUser.EmailAddress)
+                .Select(x => x.Password)
+                .FirstOrDefaultAsync();
+
+            _passwordHasherMock.Setup(x => x.HashPassword(existingUser, request.Password))
+                .Returns(Guid.NewGuid().ToString);
+
+            var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
+                _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
+
+            //act
+            await service.ResetPassword(request);
+
+            //assert
+            var check = _dbContext.Users
+                .First(x => x.Id == existingUser.Id);
+            
+            check.Should().NotBeNull();
+            check.Password.Should().NotBeNull();
+            check.Password.Should().NotBe(oldPasswordHash);
+        }
+
+        [Fact]
         public async Task DeleteAsync_WithItemToDelete_DeletesItem()
         {
             //arrange
@@ -341,7 +499,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.SaveChangesAsync();
 
             var service = new UserService(_dbContext, _passwordHasherMock.Object, _createUserValidator,
-                _updateUserValidator, _updateUserPasswordValidator, _jwtAuthenticationSettings,
+                _updateUserValidator, _updateUserPasswordValidator, _resetUserPasswordValidator, _jwtAuthenticationSettings,
                 _azureBlobStorageSettings, AutoMapperSingleton.Mapper);
 
             //act

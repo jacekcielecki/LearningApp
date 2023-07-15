@@ -6,14 +6,14 @@ using LearningApp.WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appConfig = builder.Configuration;
-var jwtSettings = appConfig.GetSection("Jwt").Get<JwtAuthenticationSettings>()!;
-var blobSettings = appConfig.GetSection("BlobStorage").Get<AzureBlobStorageSettings>()!;
-var corsOriginName = appConfig["Cors:originName"]!;
-var connectionString = appConfig.GetConnectionString("learningAppDb");
+var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtAuthenticationSettings>();
+var blobSettings = builder.Configuration.GetSection("BlobStorage").Get<AzureBlobStorageSettings>();
+var smtpSettings = builder.Configuration.GetSection("Smtp").Get<SmtpSettings>();
+var connectionString = builder.Configuration.GetConnectionString("learningAppDb");
+var corsOriginName = builder.Configuration["Cors:originName"];
 
 builder.Services.AddInfrastructureServices(connectionString);
-builder.Services.AddApplicationServices(jwtSettings, blobSettings);
+builder.Services.AddApplicationServices(jwtSettings, blobSettings, smtpSettings);
 builder.Services.AddWebApiServices();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

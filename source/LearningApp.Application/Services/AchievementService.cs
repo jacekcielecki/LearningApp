@@ -44,8 +44,7 @@ namespace LearningApp.Application.Services
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             var entity = _mapper.Map<Achievement>(request);
-            _dbContext
-                .Achievements
+            _dbContext.Achievements
                 .Add(entity);
             await _dbContext.SaveChangesAsync();
 
@@ -57,8 +56,7 @@ namespace LearningApp.Application.Services
             var validationResult = await _updateAchievementRequest.ValidateAsync(request);
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
-            var entity = await _dbContext
-                .Achievements
+            var entity = await _dbContext.Achievements
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(Achievement));
 
@@ -71,8 +69,7 @@ namespace LearningApp.Application.Services
 
         public async Task DeleteAsync(int id)
         {
-            var entity = await _dbContext
-                .Achievements
+            var entity = await _dbContext.Achievements
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(Achievement));
 

@@ -20,7 +20,7 @@ namespace LearningApp.Application.Tests.Services
         public CategoryServiceTests()
         {
             var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
+                .UseInMemoryDatabase(databaseName: "CategoryServiceTests")
                 .Options;
 
             _dbContext = new LearningAppDbContext(dbContextOptions);
@@ -49,7 +49,10 @@ namespace LearningApp.Application.Tests.Services
             //assert
             result.Should().NotBeNull();
             result.Should().BeOfType<List<CategoryDto>>();
-            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(), options => options.ComparingByMembers<CategoryDto>().ExcludingMissingMembers());
+            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(), options => 
+                options.ComparingByMembers<CategoryDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x!.CategoryGroups));
         }
 
         [Fact]
@@ -69,7 +72,9 @@ namespace LearningApp.Application.Tests.Services
             result.Should().NotBeNull();
             result.Should().BeOfType<CategoryDto>();
             result.Should().BeEquivalentTo(existingItem,
-                options => options.ComparingByMembers<CategoryDto>().ExcludingMissingMembers());
+                options => options.ComparingByMembers<CategoryDto>()
+                    .ExcludingMissingMembers()
+                    .Excluding(x => x!.CategoryGroups));
         }
 
         [Fact]
@@ -93,7 +98,8 @@ namespace LearningApp.Application.Tests.Services
             result.Should().NotBeNull();
             result.Should().BeOfType<CategoryDto>();
             result.Should().BeEquivalentTo(itemToCreate,
-                options => options.ComparingByMembers<CategoryDto>().ExcludingMissingMembers());
+                options => options.ComparingByMembers<CategoryDto>()
+                    .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -122,7 +128,8 @@ namespace LearningApp.Application.Tests.Services
             result.Should().BeOfType<CategoryDto>();
             result.Id.Should().Be(existingItem.Id);
             result.Should().BeEquivalentTo(itemToUpdate,
-                options => options.ComparingByMembers<CategoryDto>().ExcludingMissingMembers());
+                options => options.ComparingByMembers<CategoryDto>()
+                    .ExcludingMissingMembers());
         }
 
         [Fact]

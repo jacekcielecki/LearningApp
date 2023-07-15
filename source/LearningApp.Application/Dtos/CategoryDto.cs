@@ -10,6 +10,7 @@
         public int QuizPerLevel { get; set; }
         public int? CreatorId { get; set; }
         public DateTime? DateCreated { get; set; }
+        public virtual UserDto Creator { get; set; }
         public virtual ICollection<QuestionDto> Questions { get; set; }
     }
 }

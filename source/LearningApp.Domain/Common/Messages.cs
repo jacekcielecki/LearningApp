@@ -10,6 +10,7 @@
         public const string InvalidPassword = "Invalid Password";
         public const string AccessProtectedResource = "Action forbidden, resource is protected";
         public const string UnauthorizedAccess = "You don't have access to modify this resource";
+        public const string InvalidVerificationToken = "Invalid verification token";
         public static string DatabaseSeederFailure(string entityType) => $"{entityType} is a unknown entity type, data cannot be seeded";
         public static string InvalidId(string entityName) => $"{entityName} with given id not found.";
     }

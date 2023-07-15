@@ -1,9 +1,8 @@
-﻿using LearningApp.Domain.Entities;
+﻿using LearningApp.Application.Extensions;
+using LearningApp.Domain.Entities;
 using LearningApp.Domain.Enums;
 using LearningApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace LearningApp.Application.Authorization
 {
@@ -18,30 +17,30 @@ namespace LearningApp.Application.Authorization
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ResourceOperationRequirement requirement, UserContent resource)
         {
+            var userContext = context?.User;
+            var userRole = userContext.GetUserRole();
+            var userId = userContext.GetUserId();
+
             if (requirement.ResourceOperation == OperationType.Read)
             {
-                context.Succeed(requirement);
+                context?.Succeed(requirement);
                 return Task.CompletedTask;
             }
-            if (context is null)
+            if (userContext is null)
             {
                 return Task.CompletedTask;
             }
-
-            var userRole = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
-            var isAdmin = userRole?.ToLower() == "admin";
-            if (isAdmin)
+            if (userRole == "Admin")
             {
                 context.Succeed(requirement);
                 return Task.CompletedTask;
             }
 
-            var userId = context.User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti)?.Value;
             switch (resource)
             {
                 case Category:
                 {
-                    var isResourceCreator = userId is not null && resource.CreatorId == int.Parse(userId);
+                    var isResourceCreator = resource.CreatorId == userId;
                     if (isResourceCreator) context.Succeed(requirement);
                     break;
                 }
@@ -53,7 +52,7 @@ namespace LearningApp.Application.Authorization
 
                     if (resourceCategory is not null)
                     {
-                        var isResourceCategoryCreator = userId is not null && resourceCategory.CreatorId == int.Parse(userId);
+                        var isResourceCategoryCreator = resourceCategory.CreatorId == userId;
                         if (isResourceCategoryCreator) context.Succeed(requirement);
                     }
                     break;

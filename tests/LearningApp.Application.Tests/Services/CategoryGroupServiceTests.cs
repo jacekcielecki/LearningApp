@@ -16,7 +16,7 @@ namespace LearningApp.Application.Tests.Services
         public CategoryGroupServiceTests()
         {
             var dbContextOptions = new DbContextOptionsBuilder<LearningAppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
+                .UseInMemoryDatabase(databaseName: "CategoryGroupServiceTests")
                 .Options;
 
             _dbContext = new LearningAppDbContext(dbContextOptions);
@@ -34,7 +34,6 @@ namespace LearningApp.Application.Tests.Services
             };
             await _dbContext.CategoryGroups.AddRangeAsync(existingItems);
             await _dbContext.SaveChangesAsync();
-
 
             var service = new CategoryGroupService(_dbContext, AutoMapperSingleton.Mapper,
                 _createCategoryGroupValidator, _updateCategoryGroupValidator);

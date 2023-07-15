@@ -25,7 +25,7 @@ namespace LearningApp.WebApi.Tests.Controllers
 
                     services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>();
                     services.AddMvc(option => option.Filters.Add(new FakeUserFilter()));
-                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
+                    services.AddDbContext<LearningAppDbContext>(options => options.UseInMemoryDatabase("UserProgressControllerTests"));
                 });
             });
 
@@ -46,7 +46,6 @@ namespace LearningApp.WebApi.Tests.Controllers
 
             var existingUser = new User
             {
-                Id = 999,
                 Username = "TestUserUsername",
                 EmailAddress = "TestUser@mail.com",
                 Password = "TestUserPassword",
@@ -95,13 +94,20 @@ namespace LearningApp.WebApi.Tests.Controllers
             //arrange
             var existingUser = new User
             {
-                Id = 999,
                 Username = "TestUserUsername",
                 EmailAddress = "TestUser@mail.com",
-                Password = "TestUserPassword"
+                Password = "TestUserPassword",
+                UserProgress = new UserProgress
+                {
+                    ExperiencePoints = 0,
+                    TotalCompletedQuiz = 0,
+                    Level = 1,
+                    Achievements = new List<Achievement>()
+                }
             };
-            var existingAchievement = new Achievement {Name = "TestAchievementName" };
             await _databaseSeeder.Seed(existingUser);
+
+            var existingAchievement = new Achievement { Name = "TestAchievementName" };
             await _databaseSeeder.Seed(existingAchievement);
 
             //act

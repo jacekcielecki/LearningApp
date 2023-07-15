@@ -61,12 +61,11 @@ namespace WSBLearn.Dal.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("varchar(2000)");
 
                     b.HasKey("Id");
 
@@ -88,15 +87,14 @@ namespace WSBLearn.Dal.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<string>("IconUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<int>("QuestionsPerQuiz")
                         .HasColumnType("int");
@@ -105,6 +103,8 @@ namespace WSBLearn.Dal.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
 
                     b.ToTable("Categories");
                 });
@@ -118,12 +118,11 @@ namespace WSBLearn.Dal.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("IconUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("varchar(2000)");
 
                     b.HasKey("Id");
 
@@ -146,7 +145,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<int>("UserProgressId")
                         .HasColumnType("int");
@@ -177,7 +176,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.Property<string>("LevelName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<int>("QuizToFinish")
                         .HasColumnType("int");
@@ -198,13 +197,13 @@ namespace WSBLearn.Dal.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("A")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<string>("B")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<string>("C")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -217,25 +216,26 @@ namespace WSBLearn.Dal.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("D")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<DateTime?>("DateCreated")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
                     b.Property<string>("QuestionContent")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("varchar(2000)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("CreatorId");
 
                     b.ToTable("Questions");
                 });
@@ -250,7 +250,7 @@ namespace WSBLearn.Dal.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.HasKey("Id");
 
@@ -279,14 +279,23 @@ namespace WSBLearn.Dal.Migrations
 
                     b.Property<string>("EmailAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<string>("ProfilePictureUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<string>("ResetPasswordToken")
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<DateTime?>("ResetPasswordTokenExpireDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -296,7 +305,13 @@ namespace WSBLearn.Dal.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<DateTime>("VerificationTokenExpireDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -366,6 +381,15 @@ namespace WSBLearn.Dal.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("LearningApp.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("LearningApp.Domain.Entities.User", "Creator")
+                        .WithMany("Categories")
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("LearningApp.Domain.Entities.CategoryProgress", b =>
                 {
                     b.HasOne("LearningApp.Domain.Entities.UserProgress", "UserProgress")
@@ -396,13 +420,19 @@ namespace WSBLearn.Dal.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LearningApp.Domain.Entities.User", "Creator")
+                        .WithMany("Questions")
+                        .HasForeignKey("CreatorId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("LearningApp.Domain.Entities.User", b =>
                 {
                     b.HasOne("LearningApp.Domain.Entities.Role", "Role")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -431,8 +461,17 @@ namespace WSBLearn.Dal.Migrations
                     b.Navigation("LevelProgresses");
                 });
 
+            modelBuilder.Entity("LearningApp.Domain.Entities.Role", b =>
+                {
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("LearningApp.Domain.Entities.User", b =>
                 {
+                    b.Navigation("Categories");
+
+                    b.Navigation("Questions");
+
                     b.Navigation("UserProgress");
                 });
 
