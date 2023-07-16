@@ -40,6 +40,7 @@ namespace LearningApp.Application.Services
         {
             var entities = await _dbContext.Questions
                 .Where(e => e.CategoryId == categoryId)
+                .AsNoTracking()
                 .ToListAsync();
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
@@ -53,6 +54,7 @@ namespace LearningApp.Application.Services
             var entities = await _dbContext.Questions
                 .Where(r => r.CategoryId == categoryId)
                 .Where(r => r.Level == level)
+                .AsNoTracking()
                 .ToListAsync();
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
@@ -65,6 +67,7 @@ namespace LearningApp.Application.Services
         {
             var category = await _dbContext.Categories
                 .Include(r => r.Questions)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Id == categoryId);
 
             if (category is null) throw new NotFoundException(nameof(Category));
@@ -77,6 +80,7 @@ namespace LearningApp.Application.Services
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == userContext.GetUserId());
             if (user is null) throw new NotFoundException(nameof(User));
 
@@ -162,6 +166,7 @@ namespace LearningApp.Application.Services
         private async Task<List<QuestionDto>> GetRandomQuestions(int categoryId, int level)
         {
             var category = await _dbContext.Categories
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == categoryId);
             if (category is null) throw new NotFoundException(nameof(Category));
 

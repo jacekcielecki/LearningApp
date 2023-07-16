@@ -32,6 +32,7 @@ namespace LearningApp.Application.Services
         {
             var entities = await _dbContext.CategoryGroups
                 .Include(e => e.Categories)
+                .AsNoTracking()
                 .ToListAsync();
 
             return _mapper.Map<List<CategoryGroupDto>>(entities);
@@ -41,6 +42,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.CategoryGroups
                 .Include(e => e.Categories)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null) throw new NotFoundException(nameof(CategoryGroup));
 
