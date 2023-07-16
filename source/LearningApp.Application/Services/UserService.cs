@@ -103,6 +103,7 @@ namespace LearningApp.Application.Services
         {
             var user = await _dbContext.Users
                 .Include(e => e.Role)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.EmailAddress == loginDto.Email || e.Username == loginDto.Email);
             if (user is null) throw new BadHttpRequestException(Messages.AuthorizationFailed);
 
@@ -121,6 +122,7 @@ namespace LearningApp.Application.Services
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.CategoryProgress)
                 .ThenInclude(u => u.LevelProgresses)
+                .AsNoTracking()
                 .ToListAsync();
 
             return _mapper.Map<List<UserDto>>(entities);
@@ -135,6 +137,7 @@ namespace LearningApp.Application.Services
                 .Include(e => e.UserProgress)
                 .ThenInclude(e => e.CategoryProgress)
                 .ThenInclude(e => e.LevelProgresses)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (entity is null) throw new NotFoundException(nameof(User));
 
@@ -146,6 +149,7 @@ namespace LearningApp.Application.Services
             var entities = await _dbContext.Users
                 .Include(u => u.UserProgress)
                 .OrderByDescending(r => r.UserProgress.ExperiencePoints)
+                .AsNoTracking()
                 .ToListAsync();
 
             return _mapper.Map<List<UserRankingDto>>(entities);

@@ -33,6 +33,7 @@ namespace LearningApp.Application.Services
         {
             var entities = await _dbContext
                 .Achievements
+                .AsNoTracking()
                 .ToListAsync();
 
             return _mapper.Map<List<AchievementDto>>(entities);

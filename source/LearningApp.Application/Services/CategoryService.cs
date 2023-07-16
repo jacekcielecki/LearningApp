@@ -40,9 +40,9 @@ namespace LearningApp.Application.Services
             var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Category(), new ResourceOperationRequirement(OperationType.Read));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
-            IEnumerable<Category> entities = await _dbContext
-                .Categories
+            var entities = await _dbContext.Categories
                 .Include(r => r.Questions)
+                .AsNoTracking()
                 .ToListAsync();
 
             return _mapper.Map<List<CategoryDto>>(entities);
@@ -52,6 +52,7 @@ namespace LearningApp.Application.Services
         {
             var entity = await _dbContext.Categories
                 .Include(r => r.Questions)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (entity is null) throw new NotFoundException(nameof(Category));
 

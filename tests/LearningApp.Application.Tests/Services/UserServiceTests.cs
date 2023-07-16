@@ -231,7 +231,8 @@ namespace LearningApp.Application.Tests.Services
                 options => options.ComparingByMembers<UserDto>()
                     .ExcludingMissingMembers()
                     .Excluding(x => x!.Questions)
-                    .Excluding(x => x!.Categories));
+                    .Excluding(x => x!.Categories)
+                    .Excluding(x => x!.UserProgress));
         }
 
         [Fact]

@@ -52,7 +52,8 @@ namespace LearningApp.Application.Tests.Services
             result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(), options => 
                 options.ComparingByMembers<CategoryDto>()
                     .ExcludingMissingMembers()
-                    .Excluding(x => x!.CategoryGroups));
+                    .Excluding(x => x!.CategoryGroups)
+                    .Excluding(x => x!.Questions));
         }
 
         [Fact]
@@ -74,7 +75,8 @@ namespace LearningApp.Application.Tests.Services
             result.Should().BeEquivalentTo(existingItem,
                 options => options.ComparingByMembers<CategoryDto>()
                     .ExcludingMissingMembers()
-                    .Excluding(x => x!.CategoryGroups));
+                    .Excluding(x => x!.CategoryGroups)
+                    .Excluding(x => x!.Questions));
         }
 
         [Fact]

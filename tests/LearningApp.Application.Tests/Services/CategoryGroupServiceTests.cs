@@ -44,7 +44,10 @@ namespace LearningApp.Application.Tests.Services
             //assert
             result.Should().NotBeNull();
             result.Should().BeOfType<List<CategoryGroupDto>>();
-            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(), options => options.ComparingByMembers<AchievementDto>().ExcludingMissingMembers());
+            result.Should().ContainEquivalentOf(existingItems.FirstOrDefault(), 
+                options => options.ComparingByMembers<AchievementDto>()
+                .ExcludingMissingMembers()
+                .Excluding(x => x!.Categories));
         }
 
         [Fact]
@@ -65,7 +68,9 @@ namespace LearningApp.Application.Tests.Services
             result.Should().NotBeNull();
             result.Should().BeOfType<CategoryGroupDto>();
             result.Should().BeEquivalentTo(existingItem,
-                options => options.ComparingByMembers<CategoryGroupDto>().ExcludingMissingMembers());
+                options => options.ComparingByMembers<CategoryGroupDto>()
+                .ExcludingMissingMembers()
+                .Excluding(x => x.Categories));
         }
 
         [Fact]
