@@ -73,8 +73,8 @@ namespace LearningApp.Application.Services
             {
                 Username = request.Username,
                 EmailAddress = request.EmailAddress,
+                ProfilePictureUrl = request.ProfilePictureUrl,
                 RoleId = 2,
-                ProfilePictureUrl = string.IsNullOrEmpty(request.ProfilePictureUrl) ? _blobStorageSettings.DefaultProfilePictureUrl : request.ProfilePictureUrl,
                 IsVerified = false,
                 VerificationToken = GenerateVerificationToken(),
                 VerificationTokenExpireDate = DateTime.Now.AddDays(1)

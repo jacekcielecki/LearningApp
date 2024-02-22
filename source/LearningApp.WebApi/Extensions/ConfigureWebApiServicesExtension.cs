@@ -10,6 +10,7 @@ namespace LearningApp.WebApi.Extensions
     {
         public static IServiceCollection AddWebApiServices(this IServiceCollection services)
         {
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IBlobStorageService, BlobStorageService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IUserProgressService, UserProgressService>();

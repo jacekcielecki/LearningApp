@@ -43,7 +43,6 @@ namespace LearningApp.Application.Tests.Services
             {
                 AvatarContainerName = "AvatarTest",
                 ConnectionString = "TestConnectionString",
-                DefaultProfilePictureUrl = "https://www.testurl.pl",
                 ImageContainerName = "ImageTest"
             };
 
