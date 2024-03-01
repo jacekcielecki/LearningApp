@@ -41,6 +41,7 @@ namespace LearningApp.Application.Services
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             var entities = await _dbContext.Categories
+                .Include(r => r.Creator)
                 .Include(r => r.Questions)
                 .AsNoTracking()
                 .ToListAsync();
