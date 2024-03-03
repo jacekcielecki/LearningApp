@@ -4,6 +4,7 @@ using LearningApp.Application.Tests.Helpers;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Security.Claims;
 
@@ -13,6 +14,7 @@ namespace LearningApp.Application.Tests.Services
     {
         private readonly LearningAppDbContext _dbContext;
         private readonly Mock<IAuthorizationService> _authorizationServiceStub = new Mock<IAuthorizationService>();
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
         public UserProgressServiceTests()
         {
@@ -23,6 +25,8 @@ namespace LearningApp.Application.Tests.Services
             _dbContext = new LearningAppDbContext(dbContextOptions);
             _authorizationServiceStub.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Success());
+            _httpContextAccessorMock.Setup(x => x.HttpContext)
+                .Returns(new DefaultHttpContext { User = FakeHttpContextSingleton.ClaimsPrincipal });
         }
 
         [Fact]
@@ -72,10 +76,10 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Users.AddAsync(existingUser);
             await _dbContext.SaveChangesAsync();
 
-            var service = new UserProgressService(_dbContext);
+            var service = new UserProgressService(_dbContext, _httpContextAccessorMock.Object);
 
             //act
-            var result = await service.CompleteQuizAsync(FakeHttpContextSingleton.ClaimsPrincipal, existingCategory.Id, quizLevelName, expGained);
+            var result = await service.CompleteQuizAsync(existingCategory.Id, quizLevelName, expGained);
 
             //assert
             result.Should().NotBeNull();
@@ -106,7 +110,7 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Achievements.AddAsync(existingAchievement);
             await _dbContext.SaveChangesAsync();
 
-            var service = new UserProgressService(_dbContext);
+            var service = new UserProgressService(_dbContext, _httpContextAccessorMock.Object);
 
             //act
             await service.CompleteAchievementAsync(existingUser.Id, existingAchievement.Id);

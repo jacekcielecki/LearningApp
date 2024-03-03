@@ -171,7 +171,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             var itemToUpdate = new Question
             {
                 QuestionContent = "TestQuestionContent",
-                CategoryId = existingCategory.Id
+                CategoryId = existingCategory.Id,
+                CreatorId = 1
             };
             await _databaseSeeder.Seed(existingCategory);
             await _databaseSeeder.Seed(itemToUpdate);
@@ -201,6 +202,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             var itemToDelete = new Question
             {
                 QuestionContent = "TestQuestionContent",
+                CreatorId = 1
             };
             await _databaseSeeder.Seed(itemToDelete);
 

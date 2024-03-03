@@ -5,6 +5,7 @@ using LearningApp.Application.Tests.Helpers;
 using LearningApp.Domain.Entities;
 using LearningApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Security.Claims;
 
@@ -16,6 +17,7 @@ namespace LearningApp.Application.Tests.Services
         private readonly IValidator<CreateCategoryRequest> _createCategoryValidator = new CreateCategoryRequestValidator();
         private readonly IValidator<UpdateCategoryRequest> _updateCategoryValidator = new UpdateCategoryRequestValidator();
         private readonly Mock<IAuthorizationService> _authorizationService = new Mock<IAuthorizationService>();
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
         public CategoryServiceTests()
         {
@@ -26,6 +28,8 @@ namespace LearningApp.Application.Tests.Services
             _dbContext = new LearningAppDbContext(dbContextOptions);
             _authorizationService.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Success());
+            _httpContextAccessorMock.Setup(x => x.HttpContext)
+                .Returns(new DefaultHttpContext { User = FakeHttpContextSingleton.ClaimsPrincipal });
         }
 
         [Fact]
@@ -41,10 +45,10 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Categories.AddRangeAsync(existingItems);
             await _dbContext.SaveChangesAsync();
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object, _httpContextAccessorMock.Object);
 
             //act
-            var result = await service.GetAllAsync(FakeHttpContextSingleton.ClaimsPrincipal);
+            var result = await service.GetAllAsync();
 
             //assert
             result.Should().NotBeNull();
@@ -64,10 +68,10 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Categories.AddAsync(existingItem);
             await _dbContext.SaveChangesAsync();
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object, _httpContextAccessorMock.Object);
 
             //act
-            var result = await service.GetByIdAsync(existingItem.Id, FakeHttpContextSingleton.ClaimsPrincipal);
+            var result = await service.GetByIdAsync(existingItem.Id);
 
             //assert
             result.Should().NotBeNull();
@@ -91,10 +95,10 @@ namespace LearningApp.Application.Tests.Services
                 QuestionsPerQuiz = 6
             };
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object, _httpContextAccessorMock.Object);
 
             //act
-            var result = await service.CreateAsync(itemToCreate, FakeHttpContextSingleton.ClaimsPrincipal);
+            var result = await service.CreateAsync(itemToCreate);
 
             //assert
             result.Should().NotBeNull();
@@ -120,10 +124,10 @@ namespace LearningApp.Application.Tests.Services
                 QuestionsPerQuiz = 6
             };
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object, _httpContextAccessorMock.Object);
 
             //act
-            var result = await service.UpdateAsync(existingItem.Id, itemToUpdate, FakeHttpContextSingleton.ClaimsPrincipal);
+            var result = await service.UpdateAsync(existingItem.Id, itemToUpdate);
 
             //assert
             result.Should().NotBeNull();
@@ -142,10 +146,10 @@ namespace LearningApp.Application.Tests.Services
             await _dbContext.Categories.AddAsync(existingItem);
             await _dbContext.SaveChangesAsync();
 
-            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object);
+            var service = new CategoryService(_dbContext, AutoMapperSingleton.Mapper, _createCategoryValidator, _updateCategoryValidator, _authorizationService.Object, _httpContextAccessorMock.Object);
 
             //act
-            await service.DeleteAsync(existingItem.Id, FakeHttpContextSingleton.ClaimsPrincipal);
+            await service.DeleteAsync(existingItem.Id);
 
             //assert
             var deletedItem = _dbContext.Achievements.FirstOrDefault(x => x.Id == existingItem.Id);

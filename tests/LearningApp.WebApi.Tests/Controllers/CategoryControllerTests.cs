@@ -90,6 +90,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             var itemToUpdate = new Category
             {
                 Name = "TestCategoryName",
+                CreatorId = 1
             };
             await _databaseSeeder.Seed(itemToUpdate);
 
@@ -116,6 +117,7 @@ namespace LearningApp.WebApi.Tests.Controllers
             var itemToDelete = new Category
             {
                 Name = "TestCategoryName",
+                CreatorId = 1
             };
             await _databaseSeeder.Seed(itemToDelete);
 
