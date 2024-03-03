@@ -19,16 +19,14 @@ namespace LearningApp.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _categoryService.GetAllAsync(userContext);
+            var response = await _categoryService.GetAllAsync();
             return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _categoryService.GetByIdAsync(id, userContext);
+            var response = await _categoryService.GetByIdAsync(id);
             return Ok(response);
         }
 
@@ -42,16 +40,14 @@ namespace LearningApp.WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _categoryService.UpdateAsync(id, updateCategoryRequest, userContext);
+            var response = await _categoryService.UpdateAsync(id, updateCategoryRequest);
             return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var userContext = HttpContext.GetUserContext();
-            await _categoryService.DeleteAsync(id, userContext);
+            await _categoryService.DeleteAsync(id);
             return Ok();
         }
     }

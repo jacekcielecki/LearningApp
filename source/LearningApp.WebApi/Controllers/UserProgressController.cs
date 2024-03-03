@@ -21,8 +21,7 @@ namespace LearningApp.WebApi.Controllers
         [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> CompleteQuizAsync(int categoryId, int level, string quizLevelName, int expGained)
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _userProgressService.CompleteQuizAsync(userContext, categoryId, quizLevelName, expGained);
+            var response = await _userProgressService.CompleteQuizAsync(categoryId, quizLevelName, expGained);
             return Ok(response);
         }
 

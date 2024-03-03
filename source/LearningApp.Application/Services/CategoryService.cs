@@ -38,9 +38,10 @@ namespace LearningApp.Application.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<List<CategoryDto>> GetAllAsync(ClaimsPrincipal userContext)
+        public async Task<List<CategoryDto>> GetAllAsync()
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Category(), new ResourceOperationRequirement(OperationType.Read));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, new Category(), new ResourceOperationRequirement(OperationType.Read));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             var entities = await _dbContext.Categories
@@ -52,7 +53,7 @@ namespace LearningApp.Application.Services
             return _mapper.Map<List<CategoryDto>>(entities);
         }
 
-        public async Task<CategoryDto> GetByIdAsync(int id, ClaimsPrincipal userContext)
+        public async Task<CategoryDto> GetByIdAsync(int id)
         {
             var entity = await _dbContext.Categories
                 .Include(r => r.Questions)
@@ -60,7 +61,8 @@ namespace LearningApp.Application.Services
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (entity is null) throw new NotFoundException(nameof(Category));
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Read));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, entity, new ResourceOperationRequirement(OperationType.Read));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             return _mapper.Map<CategoryDto>(entity);
@@ -72,8 +74,8 @@ namespace LearningApp.Application.Services
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             var entity = _mapper.Map<Category>(createCategoryRequest);
-            var userContext = _httpContextAccessor.HttpContext?.User;
 
+            var userContext = _httpContextAccessor.HttpContext?.User;
             var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, entity, new ResourceOperationRequirement(OperationType.Create));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
@@ -87,12 +89,13 @@ namespace LearningApp.Application.Services
             return _mapper.Map<CategoryDto>(entity);
         }
 
-        public async Task<CategoryDto> UpdateAsync(int id, UpdateCategoryRequest request, ClaimsPrincipal userContext)
+        public async Task<CategoryDto> UpdateAsync(int id, UpdateCategoryRequest request)
         {
             var entity = await _dbContext.Categories.FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(Category));
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Update));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, entity, new ResourceOperationRequirement(OperationType.Update));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
             
             var validationResult = await _updateCategoryRequestValidator.ValidateAsync(request);
@@ -108,14 +111,15 @@ namespace LearningApp.Application.Services
             return _mapper.Map<CategoryDto>(entity);
         }
 
-        public async Task DeleteAsync(int id, ClaimsPrincipal userContext)
+        public async Task DeleteAsync(int id)
         {
             var entity = _dbContext.Categories
                 .Include(r => r.Questions)
                 .FirstOrDefault(c => c.Id == id);
             if (entity is null) throw new NotFoundException(nameof(Category));
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Delete));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, entity, new ResourceOperationRequirement(OperationType.Delete));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             _dbContext.Categories

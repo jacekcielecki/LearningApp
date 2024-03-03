@@ -1,5 +1,4 @@
-﻿using LearningApp.Application.Extensions;
-using LearningApp.Application.Interfaces;
+﻿using LearningApp.Application.Interfaces;
 using LearningApp.Application.Requests.Question;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,16 +18,14 @@ namespace LearningApp.WebApi.Controllers
         [HttpGet("{categoryId}")]
         public async Task<IActionResult> GetAllByCategoryAsync(int categoryId)
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _questionService.GetAllByCategoryAsync(categoryId, userContext);
+            var response = await _questionService.GetAllByCategoryAsync(categoryId);
             return Ok(response);
         }
 
         [HttpGet("all/{categoryId}/{level}")]
         public async Task<IActionResult> GetAllByLevelAsync(int categoryId, int level)
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _questionService.GetAllByLevelAsync(categoryId, level, userContext);
+            var response = await _questionService.GetAllByLevelAsync(categoryId, level);
             return Ok(response);
         }
 
@@ -36,32 +33,28 @@ namespace LearningApp.WebApi.Controllers
         [HttpGet("{categoryId}/{level}")]
         public async Task<IActionResult> GetQuizAsync(int categoryId, [FromRoute] int level)
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _questionService.GetQuizAsync(categoryId, level, userContext);
+            var response = await _questionService.GetQuizAsync(categoryId, level);
             return Ok(response);
         }
 
         [HttpPost("{categoryId}")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateQuestionRequest request, int categoryId)
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _questionService.CreateAsync(request, categoryId, userContext);
+            var response = await _questionService.CreateAsync(request, categoryId);
             return Ok(response);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateQuestionRequest request)
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _questionService.UpdateAsync(id, request, userContext);
+            var response = await _questionService.UpdateAsync(id, request);
             return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var userContext = HttpContext.GetUserContext();
-            await _questionService.DeleteAsync(id, userContext);
+            await _questionService.DeleteAsync(id);
             return Ok();
         }
     }

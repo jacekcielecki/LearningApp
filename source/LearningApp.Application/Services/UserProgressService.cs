@@ -7,6 +7,7 @@ using LearningApp.Domain.Common;
 using LearningApp.Domain.Entities;
 using LearningApp.Domain.Exceptions;
 using LearningApp.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearningApp.Application.Services
@@ -14,15 +15,20 @@ namespace LearningApp.Application.Services
     public class UserProgressService : IUserProgressService
     {
         private readonly LearningAppDbContext _dbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserProgressService(LearningAppDbContext dbContext)
+        public UserProgressService(LearningAppDbContext dbContext,
+            IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<QuizCompletedDto> CompleteQuizAsync(ClaimsPrincipal userContext, int categoryId, string quizLevelName, int expGained)
+        public async Task<QuizCompletedDto> CompleteQuizAsync(int categoryId, string quizLevelName, int expGained)
         {
             if (expGained is < 0 or > 20) throw new ArgumentException(Messages.InvalidGainedExperience);
+
+            var userContext = _httpContextAccessor.HttpContext?.User;
 
             var user = await _dbContext.Users
                 .Include(u => u.Role)

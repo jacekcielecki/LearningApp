@@ -13,6 +13,7 @@ using LearningApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace LearningApp.Application.Services
 {
@@ -23,33 +24,38 @@ namespace LearningApp.Application.Services
         private readonly IValidator<CreateQuestionRequest> _createQuestionRequestValidator;
         private readonly IValidator<UpdateQuestionRequest> _updateQuestionRequestValidator;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public QuestionService(LearningAppDbContext dbContext, IMapper mapper,
+        public QuestionService(LearningAppDbContext dbContext,
+            IMapper mapper,
             IValidator<CreateQuestionRequest> createQuestionRequestValidator,
             IValidator<UpdateQuestionRequest> updateQuestionRequestValidator, 
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _createQuestionRequestValidator = createQuestionRequestValidator;
             _updateQuestionRequestValidator = updateQuestionRequestValidator;
             _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<List<QuestionDto>> GetAllByCategoryAsync(int categoryId, ClaimsPrincipal userContext)
+        public async Task<List<QuestionDto>> GetAllByCategoryAsync(int categoryId)
         {
             var entities = await _dbContext.Questions
                 .Where(e => e.CategoryId == categoryId)
                 .AsNoTracking()
                 .ToListAsync();
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, new Question(), new ResourceOperationRequirement(OperationType.Read));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             return _mapper.Map<List<QuestionDto>>(entities);
         }
 
-        public async Task<List<QuestionDto>> GetAllByLevelAsync(int categoryId, int level, ClaimsPrincipal userContext)
+        public async Task<List<QuestionDto>> GetAllByLevelAsync(int categoryId, int level)
         {
             var entities = await _dbContext.Questions
                 .Where(r => r.CategoryId == categoryId)
@@ -57,13 +63,14 @@ namespace LearningApp.Application.Services
                 .AsNoTracking()
                 .ToListAsync();
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, new Question(), new ResourceOperationRequirement(OperationType.Read));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             return _mapper.Map<List<QuestionDto>>(entities);
         }
 
-        public async Task<List<QuestionDto>> GetQuizAsync(int categoryId, int level, ClaimsPrincipal userContext)
+        public async Task<List<QuestionDto>> GetQuizAsync(int categoryId, int level)
         {
             var category = await _dbContext.Categories
                 .Include(r => r.Questions)
@@ -73,7 +80,8 @@ namespace LearningApp.Application.Services
             if (category is null) throw new NotFoundException(nameof(Category));
             if (level is < 0 or > 3) throw new ArgumentException(Messages.InvalidLevel);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, new Question(), new ResourceOperationRequirement(OperationType.Read));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, new Question(), new ResourceOperationRequirement(OperationType.Read));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             var user = await _dbContext.Users
@@ -96,7 +104,7 @@ namespace LearningApp.Application.Services
             return questions;
         }
 
-        public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId, ClaimsPrincipal userContext)
+        public async Task<QuestionDto> CreateAsync(CreateQuestionRequest request, int categoryId)
         {
             var category = await _dbContext.Categories
                 .FindAsync(categoryId);
@@ -104,7 +112,8 @@ namespace LearningApp.Application.Services
             if (category is null) throw new NotFoundException(nameof(Category));
             var entity = _mapper.Map<Question>(request);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Create));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, entity, new ResourceOperationRequirement(OperationType.Create));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             var validationResult = await _createQuestionRequestValidator.ValidateAsync(request);
@@ -119,7 +128,7 @@ namespace LearningApp.Application.Services
             return _mapper.Map<QuestionDto>(entity);
         }
 
-        public async Task<QuestionDto> UpdateAsync(int id, UpdateQuestionRequest request, ClaimsPrincipal userContext)
+        public async Task<QuestionDto> UpdateAsync(int id, UpdateQuestionRequest request)
         {
             var entity = await _dbContext.Questions
                 .FindAsync(id);
@@ -129,7 +138,8 @@ namespace LearningApp.Application.Services
                 .FindAsync(request.CategoryId);
             if (category is null) throw new NotFoundException(nameof(Category));
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Update));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, entity, new ResourceOperationRequirement(OperationType.Update));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             var validationResult = await _updateQuestionRequestValidator.ValidateAsync(request);
@@ -149,13 +159,14 @@ namespace LearningApp.Application.Services
             return _mapper.Map<QuestionDto>(entity); ;
         }
 
-        public async Task DeleteAsync(int id, ClaimsPrincipal userContext)
+        public async Task DeleteAsync(int id)
         {
             var entity = await _dbContext.Questions
                 .FindAsync(id);
             if (entity is null) throw new NotFoundException(nameof(Question));
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Delete));
+            var userContext = _httpContextAccessor.HttpContext?.User;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, entity, new ResourceOperationRequirement(OperationType.Delete));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             _dbContext.Questions
