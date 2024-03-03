@@ -26,18 +26,25 @@ namespace LearningApp.Application.Authorization
             UserContent resource)
         {
             ClaimsPrincipal userContext = _httpContextAccessor.HttpContext?.User;
-            var userId = userContext.GetUserId();
+            int userId = userContext.GetUserId();
 
-            //authorize for read and create operations
-            if (requirement.ResourceOperation is OperationType.Read or OperationType.Create)
+            //authorize for read operations
+            if (requirement.ResourceOperation is OperationType.Read)
             {
                 context.Succeed(requirement);
                 return;
             }
 
-            //authorize for creator
             if (resource is Category or Question)
             {
+                //authorize for create operations
+                if (requirement.ResourceOperation is OperationType.Create)
+                {
+                    context.Succeed(requirement);
+                    return;
+                }
+
+                //authorize for creator
                 if (resource.CreatorId == userId)
                 {
                     context.Succeed(requirement);
