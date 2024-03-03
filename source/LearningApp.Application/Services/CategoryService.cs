@@ -12,6 +12,7 @@ using LearningApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace LearningApp.Application.Services
 {
@@ -22,17 +23,19 @@ namespace LearningApp.Application.Services
         private readonly IValidator<CreateCategoryRequest> _createCategoryRequestValidator;
         private readonly IValidator<UpdateCategoryRequest> _updateCategoryRequestValidator;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CategoryService(LearningAppDbContext dbContext, IMapper mapper,
             IValidator<CreateCategoryRequest> createCategoryRequestValidator, 
             IValidator<UpdateCategoryRequest> updateCategoryRequestValidator, 
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _createCategoryRequestValidator = createCategoryRequestValidator;
             _updateCategoryRequestValidator = updateCategoryRequestValidator;
             _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<List<CategoryDto>> GetAllAsync(ClaimsPrincipal userContext)
@@ -62,14 +65,15 @@ namespace LearningApp.Application.Services
             return _mapper.Map<CategoryDto>(entity);
         }
 
-        public async Task<CategoryDto> CreateAsync(CreateCategoryRequest createCategoryRequest, ClaimsPrincipal userContext)
+        public async Task<CategoryDto> CreateAsync(CreateCategoryRequest createCategoryRequest)
         {
             var validationResult = await _createCategoryRequestValidator.ValidateAsync(createCategoryRequest);
             if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors[0].ToString());
 
             var entity = _mapper.Map<Category>(createCategoryRequest);
+            var userContext = _httpContextAccessor.HttpContext?.User;
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext, entity, new ResourceOperationRequirement(OperationType.Create));
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userContext!, entity, new ResourceOperationRequirement(OperationType.Create));
             if (!authorizationResult.Succeeded) throw new ForbiddenException();
 
             entity.CreatorId = userContext.GetUserId();

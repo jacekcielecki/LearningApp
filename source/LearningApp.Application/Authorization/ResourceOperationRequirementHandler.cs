@@ -3,63 +3,58 @@ using LearningApp.Domain.Entities;
 using LearningApp.Domain.Enums;
 using LearningApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace LearningApp.Application.Authorization
 {
     public class ResourceOperationRequirementHandler : AuthorizationHandler<ResourceOperationRequirement, UserContent>
     {
         private readonly LearningAppDbContext _dbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ResourceOperationRequirementHandler(LearningAppDbContext dbContext)
+        public ResourceOperationRequirementHandler(LearningAppDbContext dbContext, 
+            IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ResourceOperationRequirement requirement, UserContent resource)
+        protected override async Task HandleRequirementAsync(
+            AuthorizationHandlerContext context,
+            ResourceOperationRequirement requirement, 
+            UserContent resource)
         {
-            var userContext = context?.User;
-            var userRole = userContext.GetUserRole();
+            ClaimsPrincipal userContext = _httpContextAccessor.HttpContext?.User;
             var userId = userContext.GetUserId();
 
-            if (requirement.ResourceOperation == OperationType.Read)
-            {
-                context?.Succeed(requirement);
-                return Task.CompletedTask;
-            }
-            if (userContext is null)
-            {
-                return Task.CompletedTask;
-            }
-            if (userRole == "Admin")
+            //authorize for read and create operations
+            if (requirement.ResourceOperation is OperationType.Read or OperationType.Create)
             {
                 context.Succeed(requirement);
-                return Task.CompletedTask;
+                return;
             }
 
-            switch (resource)
+            //authorize for creator
+            if (resource is Category or Question)
             {
-                case Category:
+                if (resource.CreatorId == userId)
                 {
-                    var isResourceCreator = resource.CreatorId == userId;
-                    if (isResourceCreator) context.Succeed(requirement);
-                    break;
-                }
-                case Question:
-                {
-                    var resourceCategory = _dbContext
-                        .Categories
-                        .FirstOrDefault(x => x.CreatorId == resource.CreatorId);
-
-                    if (resourceCategory is not null)
-                    {
-                        var isResourceCategoryCreator = resourceCategory.CreatorId == userId;
-                        if (isResourceCategoryCreator) context.Succeed(requirement);
-                    }
-                    break;
+                    context.Succeed(requirement);
+                    return;
                 }
             }
 
-            return Task.CompletedTask;
+            var user = await _dbContext.Users.FindAsync(userId);
+
+            //authorize for admin
+            if (user?.RoleId == 1)
+            {
+                context.Succeed(requirement);
+                return;
+            }
+
+            context.Fail();
         }
     }
 }

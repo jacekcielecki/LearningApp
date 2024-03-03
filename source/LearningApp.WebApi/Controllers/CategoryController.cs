@@ -35,11 +35,10 @@ namespace LearningApp.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCategoryRequest createCategoryRequest)
         {
-            var userContext = HttpContext.GetUserContext();
-            var response = await _categoryService.CreateAsync(createCategoryRequest, userContext);
+            var response = await _categoryService.CreateAsync(createCategoryRequest);
             return Ok(response);
         }
-
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
         {
