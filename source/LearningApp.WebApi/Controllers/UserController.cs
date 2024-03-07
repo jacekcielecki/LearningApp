@@ -37,6 +37,13 @@ namespace LearningApp.WebApi.Controllers
             return Ok(response);
         }
 
+        [HttpGet("CheckIfEmailTaken")]
+        public async Task<IActionResult> CheckIfEmailTaken(string email)
+        {
+            var result = await _userService.CheckIfEmailTaken(email);
+            return Ok(result);
+        }
+
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UpdateUserRequest request)

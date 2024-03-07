@@ -155,6 +155,14 @@ namespace LearningApp.Application.Services
             return _mapper.Map<List<UserRankingDto>>(entities);
         }
 
+        public async Task<bool> CheckIfEmailTaken(string email)
+        {
+            var taken = await _dbContext.Users
+                .AnyAsync(u => u.EmailAddress == email);
+
+            return taken;
+        }
+
         public async Task<UserDto> UpdateAsync(int id, UpdateUserRequest request)
         {
             var entity = await _dbContext.Users

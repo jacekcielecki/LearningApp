@@ -17,15 +17,7 @@ namespace LearningApp.Application.Requests.User
                 .NotNull()
                 .NotEmpty()
                 .MinimumLength(6)
-                .MaximumLength(40)
-                .Custom((value, context) =>
-                {
-                    var isUsernameNotUnique = _dbContext.Users.Any(u => u.Username == value);
-                    if (isUsernameNotUnique)
-                    {
-                        context.AddFailure("Username", ValidationMessages.UsernameTaken(value));
-                    }
-                });
+                .MaximumLength(40);
 
             RuleFor(r => r.Password)
                 .NotNull()

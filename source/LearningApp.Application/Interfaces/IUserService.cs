@@ -11,6 +11,7 @@ namespace LearningApp.Application.Interfaces
         Task<List<UserDto>> GetAllAsync();
         Task<UserDto> GetByIdAsync(int id);
         Task<List<UserRankingDto>> GetSortByExpAsync();
+        Task<bool> CheckIfEmailTaken(string email);
         Task<UserDto> UpdateAsync(int id, UpdateUserRequest request);
         Task<UserDto> UpdateUserRoleAsync(int id, int roleId);
         Task UpdateUserPasswordAsync(int id, UpdateUserPasswordRequest request);
