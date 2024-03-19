@@ -113,7 +113,7 @@ namespace LearningApp.Application.Tests.Services
             var service = new UserProgressService(_dbContext, _httpContextAccessorMock.Object);
 
             //act
-            await service.CompleteAchievementAsync(existingUser.Id, existingAchievement.Id);
+            await service.CompleteAchievementAsync(existingAchievement.Id);
 
             //assert
             var check = await _dbContext.Users

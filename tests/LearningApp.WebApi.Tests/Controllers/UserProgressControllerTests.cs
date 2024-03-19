@@ -79,9 +79,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             await _databaseSeeder.Seed(existingUser);
 
             //act
-            var response = 
-                await _client
-                .PatchAsync($"api/UserProgress/{existingCategory.Id}/{level}/{quizLevelName}/{expGained}", null);
+            var requestUri = $"/api/UserProgress/CompleteQuiz/Category/{existingCategory.Id}/Level/{quizLevelName}/ExpGained/{expGained}";
+            var response = await _client.PatchAsync(requestUri, null);
             
             //arrange
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -111,9 +110,8 @@ namespace LearningApp.WebApi.Tests.Controllers
             await _databaseSeeder.Seed(existingAchievement);
 
             //act
-            var response =
-                await _client.PatchAsync(
-                    $"/api/UserProgress/CompleteAchievement/{existingUser.Id}/{existingAchievement.Id}", null);
+            var requestUri = $"/api/UserProgress/CompleteAchievement/Achievement/{existingAchievement.Id}";
+            var response = await _client.PatchAsync(requestUri, null);
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

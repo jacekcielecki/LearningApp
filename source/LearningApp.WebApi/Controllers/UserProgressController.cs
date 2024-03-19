@@ -1,5 +1,4 @@
-﻿using LearningApp.Application.Extensions;
-using LearningApp.Application.Interfaces;
+﻿using LearningApp.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,19 +16,19 @@ namespace LearningApp.WebApi.Controllers
             _userProgressService = userProgressService;
         }
 
-        [HttpPatch("{categoryId}/{level}/{quizLevelName}/{expGained}")]
+        [HttpPatch("CompleteQuiz/Category/{categoryId}/Level/{quizLevelName}/ExpGained/{expGained}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<IActionResult> CompleteQuizAsync(int categoryId, int level, string quizLevelName, int expGained)
+        public async Task<IActionResult> CompleteQuizAsync(int categoryId, string quizLevelName, int expGained)
         {
             var response = await _userProgressService.CompleteQuizAsync(categoryId, quizLevelName, expGained);
             return Ok(response);
         }
 
-        [HttpPatch("CompleteAchievement/{userId}/{achievementId}")]
+        [HttpPatch("CompleteAchievement/Achievement/{achievementId}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<IActionResult> CompleteAchievementAsync(int userId, int achievementId)
+        public async Task<IActionResult> CompleteAchievementAsync(int achievementId)
         {
-            await _userProgressService.CompleteAchievementAsync(userId, achievementId);
+            await _userProgressService.CompleteAchievementAsync(achievementId);
             return Ok();
         }
     }

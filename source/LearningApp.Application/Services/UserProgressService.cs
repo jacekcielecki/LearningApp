@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using FluentValidation;
+﻿using FluentValidation;
 using LearningApp.Application.Dtos;
 using LearningApp.Application.Extensions;
 using LearningApp.Application.Interfaces;
@@ -83,12 +82,14 @@ namespace LearningApp.Application.Services
             return quizCompletedResponse;
         }
 
-        public async Task CompleteAchievementAsync(int userId, int achievementId)
+        public async Task CompleteAchievementAsync(int achievementId)
         {
+            var userContext = _httpContextAccessor.HttpContext?.User;
+
             var user = await _dbContext.Users
                 .Include(u => u.UserProgress)
                 .ThenInclude(u => u.Achievements)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+                .FirstOrDefaultAsync(u => u.Id == userContext.GetUserId());
             if (user is null) throw new NotFoundException(nameof(User));
 
             var achievement = _dbContext.Achievements
