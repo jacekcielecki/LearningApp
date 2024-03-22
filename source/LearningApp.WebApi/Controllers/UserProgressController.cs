@@ -1,4 +1,6 @@
-﻿using LearningApp.Application.Interfaces;
+﻿using LearningApp.Application.Dtos;
+using LearningApp.Application.Interfaces;
+using LearningApp.WebApi.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,10 +27,11 @@ namespace LearningApp.WebApi.Controllers
         }
 
         [HttpPatch("CompleteAchievement/Achievement/{achievementId}")]
+        [TypeFilter<GetUserFilter>]
         [Authorize(Roles = "Admin, User")]
-        public async Task<IActionResult> CompleteAchievementAsync(int achievementId)
+        public async Task<IActionResult> CompleteAchievementAsync(int achievementId, [FromServices] UserDto? user)
         {
-            await _userProgressService.CompleteAchievementAsync(achievementId);
+            await _userProgressService.CompleteAchievementAsync(achievementId, user);
             return Ok();
         }
     }

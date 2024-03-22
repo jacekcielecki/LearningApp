@@ -82,22 +82,20 @@ namespace LearningApp.Application.Services
             return quizCompletedResponse;
         }
 
-        public async Task CompleteAchievementAsync(int achievementId)
+        public async Task CompleteAchievementAsync(int achievementId, UserDto user)
         {
-            var userContext = _httpContextAccessor.HttpContext?.User;
+            var achievement = await _dbContext.Achievements
+                .FindAsync(achievementId);
 
-            var user = await _dbContext.Users
-                .Include(u => u.UserProgress)
-                .ThenInclude(u => u.Achievements)
-                .FirstOrDefaultAsync(u => u.Id == userContext.GetUserId());
-            if (user is null) throw new NotFoundException(nameof(User));
-
-            var achievement = _dbContext.Achievements
-                .FirstOrDefault(a => a.Id == achievementId);
             if (achievement is null) throw new NotFoundException(nameof(Achievement));
 
-            user.UserProgress.Achievements
-                .Add(achievement);
+            var userProgress = await _dbContext.UserProgresses
+                .Include(x => x.Achievements)
+                .FirstOrDefaultAsync(x => x.UserId == user.Id);
+
+            if (userProgress is null) throw new NotFoundException(nameof(UserProgress));
+
+            userProgress.Achievements.Add(achievement);
             await _dbContext.SaveChangesAsync();
         }
 
