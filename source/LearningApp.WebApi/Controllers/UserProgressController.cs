@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LearningApp.WebApi.Controllers
 {
+#pragma warning disable CS8632
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -35,4 +36,5 @@ namespace LearningApp.WebApi.Controllers
             return Ok();
         }
     }
+#pragma warning restore CS8632
 }

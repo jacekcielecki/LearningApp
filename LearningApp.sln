@@ -17,7 +17,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D1FE5C94
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.Application.Tests", "tests\LearningApp.Application.Tests\LearningApp.Application.Tests.csproj", "{75E93E73-90C7-4E71-BD19-06F7093401F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningApp.WebApi.Tests", "tests\LearningApp.WebApi.Tests\LearningApp.WebApi.Tests.csproj", "{C76996F0-6960-4261-AFF5-F9EB0E82A62B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearningApp.WebApi.Tests", "tests\LearningApp.WebApi.Tests\LearningApp.WebApi.Tests.csproj", "{C76996F0-6960-4261-AFF5-F9EB0E82A62B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{43ECC31B-A070-4F7F-B5B1-BF59CDAF2877}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

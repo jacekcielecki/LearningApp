@@ -99,6 +99,13 @@ namespace LearningApp.Application.Tests.Services
                 EmailAddress = "TestUser@mail.com",
                 Password = "TestUserPassword"
             };
+            var existingUserDto = new UserDto
+            {
+                Id = 1,
+                Username = "TestUserUsername",
+                EmailAddress = "TestUser@mail.com",
+            };
+
             await _dbContext.Users.AddAsync(existingUser);
             await _dbContext.SaveChangesAsync();
 
@@ -113,7 +120,7 @@ namespace LearningApp.Application.Tests.Services
             var service = new UserProgressService(_dbContext, _httpContextAccessorMock.Object);
 
             //act
-            await service.CompleteAchievementAsync(existingAchievement.Id);
+            await service.CompleteAchievementAsync(existingAchievement.Id, existingUserDto);
 
             //assert
             var check = await _dbContext.Users
